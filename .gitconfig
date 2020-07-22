@@ -1,40 +1,37 @@
-# vim: set ts=4 sw=4 sts=4 noexpandtab nosmartindent :
+# vim: set ts=4 sw=4 sts=4 expandtab nosmartindent :
 
 [user]
-	name = Szymon Rams
-	email = szymonrams@hotmail.com
+    name = Szymon Rams
+    email = szymonrams@hotmail.com
 
 [alias]
-	s = status
-	st = status -s
-	cl = clone
-	ci = commit
-	co = checkout
-	br = branch
-	r = reset
-	cp = cherry-pick
-	br = branch
-	# diff = diff --word-diff
-	# diffc = diff --cached
-	branch = branch -ra
-	bra = branch -ra
-	f = !git ls-files | grep -
-	ls = log --pretty=\"format:%C(green)%h %C(yellow)[%ad]%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --date=relative
-	ls10 = log --pretty=\"format:%C(green)%h %C(yellow)[%ad]%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --date=relative -10
-	ll = log --pretty=\"format:%C(yellow)%h%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --numstat
-	fpa = fetch --progress --all
+    s = status
+    st = status -s
+    cl = clone
+    ci = commit
+    co = checkout
+    br = branch
+    r = reset
+    cp = cherry-pick
+    br = branch
+    # diff = diff --word-diff
+    # diffc = diff --cached
+    branch = branch -ra
+    bra = branch -ra
+    f = !git ls-files | grep -
+    ls = log --pretty=\"format:%C(green)%h %C(yellow)[%ad]%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --date=relative
+    ls10 = log --pretty=\"format:%C(green)%h %C(yellow)[%ad]%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --date=relative -10
+    ll = log --pretty=\"format:%C(yellow)%h%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --numstat
+    fpa = fetch --progress --all
     la = !git config -l | grep alias | cut -c 7-
-	poh = push origin head
-	lg = log --graph --pretty=\"format:%C(green)%h %C(yellow)[%ad]%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --date=relative
-
-	
-	
+    poh = push origin head
+    lg = log --graph --pretty=\"format:%C(green)%h %C(yellow)[%ad]%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --date=relative
 
 [filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+    clean = git-lfs clean -- %f
+    smudge = git-lfs smudge -- %f
+    process = git-lfs filter-process
+    required = true
 
 [core]
-	editor = vim
+    editor = vim
