@@ -7,8 +7,8 @@
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 if [ -f /etc/profile ]; then
-	PATH=""
-	source /etc/profile
+    PATH=""
+    source /etc/profile
 fi
 
 # Force the terminal language to be English
@@ -54,9 +54,9 @@ export VIRTUALENVWRAPPER_PYTHON="$HOME/.localpython/3.8.3/bin/python3"
 
 # source the configuration for virtualenvwrapper
 if [[ -r "$HOME/.localpython/3.8.3/bin/virtualenvwrapper.sh" ]]; then
-	source "$HOME/.localpython/3.8.3/bin/virtualenvwrapper.sh"
+    source "$HOME/.localpython/3.8.3/bin/virtualenvwrapper.sh"
 else
-	echo "WARNING: Can't find virtualenvwrapper.sh"
+    echo "WARNING: Can't find virtualenvwrapper.sh"
 fi
 
 # set the default directory for virtualenvs
@@ -92,3 +92,12 @@ edit-oh-my-zsh-config() { "$EDITOR" ~/.oh-my-zsh }
 
 # Add fzf zsh integration
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+
+
+# add function from .config/zsh/functions directory
+__base_dir="$HOME/.config/zsh/functions"
+for function_file in $(ls $__base_dir); do
+    . "$__base_dir/$function_file"
+done
+unset function_file
+unset __base_dir
