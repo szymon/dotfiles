@@ -1,9 +1,2 @@
-# Profile file. Runt on login. Environmental variables are set here.
+# Profile file. Runt on login. Sets the terminal, displays some wotd messages, and so on.
 
-export PATH="/Library/Frameworks/Python.framework/Versions/3.8/bin:$PATH:/$HOME/.local/bin:$HOME/.cargo/bin"
-
-export EDITOR="nvim"
-
-# ~/ Clean-up:
-
-export PATH="$HOME/.cargo/bin:$PATH"
