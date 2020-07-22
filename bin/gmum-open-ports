@@ -1,0 +1,59 @@
+#!/usr/bin/env bash
+
+print-help() {
+    echo "USAGE: $1 [plaster|szerszen|zadlo|szarancza] --port port"
+    echo
+    echo "  --help|-h         Display this page."
+    echo
+}
+
+open-ports() {
+    base_port=10080
+    server=""
+    cmd=""
+    nb_forwarded_ports=3
+
+    if [ $# -eq 0 ]; then
+        print-help $(basename $0)
+    fi
+
+    while [ $# -ge 1 ]; do
+        key=$1
+
+        case $key in
+        plaster|szerszen|zadlo|szarancza)
+            server=$1
+            shift 1
+            ;;
+        --port)
+            base_port=$2
+            shift 2
+            ;;
+        -c|-connections)
+            nb_forwarded_ports=$2
+            shift 2
+            ;;
+        -h|--help)
+            print-help $(basename $0)
+            return -1
+            ;;
+        *)
+            print-help $(basename $0)
+            echo "Unknown key: $key"
+            echo
+            return -1
+            ;;
+        esac
+    done
+    
+    i=0
+    while [ $i -le $nb_forwarded_ports ]; do
+        cmd="$cmd -L $((base_port + i)):localhost:$((base_port + i)) "
+        i=$((i + 1))
+    done
+
+    eval \"$(echo ssh "$cmd -N -v" $server.capdnet)\"
+}
+
+
+open-ports "$@"

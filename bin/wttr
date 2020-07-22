@@ -1,0 +1,8 @@
+#!/usr/bin/env bash
+
+
+wttr() {
+    curl v2.wttr.in/$WTTR_COORDS
+}
+
+wttr

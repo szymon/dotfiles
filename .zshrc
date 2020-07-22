@@ -93,6 +93,8 @@ edit-oh-my-zsh-config() { "$EDITOR" ~/.oh-my-zsh }
 # Add fzf zsh integration
 [ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
 
+# add secrets
+[ -f ~/.secrets ] && source ~/.secrets
 
 # add function from .config/zsh/functions directory
 __base_dir="$HOME/.config/zsh/functions"
