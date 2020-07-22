@@ -1,3 +1,5 @@
+# vim: set ts=4 sw=4 sts=4 noexpandtab nosmartindent :
+
 [user]
 	name = Szymon Rams
 	email = szymonrams@hotmail.com
@@ -12,8 +14,8 @@
 	r = reset
 	cp = cherry-pick
 	br = branch
-  # diff = diff --word-diff
-  diffc = diff --cached
+	# diff = diff --word-diff
+	# diffc = diff --cached
 	branch = branch -ra
 	bra = branch -ra
 	f = !git ls-files | grep -
@@ -21,7 +23,12 @@
 	ls10 = log --pretty=\"format:%C(green)%h %C(yellow)[%ad]%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --date=relative -10
 	ll = log --pretty=\"format:%C(yellow)%h%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --numstat
 	fpa = fetch --progress --all
-	la = !git config -l | grep alias | cut -c 7-
+    la = !git config -l | grep alias | cut -c 7-
+	poh = push origin head
+	lg = log --graph --pretty=\"format:%C(green)%h %C(yellow)[%ad]%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --date=relative
+
+	
+	
 
 [filter "lfs"]
 	clean = git-lfs clean -- %f

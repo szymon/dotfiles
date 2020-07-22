@@ -1,0 +1,11 @@
+
+# vim: set sw=2 :
+
+session_name: algo
+start_directory: ~/code/algorithms/
+windows:
+  - window_name: remote
+    focus: True
+    panes:
+      - vim
+  - window_name: remote

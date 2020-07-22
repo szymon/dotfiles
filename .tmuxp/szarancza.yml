@@ -1,0 +1,16 @@
+# vim: set sw=2 :
+
+session_name: Szarancza
+start_directory: ~/code/hypernetworks-kd/
+windows:
+  - window_name: remote
+    focus: True
+    panes:
+      - gmum-connect szarancza
+  - window_name: editor
+    panes:
+      - vim
+  - window_name: cmd
+    panes:
+      - git status
+  - window_name: ports

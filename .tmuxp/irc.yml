@@ -1,0 +1,8 @@
+# vim: set sw=2 :
+
+session_name: IRC
+windows:
+  - window_name: irssi
+    focus: True
+    panes:
+      - irssi
