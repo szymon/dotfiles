@@ -5,6 +5,7 @@
     email = szymonrams@hotmail.com
 
 [alias]
+    # most of these aliases are directly taken from https://git.wiki.kernel.org/index.php/Aliases
     s = status
     st = status -s
     cl = clone
@@ -13,19 +14,27 @@
     br = branch
     r = reset
     cp = cherry-pick
-    br = branch
-    # diff = diff --word-diff
-    # diffc = diff --cached
-    branch = branch -ra
-    bra = branch -ra
-    f = !git ls-files | grep -
-    ls = log --pretty=\"format:%C(green)%h %C(yellow)[%ad]%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --date=relative
-    ls10 = log --pretty=\"format:%C(green)%h %C(yellow)[%ad]%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --date=relative -10
-    ll = log --pretty=\"format:%C(yellow)%h%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --numstat
-    fpa = fetch --progress --all
-    la = !git config -l | grep alias | cut -c 7-
+    fp = fetch --progress
     poh = push origin head
-    lg = log --graph --pretty=\"format:%C(green)%h %C(yellow)[%ad]%Cred%d %Creset%s%C(yellow) [%cn]\" --decorate --date=relative
+    df = diff
+    dc = diff --cached
+
+    # a shortcut for seeig the fetched commits
+    lc = log ORIG_HEAD.. --stat --no-merges
+
+    # undo the last commit
+    undo = reset --soft HEAD^
+
+    changes = diff --name-status -r
+    diffstat = diff --stat -r
+
+    graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
+
+    # pretty logs
+    lg = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
+    ls = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
+    ls10 = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative -10
+
 
 [filter "lfs"]
     clean = git-lfs clean -- %f
