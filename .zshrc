@@ -1,3 +1,4 @@
+
 # from: http://zsh.sourceforge.net/Intro/intro_3.html
 # this file (.zshenv) is read and executed on all invocations of the shell, unless the -f option is set.
 # It should contain commands to set the command search path, plus other important environment
@@ -44,11 +45,25 @@ export PATH="$HOME/bin/:$HOME/bin/usr/:$PATH"
 # setup other variables
 
 # setup rust paths
-export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/src/
+type -a rustc 2>&1 >/dev/null
+
+if [[ $? -eq 0 ]]; then
+    export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/src/
+fi
 
 # force fzf to use ripgrep
-export FZF_DEFAULT_COMMAND='rg --files --hidden --follow'
+type -a rg 2>&1 >/dev/null
 
+if [[ $? -eq 0 ]]; then
+    export FZF_DEFAULT_COMMAND='rg --files --hidden --follow'
+fi
+
+type -a pyenv
+
+if [[ $? -eq 0 ]]; then
+    eval "$(pyenv init -)"
+    eval "$(pyenv virtualenv-init -)"
+fi
 # set the default python for mkvirtualenv
 export VIRTUALENVWRAPPER_PYTHON="$HOME/.localpython/3.8.3/bin/python3"
 
@@ -98,8 +113,10 @@ edit-oh-my-zsh-config() { "$EDITOR" ~/.oh-my-zsh }
 
 # add function from .config/zsh/functions directory
 __base_dir="$HOME/.config/zsh/functions"
+if [[ -r $__base_dir ]]; then
 for function_file in $(ls $__base_dir); do
     . "$__base_dir/$function_file"
 done
 unset function_file
+fi
 unset __base_dir
