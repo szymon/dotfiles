@@ -31,6 +31,7 @@ set number
 set relativenumber
 set hlsearch
 set ruler
+set mouse=a
 
 " Colorscheme
 set t_Co=256
@@ -57,37 +58,9 @@ nnoremap <C-j> <c-w>j
 nnoremap <C-k> <c-w>k
 nnoremap <C-l> <c-w>l
 
-xnoremap K :move '<-2<cr>gv-gv
-xnoremap J :move '>+1<cr>gv-gv
-
 set exrc
 set secure
 
-" %mode% %buffor_number% %spell?% %readonly?% %dirty?% %filename% <---> %file_format% %position% %position_p%
-
-" set statusline=
-" set statusline+=%#Cursor#%{(mode()=='n')?'\ \ NORMAL\ ':''}
-" set statusline+=%#DiffChange#%{(mode()=='i')?'\ \ INSERT\ ':''}
-" set statusline+=%#DiffDelete#%{(mode()=='R')?'\ \ RPLACE\ ':''}
-" set statusline+=%#Cursor#%{(mode()=='v')?'\ \ VISUAL\ ':''}
-" set statusline+=%#Cursor#%{(mode()=='V')?'\ \ VISUAL\ ':''}
-" set statusline+=\ %n\           " buffer number
-" set statusline+=%#Visual#       " colour
-" set statusline+=%{&paste?'\ PASTE\ ':''}
-" set statusline+=%{&spell?'\ SPELL\ ':''}
-" set statusline+=%#CursorIM#     " colour
-" set statusline+=%R                        " readonly flag
-" set statusline+=%M                        " modified [+] flag
-" set statusline+=%#Cursor#               " colour
-" set statusline+=%#CursorLine#     " colour
-" set statusline+=\ %t\                   " short file name
-" set statusline+=%=                          " right align
-" set statusline+=%#CursorLine#   " colour
-" set statusline+=\ %Y\                   " file type
-" set statusline+=%#CursorIM#     " colour
-" set statusline+=\ %3l:%-2c\         " line + column
-" set statusline+=%#Cursor#       " colour
-" set statusline+=\ %3p%%\                " percentage
 
 let g:currentmode={
     \ 'n'  : 'Normal',
@@ -143,25 +116,14 @@ hi User4 ctermfg=239 ctermbg=239 guibg=#4e4e4e guifg=#4e4e4e
 
 filetype off
 
-
-"set rtp+=~/.vim/bundle/Vundle.vim
-"call vundle#begin()
-"Plugin 'VundleVim/Vundle.vim'
-"Plugin 'airblade/vim-gitgutter'
-"" Plugin 'rhysd/vim-clang-format'
-"" Plugin 'rust-lang/rust.vim'
-"Plugin 'ctrlpvim/ctrlp.vim'
-"Plugin 'fzf'
-"Plugin 'fzf.vim'
-"call vundle#end()
-
 " to download the vim-plug run: sh -c 'curl -fLo "${XDG_DATA_HOME:-$HOME/.local/share}"/nvim/site/autoload/plug.vim --create-dirs https://raw.githubusercontent.com/junegunn/vim-plug/master/plug.vim'
 call plug#begin(stdpath('data'))
 Plug 'airblade/vim-gitgutter'
-Plug 'rhysd/vim-clang-format'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'phanviet/vim-monokai-pro'
+Plug 'neoclide/coc.nvim', {'branch': 'release' }
+Plug 'hashivim/vim-terraform'
 
 " Searching in files
 if has('nvim')
@@ -184,55 +146,6 @@ let mapleader=','
 nnoremap <leader>, :w<cr>
 nnoremap <leader><space> :noh<cr>
 
-
-" Denite custom settings
-autocmd FileType denite call s:denite_my_settings()
-function! s:denite_my_settings() abort
-  nnoremap <silent><buffer><expr> <CR>
-  \ denite#do_map('do_action')
-  nnoremap <silent><buffer><expr> d
-  \ denite#do_map('do_action', 'delete')
-  nnoremap <silent><buffer><expr> p
-  \ denite#do_map('do_action', 'preview')
-  nnoremap <silent><buffer><expr> q
-  \ denite#do_map('quit')
-  nnoremap <silent><buffer><expr> i
-  \ denite#do_map('open_filter_buffer')
-  nnoremap <silent><buffer><expr> <Space>
-  \ denite#do_map('toggle_select').'j'
-endfunction
-
-call denite#custom#var('file/rec', 'command', ['rg', '--files', '--glob', '!.git'])
-call denite#custom#var('grep', 'command', ['rg'])
-call denite#custom#var('grep', 'default_opts', ['--hidden', '--vimgrep', '--heading', '-S'])
-
-call denite#custom#var('grep', 'recursive_opts', [])
-call denite#custom#var('grep', 'pattern_opt', ['--regexp'])
-call denite#custom#var('grep', 'separator', ['--'])
-call denite#custom#var('grep', 'final_opts', [])
-
-let s:menus = {}
-let s:menus.zsh = {
-    \ 'description': 'Edit your import zsh configuration'
-    \ }
-
-let s:menus.vim = {
-    \ 'description': 'Edit your vim configuration'
-    \ }
-
-let s:menus.zsh.file_candidates = [
-    \ ['zshrc', '~/.config/zsh/.zshrc'],
-    \ ['zshenv', '~/.zshenc'],
-    \ ['zshrc-home', '~/.zshrc'],
-    \ ]
-
-let s:menus.vim.file_candidates = [
-    \ ['vimrc-home', '~/.vimrc'],
-    \ ['neovimrc', '~/.config/nvim/init.vim'],
-    \ ]
-
-call denite#custom#var('menu', 'menus', s:menus)
-
 nmap ; :Denite buffer<cr>
 nmap <leader>t :DeniteProjectDir file/rec<cr>
 nnoremap <leader>g :<C-u>Denite grep:. -no-empty<cr>
@@ -253,5 +166,70 @@ endif
 set backupdir=~/.local/share/nvim/backup
 set backup
 set noswapfile
+
+
+set signcolumn=number
+
+inoremap <silent><expr> <TAB>
+      \ pumvisible() ? "\<C-n>" :
+      \ <SID>check_back_space() ? "\<TAB>" :
+      \ coc#refresh()
+inoremap <expr><S-TAB> pumvisible() ? "\<C-p>" : "\<C-h>"
+
+function! s:check_back_space() abort
+  let col = col('.') - 1
+  return !col || getline('.')[col - 1]  =~# '\s'
+endfunction
+
+" Use <c-space> to trigger completion.
+if has('nvim')
+  inoremap <silent><expr> <c-space> coc#refresh()
+else
+  inoremap <silent><expr> <c-@> coc#refresh()
+endif
+
+" Make <CR> auto-select the first completion item and notify coc.nvim to
+" format on enter, <cr> could be remapped by other vim plugin
+inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+
+" Use `[g` and `]g` to navigate diagnostics
+" Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
+
+" GoTo code navigation.
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
+
+" Use K to show documentation in preview window.
+nnoremap <silent> K :call <SID>show_documentation()<CR>
+
+function! s:show_documentation()
+  if (index(['vim','help'], &filetype) >= 0)
+    execute 'h '.expand('<cword>')
+  elseif (coc#rpc#ready())
+    call CocActionAsync('doHover')
+  else
+    execute '!' . &keywordprg . " " . expand('<cword>')
+  endif
+endfunction
+
+" Highlight the symbol and its references when holding the cursor.
+autocmd CursorHold * silent call CocActionAsync('highlight')
+
+" Symbol renaming.
+nmap <leader>rn <Plug>(coc-rename)
+
+" Add `:Format` command to format current buffer.
+command! -nargs=0 Format :call CocAction('format')
+
+" Add `:Fold` command to fold current buffer.
+command! -nargs=? Fold :call     CocAction('fold', <f-args>)
+
+" Add `:OR` command for organize imports of the current buffer.
+command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
 
 
