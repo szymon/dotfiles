@@ -1,3 +1,4 @@
+source ~/.vimrc
 
 set nocompatible
 
@@ -7,7 +8,7 @@ set wildmenu
 set termguicolors
 
 " Yank and paste with the system clipboard
-set clipboard=unnamed
+set clipboard=unnamedplus
 
 filetype plugin on
 
@@ -28,7 +29,7 @@ set shiftwidth=4
 set expandtab
 set ai
 set number
-set relativenumber
+"set relativenumber
 set hlsearch
 set ruler
 set mouse=a
@@ -36,7 +37,6 @@ set mouse=a
 " Colorscheme
 set t_Co=256
 colorscheme default
-highlight Comment ctermfg=green
 
 command! JsonFormat %!python -m json.tool
 
@@ -60,7 +60,6 @@ nnoremap <C-l> <c-w>l
 
 set exrc
 set secure
-
 
 let g:currentmode={
     \ 'n'  : 'Normal',
@@ -121,9 +120,11 @@ call plug#begin(stdpath('data'))
 Plug 'airblade/vim-gitgutter'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
+Plug 'sheerun/vim-polyglot'
 Plug 'phanviet/vim-monokai-pro'
 Plug 'neoclide/coc.nvim', {'branch': 'release' }
 Plug 'hashivim/vim-terraform'
+Plug 'psf/black'
 
 " Searching in files
 if has('nvim')
@@ -137,6 +138,7 @@ endif
 call plug#end()
 
 " autocmd FileType c,cpp,cuda ClangFormatAutoEnable
+autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
 filetype plugin indent on
 
 set hidden
@@ -151,8 +153,35 @@ nmap <leader>t :DeniteProjectDir file/rec<cr>
 nnoremap <leader>g :<C-u>Denite grep:. -no-empty<cr>
 nnoremap <leader>j :<C-u>DeniteCursorWord grep:.<cr>
 
+" emacs movement in cmd mode
+cnoremap <C-A>		<Home>
+cnoremap <C-B>		<Left>
+cnoremap <C-D>		<Del>
+cnoremap <C-E>		<End>
+cnoremap <C-F>		<Right>
+cnoremap <C-N>		<Down>
+cnoremap <C-P>		<Up>
+cnoremap <Esc><C-B>	<S-Left>
+cnoremap <Esc><C-F>	<S-Right>
+
 
 nmap <silent> <c-p> :Files<cr>
+
+autocmd FileType denite call s:denite_my_settings()
+function! s:denite_my_settings() abort
+    nnoremap <silent><buffer><expr> <cr>
+        \ denite#do_map('do_action')
+    nnoremap <silent><buffer><expr> d
+        \ denite#do_map('do_action', 'delete')
+    nnoremap <silent><buffer><expr> p
+        \ denite#do_map('do_action', 'preview')
+    nnoremap <silent><buffer><expr> q
+        \ denite#do_map('quit')
+    nnoremap <silent><buffer><expr> i
+        \ denite#do_map('open_filter_buffer')
+    nnoremap <silent><buffer><expr> <space>
+        \ denite#do_map('toggle_select').'j'
+endfunction
 
 colorscheme monokai_pro
 
@@ -168,7 +197,7 @@ set backup
 set noswapfile
 
 
-set signcolumn=number
+set signcolumn=yes
 
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
@@ -188,10 +217,11 @@ else
   inoremap <silent><expr> <c-@> coc#refresh()
 endif
 
+
 " Make <CR> auto-select the first completion item and notify coc.nvim to
 " format on enter, <cr> could be remapped by other vim plugin
-inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
-                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
+"inoremap <silent><expr> <cr> pumvisible() ? coc#_select_confirm()
+"                              \: "\<C-g>u\<CR>\<c-r>=coc#on_enter()\<CR>"
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
@@ -227,9 +257,10 @@ nmap <leader>rn <Plug>(coc-rename)
 command! -nargs=0 Format :call CocAction('format')
 
 " Add `:Fold` command to fold current buffer.
-command! -nargs=? Fold :call     CocAction('fold', <f-args>)
-
-" Add `:OR` command for organize imports of the current buffer.
-command! -nargs=0 OR   :call     CocAction('runCommand', 'editor.action.organizeImport')
+command! -nargs=? Fold :call CocAction('fold', <f-args>)
 
 
+" use `:OR` for organize import of current buffer
+command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
+
+"autocmd BufWritePre *.py :OR

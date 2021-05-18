@@ -51,9 +51,16 @@ if [[ $(uname) == 'Darwin' ]]; then
     export PATH="$HOME/.localpython/3.8.3/bin:$PATH"
 fi
 
+# add custom cuda installs, /usr/bin/cuda can be
+# managed by update-alternatives and point to the correct version of cuda
+export PATH="/usr/local/cuda/bin:$PATH"
+export CUDADIR=/usr/loca/cuda
+export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64"
+
 # add local bin and bin/usr for my scripts, functions and programs
 # this is where I'll install tools compiled from source
 export PATH="$HOME/bin/:$HOME/bin/usr/:$PATH"
+export PATH="/home/szymon/.local/bin:$PATH"
 
 
 # =====================
@@ -79,7 +86,7 @@ if [ -d "$HOME/.nvm" ]; then
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 fi
 
-
+export PYTHONBREAKPOINT=ipdb.set_trace
 # set the default directory for virtualenvs
 export WORKON_HOME="$HOME/.virtualenvs"
 export VIRTUALENVWRAPPER_VIRTUALENV_ARGS=""
@@ -92,7 +99,7 @@ fi
 export DISABLE_AUTO_TITLE='true'
 
 # Set the default editor
-export EDITOR="nvim"
+export EDITOR="/usr/local/bin/nvim"
 
 # this file is sourced in interactive shell. It should contain commands to set up aliases, functions
 # options, key bindings, etc.
@@ -114,6 +121,10 @@ alias gs='git status'
 alias gd='git diff'
 alias gc='git commit'
 alias ga='git add'
+alias sr="cd $HOME/code/serenity"
+alias open="xdg-open"
+alias tmux-hyper="tmuxp load hyper"
+alias tmux-hyper-old="tmuxp load hyper-old"
 
 edit-ssh-config() { "$EDITOR" ~/.ssh/config }
 edit-zshrc-config() { "$EDITOR" ~/.zshrc }
@@ -138,3 +149,24 @@ unset __base_dir
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /home/szymon/go/bin/terraform terraform
+eval "$(register-python-argcomplete pipx)"
+
+# Scaleway CLI autocomplete initialization.
+eval "$(scw autocomplete script shell=zsh)"
+
+function init_pyenv_conda() {
+# >>> conda initialize >>>
+# !! Contents within this block are managed by 'conda init' !!
+__conda_setup="$('/home/szymon/.pyenv/versions/miniconda3-latest/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+if [ $? -eq 0 ]; then
+    eval "$__conda_setup"
+else
+    if [ -f "/home/szymon/.pyenv/versions/miniconda3-latest/etc/profile.d/conda.sh" ]; then
+        . "/home/szymon/.pyenv/versions/miniconda3-latest/etc/profile.d/conda.sh"
+    else
+        export PATH="/home/szymon/.pyenv/versions/miniconda3-latest/bin:$PATH"
+    fi
+fi
+unset __conda_setup
+# <<< conda initialize <<<
+}

@@ -1,0 +1,42 @@
+{
+    "coc.preferences.formatOnSaveFiletypes": ["python", "cpp", "cmake", "c"],
+    "python.linting.enabled": true,
+    "python.linting.pylintEnabled": false,
+    "python.linting.flake8Enabled": true,
+    "python.linting.flake8Path": "/home/szymon/.local/pipx/venvs/flake8/bin/flake8",
+    "python.linting.flake8Args": [
+        "--suppress-none-returning"
+    ],
+    "python.formatting.blackPath": "/home/szymon/.local/pipx/venvs/black/bin/black",
+    "python.formatting.provider": "black",
+    "python.formatting.blackArgs": [
+        "-l 100"
+    ],
+    "pyright.disableDiagnostics": true,
+    "python.sortImports.path": "/home/szymon/.local/pipx/venvs/isort/bin/isort",
+    "pyright.organizeimports.provider": "isort",
+
+    "languageserver": {
+        "ccls": {
+            "command": "ccls",
+            "filetypes": [
+                "c",
+                "cpp",
+                "objc",
+                "objcpp"
+            ],
+            "rootPatterns": [
+                ".ccls",
+                "compile_commands.json",
+                ".vim/",
+                ".git/",
+                ".hg/"
+            ],
+            "initializationOptions": {
+                "cache": {
+                    "directory": "/tmp/ccls"
+                }
+            }
+        }
+    }
+}
