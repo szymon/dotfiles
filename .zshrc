@@ -122,9 +122,12 @@ alias gd='git diff'
 alias gc='git commit'
 alias ga='git add'
 alias sr="cd $HOME/code/serenity"
-alias open="xdg-open"
 alias tmux-hyper="tmuxp load hyper"
 alias tmux-hyper-old="tmuxp load hyper-old"
+
+if [[ $(uname) != 'Darwin' ]]; then
+    alias open="xdg-open"
+fi
 
 edit-ssh-config() { "$EDITOR" ~/.ssh/config }
 edit-zshrc-config() { "$EDITOR" ~/.zshrc }
@@ -147,26 +150,28 @@ unset function_file
 fi
 unset __base_dir
 
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /home/szymon/go/bin/terraform terraform
-eval "$(register-python-argcomplete pipx)"
+if [[ $(uname) != 'Darwin' ]]; then
+    autoload -U +X bashcompinit && bashcompinit
+    complete -o nospace -C /home/szymon/go/bin/terraform terraform
+    eval "$(register-python-argcomplete pipx)"
 
-# Scaleway CLI autocomplete initialization.
-eval "$(scw autocomplete script shell=zsh)"
+    # Scaleway CLI autocomplete initialization.
+    eval "$(scw autocomplete script shell=zsh)"
 
-function init_pyenv_conda() {
-# >>> conda initialize >>>
-# !! Contents within this block are managed by 'conda init' !!
-__conda_setup="$('/home/szymon/.pyenv/versions/miniconda3-latest/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-if [ $? -eq 0 ]; then
-    eval "$__conda_setup"
-else
-    if [ -f "/home/szymon/.pyenv/versions/miniconda3-latest/etc/profile.d/conda.sh" ]; then
-        . "/home/szymon/.pyenv/versions/miniconda3-latest/etc/profile.d/conda.sh"
+    function init_pyenv_conda() {
+    # >>> conda initialize >>>
+    # !! Contents within this block are managed by 'conda init' !!
+    __conda_setup="$('/home/szymon/.pyenv/versions/miniconda3-latest/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
+    if [ $? -eq 0 ]; then
+        eval "$__conda_setup"
     else
-        export PATH="/home/szymon/.pyenv/versions/miniconda3-latest/bin:$PATH"
+        if [ -f "/home/szymon/.pyenv/versions/miniconda3-latest/etc/profile.d/conda.sh" ]; then
+            . "/home/szymon/.pyenv/versions/miniconda3-latest/etc/profile.d/conda.sh"
+        else
+            export PATH="/home/szymon/.pyenv/versions/miniconda3-latest/bin:$PATH"
+        fi
     fi
+    unset __conda_setup
+    # <<< conda initialize <<<
+    }
 fi
-unset __conda_setup
-# <<< conda initialize <<<
-}

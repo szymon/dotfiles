@@ -1,19 +1,19 @@
 {
-    "coc.preferences.formatOnSaveFiletypes": ["python", "cpp", "cmake", "c"],
+    "coc.preferences.formatOnSaveFiletypes": ["python", "cpp", "cmake", "c", "rust"],
     "python.linting.enabled": true,
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
-    "python.linting.flake8Path": "/home/szymon/.local/pipx/venvs/flake8/bin/flake8",
+    "python.linting.flake8Path": "~/.local/pipx/venvs/flake8/bin/flake8",
     "python.linting.flake8Args": [
         "--suppress-none-returning"
     ],
-    "python.formatting.blackPath": "/home/szymon/.local/pipx/venvs/black/bin/black",
+    "python.formatting.blackPath": "~/.local/pipx/venvs/black/bin/black",
     "python.formatting.provider": "black",
     "python.formatting.blackArgs": [
         "-l 100"
     ],
     "pyright.disableDiagnostics": true,
-    "python.sortImports.path": "/home/szymon/.local/pipx/venvs/isort/bin/isort",
+    "python.sortImports.path": "~/.local/pipx/venvs/isort/bin/isort",
     "pyright.organizeimports.provider": "isort",
 
     "languageserver": {
