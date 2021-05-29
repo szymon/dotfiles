@@ -3,7 +3,6 @@
 [user]
 	name = Szymon Rams
 	email = szymonrams@hotmail.com
-	signingkey = E11AE2D188D7B9A5ED1A97DC74AA71F70F108CAE
 
 [alias]
 	# most of these aliases are directly taken from https://git.wiki.kernel.org/index.php/Aliases
