@@ -1,16 +1,6 @@
 source ~/.vimrc
 
-set nocompatible
-
-set path+=**
-set wildmenu
-
-set termguicolors
-
-" Yank and paste with the system clipboard
-set clipboard=unnamedplus
-
-filetype plugin on
+set signcolumn=yes
 
 " Tweaks for browsing
 let g:netrw_banner=0
@@ -20,46 +10,7 @@ let g:netrw_liststyle=3
 let g:netrw_list_hide=netrw_gitignore#Hide()
 let g:netrw_list_hide.=',\(^\|\s\s\)\zs\.\S\+'
 
-set langmenu=en_US.UTF-8
-language message en_US.UTF-8
-
-syntax on
-set tabstop=4
-set shiftwidth=4
-set expandtab
-set ai
-set number
-"set relativenumber
-set hlsearch
-set ruler
-set mouse=a
-
-" Colorscheme
-set t_Co=256
-colorscheme default
-
 command! JsonFormat %!python -m json.tool
-
-" Make backspace usefull
-set backspace=indent,eol,start
-
-noremap <silent> <expr> j (v:count == 0 ? 'gj' : 'j')
-noremap <silent> <expr> k (v:count == 0 ? 'gk' : 'k')
-
-nnoremap <Up> :resize -2<cr>
-nnoremap <Down> :resize +2<cr>
-nnoremap <Left> :vertical resize -2<cr>
-nnoremap <Right> :vertical resize +2<cr>
-
-nnoremap Q <nop>
-
-nnoremap <C-h> <c-w>h
-nnoremap <C-j> <c-w>j
-nnoremap <C-k> <c-w>k
-nnoremap <C-l> <c-w>l
-
-set exrc
-set secure
 
 let g:currentmode={
     \ 'n'  : 'Normal',
@@ -126,78 +77,16 @@ Plug 'neoclide/coc.nvim', {'branch': 'release' }
 Plug 'hashivim/vim-terraform'
 Plug 'psf/black'
 
-" Searching in files
-if has('nvim')
-    Plug 'Shougo/denite.nvim', { 'do': ':UpdateRemotePlugins' }
-else
-    Plug 'Shougo/denite.nvim'
-    Plug 'roxma/nvim-yarp'
-    Plug 'roxma/vim-hug-neovim-rpc'
-endif
-
 call plug#end()
 
 " autocmd FileType c,cpp,cuda ClangFormatAutoEnable
 autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
 filetype plugin indent on
 
-set hidden
-
-let mapleader=','
-
-nnoremap <leader>, :w<cr>
-nnoremap <leader><space> :noh<cr>
-
-nmap ; :Denite buffer<cr>
-nmap <leader>t :DeniteProjectDir file/rec<cr>
-nnoremap <leader>g :<C-u>Denite grep:. -no-empty<cr>
-nnoremap <leader>j :<C-u>DeniteCursorWord grep:.<cr>
-
-" emacs movement in cmd mode
-cnoremap <C-A>		<Home>
-cnoremap <C-B>		<Left>
-cnoremap <C-D>		<Del>
-cnoremap <C-E>		<End>
-cnoremap <C-F>		<Right>
-cnoremap <C-N>		<Down>
-cnoremap <C-P>		<Up>
-cnoremap <Esc><C-B>	<S-Left>
-cnoremap <Esc><C-F>	<S-Right>
-
-
+nmap <silent> ; :Buffers <cr>
 nmap <silent> <c-p> :Files<cr>
 
-autocmd FileType denite call s:denite_my_settings()
-function! s:denite_my_settings() abort
-    nnoremap <silent><buffer><expr> <cr>
-        \ denite#do_map('do_action')
-    nnoremap <silent><buffer><expr> d
-        \ denite#do_map('do_action', 'delete')
-    nnoremap <silent><buffer><expr> p
-        \ denite#do_map('do_action', 'preview')
-    nnoremap <silent><buffer><expr> q
-        \ denite#do_map('quit')
-    nnoremap <silent><buffer><expr> i
-        \ denite#do_map('open_filter_buffer')
-    nnoremap <silent><buffer><expr> <space>
-        \ denite#do_map('toggle_select').'j'
-endfunction
-
 colorscheme monokai_pro
-
-
-" backups
-if has('presistent_undo')
-    set undofile
-    set undolevels=3000
-    set undoreload=10000
-endif
-set backupdir=~/.local/share/nvim/backup
-set backup
-set noswapfile
-
-
-set signcolumn=yes
 
 inoremap <silent><expr> <TAB>
       \ pumvisible() ? "\<C-n>" :
@@ -264,3 +153,7 @@ command! -nargs=? Fold :call CocAction('fold', <f-args>)
 command! -nargs=0 OR :call CocAction('runCommand', 'editor.action.organizeImport')
 
 "autocmd BufWritePre *.py :OR
+"
+"
+highligh Visual gui=None term=reverse ctermfg=none ctermbg=232
+highligh Folded gui=None term=reverse ctermfg=none ctermbg=232
