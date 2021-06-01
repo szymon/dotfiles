@@ -104,7 +104,7 @@ export EDITOR="/usr/local/bin/nvim"
 # this file is sourced in interactive shell. It should contain commands to set up aliases, functions
 # options, key bindings, etc.
 
-ZSH_THEME="robbyrussell"
+ZSH_THEME="szymon"
 plugins=(git python)
 
 # override default history expansion where pressing <cr> wouldn't execute the command
