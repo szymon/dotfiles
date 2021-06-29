@@ -35,6 +35,7 @@ files=(
     .tmux.conf
     .tmuxp
     .zshrc
+    .vimrc
 )
 
 [ ! -d "$HOME/bin" ] && mkdir "$HOME/bin"
