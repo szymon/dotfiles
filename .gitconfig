@@ -44,3 +44,4 @@
 
 [core]
 	editor = vim
+	pager = "less -SEX"
