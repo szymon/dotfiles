@@ -53,6 +53,7 @@ fi
 
 # add custom cuda installs, /usr/bin/cuda can be
 # managed by update-alternatives and point to the correct version of cuda
+export PATH="/usr/local/bin:$PATH"
 export PATH="/usr/local/cuda/bin:$PATH"
 export CUDADIR=/usr/loca/cuda
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64"
@@ -124,6 +125,7 @@ alias ga='git add'
 alias sr="cd $HOME/code/serenity"
 alias tmux-hyper="tmuxp load hyper"
 alias tmux-hyper-old="tmuxp load hyper-old"
+alias hpr="cd ~/code/hypernetworks-kd/"
 
 if [[ $(uname) != 'Darwin' ]]; then
     alias open="xdg-open"
