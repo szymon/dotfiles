@@ -65,8 +65,8 @@ xnoremap <leader>p "_dP
 
 nnoremap Q <nop>
 
-nnoremap <silent><C-h> :tabprev<cr>
-nnoremap <silent><C-l> :tabnext<cr>
+nnoremap <silent><c-h> :tabprev<cr>
+nnoremap <silent><c-l> :tabnext<cr>
 
 
 " emacs movement in cmd mode

@@ -76,9 +76,6 @@ Plug 'tpope/vim-fugitive'
 call plug#end()
 
 
-colorscheme monokai_pro
-
-
 " status bar colors
 hi statusline guifg=black guibg=#8fbfdc ctermfg=black ctermbg=cyan
 
@@ -97,6 +94,7 @@ nnoremap <silent><leader>gc <cmd>GitGutterPreviewHunk<cr>
 nnoremap <silent> ; <cmd>Buffers <cr>
 nnoremap <silent> <c-p> <cmd>Files<cr>
 nnoremap <silent><leader>rg <cmd>Rg<cr>
+vnoremap <leader>p "_dP
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
@@ -167,3 +165,4 @@ augroup SZYMON_CUSTOM
     autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
 
 augroup END
+
