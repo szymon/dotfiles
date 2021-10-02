@@ -1,5 +1,6 @@
 source ~/.vimrc
 
+set mouse=a
 set signcolumn=yes
 set hidden
 set nowrap
@@ -74,7 +75,6 @@ Plug 'tpope/vim-fugitive'
 call plug#end()
 
 
-colorscheme monokai_pro
 
 " status bar colors
 hi statusline guifg=black guibg=#8fbfdc ctermfg=black ctermbg=cyan

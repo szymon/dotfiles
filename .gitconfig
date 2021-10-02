@@ -1,5 +1,7 @@
 # vim: set ts=8 sw=8 sts=8 noexpandtab nosmartindent :
 
+[init]
+	defaultBranch = main
 
 [alias]
 	# most of these aliases are directly taken from https://git.wiki.kernel.org/index.php/Aliases

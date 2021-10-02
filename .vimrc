@@ -2,7 +2,7 @@
 filetype plugin on
 syntax on
 
-" Set commands {{{1
+" Set commands
 set nocompatible
 set path+=**
 set wildmenu
@@ -23,14 +23,14 @@ set hidden
 set exrc
 set secure
 
-set foldmethod=manual
+set foldmethod=marker
 set langmenu=en_US.UTF-8
 
 " Make backspace usefull
 set backspace=indent,eol,start
 
 
-" Other options {{{1
+" Other options
 if has('nvim')
     set clipboard=unnamedplus
 else
@@ -40,11 +40,11 @@ endif
 let mapleader=" "
 language message en_US.UTF-8
 
-" Colorscheme {{{1
+" Colorscheme
 set t_Co=256
 colorscheme default
 
-" (Re)maps {{{1
+" (Re)maps
 
 nnoremap <leader>, :w<cr>
 nnoremap <leader><space> :noh<cr>
@@ -80,7 +80,7 @@ cnoremap <C-P>		<Up>
 cnoremap <Esc><C-B>	<S-Left>
 cnoremap <Esc><C-F>	<S-Right>
 
-" Backup {{{1
+" Backup
 
 if has('presistent_undo')
     set undofile
@@ -91,12 +91,13 @@ set backupdir=~/.local/share/nvim/backup
 set backup
 set noswapfile
 
-" Autocmd {{{1
+" Autocmd
 autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
 autocmd FileType python setlocal ts=8 sts=4 sw=4 expandtab
 
 
-" Hilight {{{1
+" Highlight
 highligh Visual gui=None term=reverse ctermfg=none ctermbg=232
+highligh search gui=none term=reverse ctermfg=none ctermbg=232
 highligh Folded gui=None term=reverse ctermfg=none ctermbg=232
 
