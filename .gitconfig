@@ -1,8 +1,5 @@
-# vim: set ts=8 sw=4 noexpandtab nosmartindent :
+# vim: set ts=8 sw=8 sts=8 noexpandtab nosmartindent :
 
-[user]
-	name = Szymon Rams
-	email = szymonrams@hotmail.com
 
 [alias]
 	# most of these aliases are directly taken from https://git.wiki.kernel.org/index.php/Aliases
@@ -35,13 +32,21 @@
 	ls = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
 	ls10 = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative -10
 
+[push]
+	default = current
 
-[filter "lfs"]
-	clean = git-lfs clean -- %f
-	smudge = git-lfs smudge -- %f
-	process = git-lfs filter-process
-	required = true
+[pull]
+	rebase = true
+
+[rebase]
+	autoStash = true
+
+[fetch]
+	prune = true
 
 [core]
 	editor = vim
-	pager = "less -SEX"
+	pager = less -FRSX
+
+[include]
+	path = ~/.gitconfig_local

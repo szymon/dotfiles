@@ -31,14 +31,13 @@ fi
 # always add $PATH at the end.
 
 # .local/bin is the installation folder for pip3 install --user
-[ -d "$HOME/.local" ] && export PATH="$HOME/.local/bin:$PATH"
 [ -d "$HOME/.cargo" ] && export PATH="$HOME/.cargo/bin:$PATH"
 [ -d "$HOME/go"     ] && export PATH="$HOME/go/bin/:$PATH"
 
 # add pyenv
 if [[ -d "$HOME/.pyenv" ]]; then
     export PYENV_ROOT="$HOME/.pyenv"
-    export PATH="$PYENV_ROOT/bin:$PATH"
+    export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims/:$PATH"
 fi
 
 
@@ -55,13 +54,14 @@ fi
 # managed by update-alternatives and point to the correct version of cuda
 export PATH="/usr/local/bin:$PATH"
 export PATH="/usr/local/cuda/bin:$PATH"
+export PATH="$PATH:/usr/local/go/bin"
 export CUDADIR=/usr/loca/cuda
 export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64"
 
 # add local bin and bin/usr for my scripts, functions and programs
 # this is where I'll install tools compiled from source
 export PATH="$HOME/bin/:$HOME/bin/usr/:$PATH"
-export PATH="/home/szymon/.local/bin:$PATH"
+export PATH="$HOME/.local/bin:$PATH"
 
 
 # =====================
@@ -81,13 +81,22 @@ if command -v pyenv 1>/dev/null 2>&1; then
     eval "$(pyenv init -)"
 fi
 
+if command -v argo 1>/dev/null 2>&1; then
+    source <(argo completion zsh)
+fi
+
+if command -v kubectl 1>/dev/null 2>&1; then
+    source <(kubectl completion zsh)
+fi
+
+
 if [ -d "$HOME/.nvm" ]; then
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 fi
 
-export PYTHONBREAKPOINT=ipdb.set_trace
+# export PYTHONBREAKPOINT=ipdb.set_trace
 # set the default directory for virtualenvs
 export WORKON_HOME="$HOME/.virtualenvs"
 export VIRTUALENVWRAPPER_VIRTUALENV_ARGS=""
@@ -100,7 +109,7 @@ fi
 export DISABLE_AUTO_TITLE='true'
 
 # Set the default editor
-export EDITOR="/usr/local/bin/nvim"
+export EDITOR="/usr/bin/nvim"
 
 # this file is sourced in interactive shell. It should contain commands to set up aliases, functions
 # options, key bindings, etc.
@@ -152,13 +161,17 @@ unset function_file
 fi
 unset __base_dir
 
+if [[ -r "$HOME/.zsh/completion" ]]; then
+    fpath=(~/.zsh/completion $fpath)
+fi
+
 if [[ $(uname) != 'Darwin' ]]; then
     autoload -U +X bashcompinit && bashcompinit
     complete -o nospace -C /home/szymon/go/bin/terraform terraform
-    eval "$(register-python-argcomplete pipx)"
+    # eval "$(register-python-argcomplete pipx)"
 
     # Scaleway CLI autocomplete initialization.
-    eval "$(scw autocomplete script shell=zsh)"
+    # eval "$(scw autocomplete script shell=zsh)"
 
     function init_pyenv_conda() {
     # >>> conda initialize >>>
@@ -177,3 +190,33 @@ if [[ $(uname) != 'Darwin' ]]; then
     # <<< conda initialize <<<
     }
 fi
+
+activate() {
+    if [ -d "$PWD/venv" ]; then
+        source "$PWD/venv/bin/activate"
+    elif [ -d "$PWD/.venv" ]; then
+        source "$PWD/.venv/bin/activate"
+    else
+        echo 'no venv or .venv directory'
+        return 1
+    fi
+}
+
+source <(kubectl completion zsh)
+source <(argo completion zsh)
+
+alias k='kubectl'
+alias staging-processing='kubectl -n staging-processing'
+alias dev-processing='kubectl -n dev-processing'
+
+
+complete -F __start_kubectl k
+complete -F __start_kubectl staging-processing
+complete -F __start_kubectl dev-processing
+complete -F __start_kubectl sydney
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/local/bin/tk tk
+
+export KUBECONFIG_DIR="$HOME/.kube"
+export KUBECONFIG="$KUBECONFIG_DIR/config:$KUBECONFIG_DIR/code-de.yaml:$KUBECONFIG_DIR/sydney.yaml:$KUBECONFIG_DIR/microk8s.yaml"
