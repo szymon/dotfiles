@@ -91,10 +91,12 @@ set backupdir=~/.local/share/nvim/backup
 set backup
 set noswapfile
 
-" Autocmd
-autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
-autocmd FileType python setlocal ts=8 sts=4 sw=4 expandtab
+augroup SZYMON_FILETYPES
+    au!
+    au FileType python setlocal ts=8 sts=4 sw=4 expandtab
+    au FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
 
+augroup END
 
 " Highlight
 highligh Visual gui=None term=reverse ctermfg=none ctermbg=232

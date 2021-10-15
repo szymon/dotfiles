@@ -9,9 +9,6 @@
     ],
     "python.formatting.blackPath": "~/.local/pipx/venvs/black/bin/black",
     "python.formatting.provider": "black",
-    "python.formatting.blackArgs": [
-        "-l 100"
-    ],
     "pyright.disableDiagnostics": true,
     "python.sortImports.path": "~/.local/pipx/venvs/isort/bin/isort",
     "pyright.organizeimports.provider": "isort",

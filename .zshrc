@@ -208,12 +208,15 @@ source <(argo completion zsh)
 alias k='kubectl'
 alias staging-processing='kubectl -n staging-processing'
 alias dev-processing='kubectl -n dev-processing'
+alias mk='microk8s kubectl'
 
 
 complete -F __start_kubectl k
 complete -F __start_kubectl staging-processing
 complete -F __start_kubectl dev-processing
 complete -F __start_kubectl sydney
+complete -F __start_kubectl mk
+
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/local/bin/tk tk

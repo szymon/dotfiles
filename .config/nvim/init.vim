@@ -65,6 +65,7 @@ Plug 'hashivim/vim-terraform'
 Plug 'junegunn/fzf', { 'do': { -> fzf#install() } }
 Plug 'junegunn/fzf.vim'
 Plug 'markonm/traces.vim'
+Plug 'morhetz/gruvbox'
 Plug 'neoclide/coc.nvim', {'branch': 'release' }
 Plug 'phanviet/vim-monokai-pro'
 Plug 'projekt0n/github-nvim-theme'
@@ -74,6 +75,8 @@ Plug 'tpope/vim-fugitive'
 
 call plug#end()
 
+
+colorscheme monokai_pro
 
 
 " status bar colors
