@@ -1,0 +1,10 @@
+#!/usr/bin/env bash
+
+
+cluster=`kubectl config current-context`
+
+if echo $cluster | grep sydney >/dev/null; then
+    echo -n ' #[fg=white,bg=red,bold]' $cluster '#[default]'
+else
+    echo -n ' #[fg=black,bg=colour252]' $cluster '#[default]'
+fi
