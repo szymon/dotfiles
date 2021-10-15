@@ -127,6 +127,8 @@ unsetopt HIST_VERIFY
 
 source $ZSH/oh-my-zsh.sh
 
+autoload -U +X bashcompinit && bashcompinit
+
 alias gs='git status'
 alias gd='git diff'
 alias gc='git commit'
@@ -167,7 +169,7 @@ fi
 
 if [[ $(uname) != 'Darwin' ]]; then
     autoload -U +X bashcompinit && bashcompinit
-    complete -o nospace -C /home/szymon/go/bin/terraform terraform
+    # complete -o nospace -C /home/szymon/go/bin/terraform terraform
     # eval "$(register-python-argcomplete pipx)"
 
     # Scaleway CLI autocomplete initialization.
@@ -191,6 +193,35 @@ if [[ $(uname) != 'Darwin' ]]; then
     }
 fi
 
+if command -v kubectl >/dev/null 2>&1; then
+    source <(kubectl completion zsh)
+    if command -v argo >/dev/null 2>&1; then
+        source <(argo completion zsh)
+    fi
+
+    alias k='kubectl'
+    alias staging-processing='kubectl -n staging-processing'
+    alias dev-processing='kubectl -n dev-processing'
+    alias mk='microk8s kubectl'
+
+    complete -F __start_kubectl k
+    complete -F __start_kubectl staging-processing
+    complete -F __start_kubectl dev-processing
+    complete -F __start_kubectl sydney
+    complete -F __start_kubectl mk
+
+
+
+
+    export KUBECONFIG_DIR="$HOME/.kube"
+    export KUBECONFIG="$KUBECONFIG_DIR/config:$KUBECONFIG_DIR/code-de.yaml:$KUBECONFIG_DIR/sydney.yaml:$KUBECONFIG_DIR/microk8s.yaml"
+
+fi
+
+if command -v tk >/dev/null 2>&1; then
+    complete -o nospace -C /usr/local/bin/tk tk
+fi
+
 activate() {
     if [ -d "$PWD/venv" ]; then
         source "$PWD/venv/bin/activate"
@@ -201,25 +232,3 @@ activate() {
         return 1
     fi
 }
-
-source <(kubectl completion zsh)
-source <(argo completion zsh)
-
-alias k='kubectl'
-alias staging-processing='kubectl -n staging-processing'
-alias dev-processing='kubectl -n dev-processing'
-alias mk='microk8s kubectl'
-
-
-complete -F __start_kubectl k
-complete -F __start_kubectl staging-processing
-complete -F __start_kubectl dev-processing
-complete -F __start_kubectl sydney
-complete -F __start_kubectl mk
-
-
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/local/bin/tk tk
-
-export KUBECONFIG_DIR="$HOME/.kube"
-export KUBECONFIG="$KUBECONFIG_DIR/config:$KUBECONFIG_DIR/code-de.yaml:$KUBECONFIG_DIR/sydney.yaml:$KUBECONFIG_DIR/microk8s.yaml"
