@@ -1,0 +1,17 @@
+session_name: Hyper-Old
+start_directory: ~/code/networks-do-networks/
+windows:
+  - window_name: shell
+    panes:
+      - shell_command:
+          - init_pyenv_conda
+          - conda activate tf-dev
+          - reset
+
+  - window_name: editor
+    panes:
+      - shell_command:
+          - init_pyenv_conda
+          - conda activate tf-dev
+          - reset
+          - nvim

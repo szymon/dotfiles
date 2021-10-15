@@ -1,0 +1,19 @@
+
+# vim: set sw=2 :
+
+session_name: mal
+windows:
+  - window_name: editor
+    focus: True
+    start_directory: ~/code/mal/impls/rust.2/
+    panes:
+      - shell_command:
+          - cd ~/code/mal/impls/rust.2/
+          - nvim
+  - window_name: zsh
+    start_directory: ~/code/mal/impls/rust.2/
+    panes:
+      - shell_command:
+          - cd ~/code/mal/impls/rust.2/
+  - window_name: tests
+    start_directory: ~/code/mal/

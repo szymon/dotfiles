@@ -1,0 +1,17 @@
+session_name: Hyper
+windows:
+  - window_name: shell
+    start_directory: ~/code/hypernetworks-kd/
+    focus: True
+    panes:
+      - shell_command:
+          - workon hyper
+          - reset
+
+  - window_name: editor
+    start_directory: ~/code/hypernetworks-kd/
+    panes:
+      - shell_command:
+          - workon hyper
+          - nvim
+

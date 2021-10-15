@@ -1,0 +1,10 @@
+
+session_name: Status
+windows:
+  - window_name: htop
+    focus: True
+    panes:
+      - htop
+  - window_name: nvtop
+    panes:
+      - nvtop

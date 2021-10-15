@@ -1,0 +1,25 @@
+
+session_name: GMUM-ssh-all
+windows:
+  - window_name: plaster
+    focus: True
+    panes:
+      - shell_command:
+          - ssh -t plaster.capdnet "tmyx attach || tmux new"
+  - window_name: truten
+    focus: True
+    panes:
+      - shell_command:
+          - ssh -t truten.capdnet "tmyx attach || tmux new"
+
+  - window_name: szarancza
+    focus: True
+    panes:
+      - shell_command:
+          - ssh -t szarancza.capdnet "tmyx attach || tmux new"
+
+  - window_name: zadlo
+    focus: True
+    panes:
+      - shell_command:
+          - ssh -t zadlo.capdnet "tmyx attach || tmux new"

@@ -1,0 +1,17 @@
+session_name: Pygrad
+windows:
+  - window_name: shell
+    start_directory: ~/code/pygrad/
+    focus: True
+    panes:
+      - shell_command:
+          - workon pygrad
+          - reset
+
+  - window_name: editor
+    start_directory: ~/code/pygrad/
+    panes:
+      - shell_command:
+          - workon pygrad
+          - nvim
+
