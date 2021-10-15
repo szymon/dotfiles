@@ -62,6 +62,7 @@ nnoremap <Left> :vertical resize -2<cr>
 nnoremap <Right> :vertical resize +2<cr>
 
 xnoremap <leader>p "_dP
+vnoremap <leader>p "_dP
 
 nnoremap Q <nop>
 
