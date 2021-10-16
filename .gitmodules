@@ -1,3 +1,7 @@
 [submodule "zsh/ohmyzsh"]
 	path = zsh/ohmyzsh
 	url = https://github.com/szymon/ohmyzsh
+[submodule "personal"]
+	path = personal
+	url = git@github.com:szymon/personal.git
+	branch = main
