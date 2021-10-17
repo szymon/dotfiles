@@ -15,7 +15,7 @@ set autoindent
 set autoindent
 set smartindent
 set scrolloff=5
-set nohlsearch
+set hls
 set ruler
 set mouse=a
 set hidden

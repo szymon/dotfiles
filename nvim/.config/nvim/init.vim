@@ -70,11 +70,11 @@ Plug 'neoclide/coc.nvim', {'branch': 'release' }
 Plug 'phanviet/vim-monokai-pro'
 Plug 'projekt0n/github-nvim-theme'
 Plug 'psf/black'
+Plug 'romainl/vim-cool'
 Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-fugitive'
 
 call plug#end()
-
 colorscheme gruvbox
 
 " status bar colors
@@ -129,6 +129,7 @@ nmap <leader>mi <plug>(fzf-maps-i)
 nmap <leader>mx <plug>(fzf-maps-x)
 nmap <leader>mo <plug>(fzf-maps-o)
 
+let g:CoolTotalMatches = 1
 
 " Add `:Format` command to format current buffer.
 command! -nargs=0 Format :call CocAction('format')<cr>
