@@ -5,3 +5,6 @@
 	path = personal
 	url = git@github.com:szymon/personal.git
 	branch = main
+[submodule "cloudferro"]
+	path = cloudferro
+	url = git@gitlab.cloudferro.com:srams/cloudferro

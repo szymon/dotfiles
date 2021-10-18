@@ -1,6 +1,7 @@
 
 flags = --dotfiles
 packages = \
+	cloudferro \
 	functions \
 	gdb \
 	git \

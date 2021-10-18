@@ -75,7 +75,7 @@ Plug 'sheerun/vim-polyglot'
 Plug 'tpope/vim-fugitive'
 
 call plug#end()
-colorscheme gruvbox
+colorscheme monokai_pro
 
 " status bar colors
 hi statusline guifg=black guibg=#8fbfdc ctermfg=black ctermbg=cyan
@@ -98,14 +98,29 @@ nnoremap <silent><leader>rg <cmd>Rg<cr>
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nnoremap <silent> [g <Plug>(coc-diagnostic-prev)
+nnoremap <silent> ]g <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+nnoremap <silent> gd <Plug>(coc-definition)
+nnoremap <silent> gy <Plug>(coc-type-definition)
+nnoremap <silent> gi <Plug>(coc-implementation)
+nnoremap <silent> gr <Plug>(coc-references)
+
+nnoremap <leader>s <cmd>call <sid>toggle_spell()<cr>
+
+let b:myLang=0
+let g:myLangList=["nospell", "en"]
+function! s:toggle_spell()
+    let b:myLang=b:myLang+1
+
+    if b:myLang>=len(g:myLangList) | let b:myLang = 0 | endif
+    if b:myLang==0
+        setlocal nospell
+    else
+        execute "setlocal spell spelllang=".get(g:myLangList, b:myLang)
+    endif
+endfunction
 
 
 " Symbol renaming.

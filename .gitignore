@@ -1,2 +1,4 @@
 .config/nvim/themes
 .config/zsh/themes
+
+nvim/.config/nvim/spell
