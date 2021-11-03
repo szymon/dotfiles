@@ -94,37 +94,37 @@ nnoremap <silent><leader>gc <cmd>GitGutterPreviewHunk<cr>
 
 nnoremap <silent> ; <cmd>Buffers <cr>
 nnoremap <silent> <c-p> <cmd>Files<cr>
-nnoremap <silent><leader>rg <cmd>Rg<cr>
+nnoremap <silent><leader>rr <cmd>Rg<cr>
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nnoremap <silent> [g <Plug>(coc-diagnostic-prev)
-nnoremap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <silent> [g <Plug>(coc-diagnostic-prev)
+nmap <silent> ]g <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
-nnoremap <silent> gd <Plug>(coc-definition)
-nnoremap <silent> gy <Plug>(coc-type-definition)
-nnoremap <silent> gi <Plug>(coc-implementation)
-nnoremap <silent> gr <Plug>(coc-references)
+nmap <silent> gd <Plug>(coc-definition)
+nmap <silent> gy <Plug>(coc-type-definition)
+nmap <silent> gi <Plug>(coc-implementation)
+nmap <silent> gr <Plug>(coc-references)
 
-nnoremap <leader>s <cmd>call <sid>toggle_spell()<cr>
-
-let b:myLang=0
-let g:myLangList=["nospell", "en"]
-function! s:toggle_spell()
-    let b:myLang=b:myLang+1
-
-    if b:myLang>=len(g:myLangList) | let b:myLang = 0 | endif
-    if b:myLang==0
-        setlocal nospell
-    else
-        execute "setlocal spell spelllang=".get(g:myLangList, b:myLang)
-    endif
-endfunction
+"nnoremap <leader>s <cmd>call <sid>toggle_spell()<cr>
+"
+"let b:myLang=0
+"let g:myLangList=["nospell", "en"]
+"function! s:toggle_spell()
+"    let b:myLang=b:myLang+1
+"
+"    if b:myLang>=len(g:myLangList) | let b:myLang = 0 | endif
+"    if b:myLang==0
+"        setlocal nospell
+"    else
+"        execute "setlocal spell spelllang=".get(g:myLangList, b:myLang)
+"    endif
+"endfunction
 
 
 " Symbol renaming.
-nnoremap <leader>rn <Plug>(coc-rename)
+nmap <leader>rn <Plug>(coc-rename)
 
 " Use K to show documentation in preview window.
 nnoremap <silent> K <cmd>call <SID>show_documentation()<CR>

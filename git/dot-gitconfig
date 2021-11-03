@@ -31,6 +31,7 @@
 
 	# pretty logs
 	lg = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
+	lga = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative --all
 	ls = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
 	ls10 = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative -10
 

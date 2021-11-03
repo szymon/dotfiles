@@ -1,5 +1,8 @@
 let g:netrw_dirhistmax  =10
-let g:netrw_dirhistcnt =8
+let g:netrw_dirhistcnt =1
+let g:netrw_dirhist_1='/home/srams/code/smietnik'
+let g:netrw_dirhist_0='/home/srams/code/smietnik/venv/lib/python3.9/site-packages'
+let g:netrw_dirhist_9='/home/srams/code/smietnik/venv/lib/python3.9/site-packages/prometheus_client'
 let g:netrw_dirhist_8='/home/szymon/.tmuxp'
 let g:netrw_dirhist_7='/home/szymon/code/networks-do-networks'
 let g:netrw_dirhist_6='/home/szymon/code/networks-do-networks/train'
@@ -7,4 +10,3 @@ let g:netrw_dirhist_5='/home/szymon/code/networks-do-networks/scripts'
 let g:netrw_dirhist_4='/home/szymon'
 let g:netrw_dirhist_3='/home/szymon/.oh-my-zsh'
 let g:netrw_dirhist_2='/home/szymon/code/scaleway_boxes'
-let g:netrw_dirhist_1='/home/szymon/code/scaleway_boxes/znc'
