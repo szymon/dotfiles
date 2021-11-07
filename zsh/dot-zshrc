@@ -12,6 +12,9 @@ if [[ $(uname) == 'Darwin' ]] && [ -f /etc/profile ]; then
     source /etc/profile
 fi
 
+autoload -Uz compinit
+compinit
+
 # Force the terminal language to be English
 export LANG=en_US.UTF-8
 
@@ -63,7 +66,6 @@ export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64"
 export PATH="$HOME/bin/:$HOME/bin/usr/:$PATH"
 export PATH="$HOME/.local/bin:$PATH"
 
-
 # =====================
 # setup other variables
 
@@ -89,7 +91,6 @@ if command -v kubectl 1>/dev/null 2>&1; then
     source <(kubectl completion zsh)
 fi
 
-
 if [ -d "$HOME/.nvm" ]; then
     export NVM_DIR="$HOME/.nvm"
     [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
@@ -109,7 +110,11 @@ fi
 export DISABLE_AUTO_TITLE='true'
 
 # Set the default editor
-export EDITOR="/usr/bin/nvim"
+if [[ $(uname) != "Darwin" ]]; then
+    export EDITOR="/usr/bin/nvim"
+else
+    export EDITOR="/usr/local/bin/nvim"
+fi
 
 # this file is sourced in interactive shell. It should contain commands to set up aliases, functions
 # options, key bindings, etc.
@@ -127,7 +132,6 @@ unsetopt HIST_VERIFY
 
 source $ZSH/oh-my-zsh.sh
 
-autoload -U +X bashcompinit && bashcompinit
 
 alias gs='git status'
 alias gd='git diff'
@@ -168,7 +172,6 @@ if [[ -r "$HOME/.zsh/completion" ]]; then
 fi
 
 if [[ $(uname) != 'Darwin' ]]; then
-    autoload -U +X bashcompinit && bashcompinit
     # complete -o nospace -C /home/szymon/go/bin/terraform terraform
     # eval "$(register-python-argcomplete pipx)"
 
