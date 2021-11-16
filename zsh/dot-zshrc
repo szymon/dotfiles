@@ -211,10 +211,15 @@ if command -v kubectl >/dev/null 2>&1; then
     complete -F __start_kubectl mk
 
 
+    alias mangum-dev-processing='kubectl --context magnum --namespace dev-processing'
+    alias mangum-staging-processing='kubectl --context magnum --namespace staging-processing'
+
+    complete -F __start_kubectl mangum-dev-processing
+    complete -F __start_kubectl magnum-staging-processing
 
 
     export KUBECONFIG_DIR="$HOME/.kube"
-    export KUBECONFIG="$KUBECONFIG_DIR/config:$KUBECONFIG_DIR/code-de.yaml:$KUBECONFIG_DIR/sydney.yaml:$KUBECONFIG_DIR/microk8s.yaml"
+    export KUBECONFIG="$KUBECONFIG_DIR/00-magnum.yaml:$KUBECONFIG_DIR/10-codede.yaml:$KUBECONFIG_DIR/19-sydney.yaml:$KUBECONFIG_DIR/01-microk8s.yaml"
 
 fi
 
@@ -232,6 +237,10 @@ activate() {
         return 1
     fi
 }
+
+if command -v ssh-askpass >/dev/null 2>&1; then
+    export SSH_ASKPASS=$(which ssh-askpass)
+fi
 
 [ -f ~/.personal ] && source ~/.personal
 [ -f ~/.cloudferro ] && source ~/.cloudferro

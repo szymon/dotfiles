@@ -72,6 +72,7 @@ Plug 'projekt0n/github-nvim-theme'
 Plug 'psf/black'
 Plug 'romainl/vim-cool'
 Plug 'sheerun/vim-polyglot'
+Plug 'stephpy/vim-yaml'
 Plug 'tpope/vim-fugitive'
 
 call plug#end()
@@ -92,20 +93,24 @@ filetype plugin indent on
 
 nnoremap <silent><leader>gc <cmd>GitGutterPreviewHunk<cr>
 
-nnoremap <silent> ; <cmd>Buffers <cr>
-nnoremap <silent> <c-p> <cmd>Files<cr>
+nnoremap <silent>; <cmd>Buffers <cr>
+nnoremap <silent><c-p> <cmd>Files<cr>
 nnoremap <silent><leader>rr <cmd>Rg<cr>
 
 " Use `[g` and `]g` to navigate diagnostics
 " Use `:CocDiagnostics` to get all diagnostics of current buffer in location list.
-nmap <silent> [g <Plug>(coc-diagnostic-prev)
-nmap <silent> ]g <Plug>(coc-diagnostic-next)
+nmap <silent>[g <Plug>(coc-diagnostic-prev)
+nmap <silent>]g <Plug>(coc-diagnostic-next)
 
 " GoTo code navigation.
-nmap <silent> gd <Plug>(coc-definition)
-nmap <silent> gy <Plug>(coc-type-definition)
-nmap <silent> gi <Plug>(coc-implementation)
-nmap <silent> gr <Plug>(coc-references)
+nmap <silent>gd <Plug>(coc-definition)
+nmap <silent>gy <Plug>(coc-type-definition)
+nmap <silent>gi <Plug>(coc-implementation)
+nmap <silent>gr <Plug>(coc-references)
+
+
+nmap <silent><leader>gg :G<cr>
+nmap <silent>c-j
 
 "nnoremap <leader>s <cmd>call <sid>toggle_spell()<cr>
 "
@@ -179,6 +184,9 @@ augroup SZYMON_CUSTOM
     au InsertEnter * hi statusline guifg=black guibg=#d7afff ctermfg=black ctermbg=magenta
     au InsertLeave * hi statusline guifg=black guibg=#8fbfdc ctermfg=black ctermbg=cyan
     autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
+    autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
+
+    autocmd BufWritePre *.go :silent call CocAction('runCommand', 'editor.action.organizeImport')
 
 augroup END
 

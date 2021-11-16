@@ -4,10 +4,8 @@
     "python.linting.pylintEnabled": false,
     "python.linting.flake8Enabled": true,
     "python.linting.flake8Path": "~/.local/pipx/venvs/flake8/bin/flake8",
-    "python.linting.flake8Args": [
-        "--suppress-none-returning"
-    ],
     "python.formatting.blackPath": "~/.local/pipx/venvs/black/bin/black",
+    "python.formatting.blackArgs": [ "-l", "120" ],
     "python.formatting.provider": "black",
     "pyright.disableDiagnostics": true,
     "python.sortImports.path": "~/.local/pipx/venvs/isort/bin/isort",
