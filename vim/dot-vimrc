@@ -88,8 +88,7 @@ if has('presistent_undo')
     set undolevels=3000
     set undoreload=10000
 endif
-set backupdir=~/.local/share/nvim/backup
-set backup
+set nobackup
 set noswapfile
 
 augroup SZYMON_FILETYPES

@@ -245,5 +245,10 @@ if command -v ssh-askpass >/dev/null 2>&1; then
     export SSH_ASKPASS=$(which ssh-askpass)
 fi
 
-[ -f ~/.personal ] && source ~/.personal
-[ -f ~/.cloudferro ] && source ~/.cloudferro
+source_is_present() {
+    if [ -f "$1" ]; then
+        source "$1"
+    fi
+}
+source_is_present ~/.personal
+source_is_present ~/.cloudferro
