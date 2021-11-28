@@ -13,9 +13,13 @@ vim.cmd [[
     nnoremap <leader>; <cmd>lua require('telescope.builtin').buffers()<cr>
 ]]
 
+vim.cmd [[colorscheme monokai_pro]]
+
 require("telescope").setup({
     defaults = {mappings = {i = {["<c-k>"] = "move_selection_previous", ["<c-j>"] = "move_selection_next", ["<c-h>"] = "which_key"}}}
 })
+
+require("gitsigns").setup()
 
 -- insert mode refresh completions (at word, at function call)
 -- scrolling window with completions
