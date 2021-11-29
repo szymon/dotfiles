@@ -9,5 +9,5 @@
 	path = cloudferro
 	url = git@gitlab.cloudferro.com:srams/cloudferro
 [submodule "nvim-lua/.config/nvim/lua-language-server"]
-	path = nvim-lua/.config/nvim/lua-language-server
+	path = nvim/.config/nvim/lua-language-server
 	url = https://github.com/sumneko/lua-language-server
