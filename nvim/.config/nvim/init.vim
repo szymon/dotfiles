@@ -108,9 +108,12 @@ nmap <silent>gy <Plug>(coc-type-definition)
 nmap <silent>gi <Plug>(coc-implementation)
 nmap <silent>gr <Plug>(coc-references)
 
+set grepprg=rg\ --vimgrep
+set grepformat^=%f:%l:%c:%m
 
 nmap <silent><leader>gg :G<cr>
-nmap <silent>c-j
+nmap <c-j> :cnext<cr>
+nmap <c-k> :cprevious<cr>
 
 "nnoremap <leader>s <cmd>call <sid>toggle_spell()<cr>
 "
