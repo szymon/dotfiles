@@ -14,6 +14,19 @@ else
     print("Unsupported system for sumneko")
 end
 
+local cmp = require("cmp")
+cmp.setup({
+    mapping = {
+        ["<c-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), {'i', 'c'}),
+        ["<c-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), {'i', 'c'}),
+        ["<c-space>"] = cmp.mapping(cmp.mapping.complete(), {'i', 'c'}),
+        ["<c-y>"] = cmp.config.disable,
+        ["<c-e>"] = cmp.mapping({i = cmp.mapping.abort(), c = cmp.mapping.close()})
+        --        ["<cr>"] = cmp.mapping.confirm({select = true})
+    },
+    sources = cmp.config.sources({{name = "nvim_lsp"}}, {name = "buffer"})
+})
+local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 ---@diagnostic disable-next-line: unused-local
 local on_attach = function(client, bufnr)
     local function buf_set_keymap(...)
@@ -45,12 +58,12 @@ local on_attach = function(client, bufnr)
     buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
     buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
     buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-    buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_loclist()<CR>', opts)
+    buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_quickfixlist()<CR>', opts)
     buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 end
 
 local lspservers = {"pyright"}
-for _, srv in ipairs(lspservers) do nvim_lsp[srv].setup {on_attach = on_attach, flags = {debounce_text_changes = 150}} end
+for _, srv in ipairs(lspservers) do nvim_lsp[srv].setup {on_attach = on_attach, capabilities = capabilities, flags = {debounce_text_changes = 150}} end
 
 -- cd lua-language-server/3rd/luamake
 -- ninja -f compile/luamake/{linux,macos}.ninja
@@ -58,6 +71,7 @@ for _, srv in ipairs(lspservers) do nvim_lsp[srv].setup {on_attach = on_attach, 
 -- ./3rd/luamake/luamake rebuild
 nvim_lsp.sumneko_lua.setup {
     on_attach = on_attach,
+    capabilities = capabilities,
     cmd = {sumneko_binary, "-E", sumneko_root_path .. "/main.lua"},
     settings = {
         Lua = {
@@ -72,7 +86,7 @@ nvim_lsp.sumneko_lua.setup {
 -- go install github.com/mattn/efm-langserver
 nvim_lsp.efm.setup {
     init_options = {documentFormatting = true},
-    filetypes = {"lua"},
+    filetypes = {"lua", "python"},
     settings = {
         rootMarkers = {".git/", vim.fn.expand("~/.config/nvim"), vim.fn.expand("~/.config/nvim/lua")},
         languages = {
@@ -81,7 +95,22 @@ nvim_lsp.efm.setup {
                     formatCommand = "lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=150 --break-after-table-lb",
                     formatStdin = true
                 }
-            }
+            },
+            python = {{formatCommand = "black --quiet -", formatStdin = true}}
+        }
+    }
+}
+
+nvim_lsp.yamlls.setup {
+    capabilities = capabilities,
+    settings = {
+        yamlls = {
+            schemas = {
+                ["https://raw.githubusercontent.com/argoproj/argo-workflows/master/api/jsonschema/schema.json"] = "~/code/argonaut",
+                ["https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.16.0-standalone-strict/all.json"] = ".*\\.k8s\\.yaml"
+            },
+            schemaDownload = {enable = true},
+            validate = true
         }
     }
 }
@@ -90,5 +119,7 @@ vim.cmd [[
 augroup SZYMON_AUGROUP
     au!
     autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
+    autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
+    autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
 augroup END
 ]]
