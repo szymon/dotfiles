@@ -21,11 +21,16 @@ cmp.setup({
         ["<c-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), {'i', 'c'}),
         ["<c-space>"] = cmp.mapping(cmp.mapping.complete(), {'i', 'c'}),
         ["<c-y>"] = cmp.config.disable,
-        ["<c-e>"] = cmp.mapping({i = cmp.mapping.abort(), c = cmp.mapping.close()})
+        ["<c-e>"] = cmp.mapping({i = cmp.mapping.abort(), c = cmp.mapping.close()}),
         --        ["<cr>"] = cmp.mapping.confirm({select = true})
+        ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(), {"i", "s"})
     },
-    sources = cmp.config.sources({{name = "nvim_lsp"}}, {name = "buffer"})
+    sources = cmp.config.sources({{name = "nvim_lsp"}}, {{name = "buffer"}})
 })
+
+cmp.setup.cmdline("/", {sources = {{name = "buffer"}}})
+-- cmp.setup.cmdline(":", {sources = cmp.config.sources({{name = "path"}}, {{name = "cmdline"}})})
+
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 ---@diagnostic disable-next-line: unused-local
 local on_attach = function(client, bufnr)
@@ -62,8 +67,9 @@ local on_attach = function(client, bufnr)
     buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 end
 
-local lspservers = {"pyright"}
-for _, srv in ipairs(lspservers) do nvim_lsp[srv].setup {on_attach = on_attach, capabilities = capabilities, flags = {debounce_text_changes = 150}} end
+nvim_lsp.pyright.setup {on_attach = on_attach, capabilities = capabilities, flags = {debounce_text_changes = 150}}
+
+nvim_lsp.hls.setup {on_attach = on_attach, settings = {haskell = {hlintOn = true, formattingProvider = "fourmolu"}}}
 
 -- cd lua-language-server/3rd/luamake
 -- ninja -f compile/luamake/{linux,macos}.ninja
@@ -88,7 +94,7 @@ nvim_lsp.efm.setup {
     init_options = {documentFormatting = true},
     filetypes = {"lua", "python"},
     settings = {
-        rootMarkers = {".git/", vim.fn.expand("~/.config/nvim"), vim.fn.expand("~/.config/nvim/lua")},
+        rootMarkers = {".git/", ".project", vim.fn.expand("~/.config/nvim"), vim.fn.expand("~/.config/nvim/lua")},
         languages = {
             lua = {
                 {
