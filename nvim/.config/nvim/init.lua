@@ -4,6 +4,7 @@ require "plugins"
 require "lsp_configs"
 require "statusline"
 
+--
 vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
 
@@ -31,9 +32,13 @@ vim.g.submode_timeout = 0
 vim.g.submode_keep_leaving_key = 1
 
 vim.cmd [[colorscheme gruvbox]]
-
+local actions = require("telescope.actions")
 require("telescope").setup({
-    defaults = {mappings = {i = {["<c-k>"] = "move_selection_previous", ["<c-j>"] = "move_selection_next", ["<c-h>"] = "which_key"}}}
+    defaults = {
+        mappings = {
+            i = {["<c-k>"] = "move_selection_previous", ["<c-j>"] = "move_selection_next", ["<c-h>"] = "which_key", ["<esc>"] = actions.close}
+        }
+    }
 })
 
 require("gitsigns").setup {
@@ -61,4 +66,7 @@ require("gitsigns").setup {
 -- scrolling window with completions
 --
 -- some way to define actions on save (format, sort imports...)
--- highlight symbold on CursorHold (aucmd CursorHold * silent call CocActionAsync('highlight'))
+vim.g.Illuminate_delay = 300
+vim.api.nvim_command [[ hi def link LspReferenceText CursorLine ]]
+vim.api.nvim_command [[ hi def link LspReferenceWrite CursorLine ]]
+vim.api.nvim_command [[ hi def link LspReferenceRead CursorLine ]]

@@ -17,6 +17,7 @@
 	poh = push origin head
 	df = diff
 	dc = diff --cached
+	clear = clean
 
 	# a shortcut for seeig the fetched commits
 	lc = log ORIG_HEAD.. --stat --no-merges
@@ -34,6 +35,8 @@
 	lga = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative --all
 	ls = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
 	ls10 = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative -10
+
+	yolo = !git commit -m "$(curl -s whatthecommit.com/index.txt)"
 
 [push]
 	default = current

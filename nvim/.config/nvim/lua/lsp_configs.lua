@@ -65,6 +65,19 @@ local on_attach = function(client, bufnr)
     buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
     buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_quickfixlist()<CR>', opts)
     buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+
+    vim.cmd [[
+    augroup SZYMON_AUGROUP
+        au!
+        autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
+        autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
+        autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
+        autocmd FileType python setlocal expandtab ts=4 sts=4 sw=4
+        autocmd BufWritePre *.py lua vim.lsp.buf.formatting(nil, 200)
+    augroup END
+    ]]
+
+    require'illuminate'.on_attach(client)
 end
 
 nvim_lsp.pyright.setup {on_attach = on_attach, capabilities = capabilities, flags = {debounce_text_changes = 150}}
@@ -120,6 +133,8 @@ nvim_lsp.yamlls.setup {
         }
     }
 }
+
+nvim_lsp.gopls.setup {on_attach = on_attach, capabilities = capabilities}
 
 vim.cmd [[
 augroup SZYMON_AUGROUP
