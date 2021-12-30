@@ -5,6 +5,7 @@ local use = require("packer").use
 -- git clone --depth 1 https://github.com/wbthomason/packer.nvim ~/.local/share/nvim/site/pack/packer/start/packer.nvim
 return require("packer").startup(function()
     use "wbthomason/packer.nvim"
+    use "nvim-treesitter/nvim-treesitter"
     use {"nvim-telescope/telescope.nvim", requires = {{"nvim-lua/plenary.nvim"}}}
     use "neovim/nvim-lspconfig"
     use "phanviet/vim-monokai-pro"

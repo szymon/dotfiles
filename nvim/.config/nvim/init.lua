@@ -32,12 +32,17 @@ vim.g.submode_timeout = 0
 vim.g.submode_keep_leaving_key = 1
 
 vim.cmd [[colorscheme gruvbox]]
-local actions = require("telescope.actions")
+
+local telescope_actions = require("telescope.actions")
 require("telescope").setup({
     defaults = {
-        file_ignore_patterns = {".git/", "venv", ".venv"},
         mappings = {
-            i = {["<c-k>"] = "move_selection_previous", ["<c-j>"] = "move_selection_next", ["<c-h>"] = "which_key", ["<esc>"] = actions.close}
+            i = {
+                ["<c-k>"] = "move_selection_previous",
+                ["<c-j>"] = "move_selection_next",
+                ["<c-h>"] = "which_key",
+                ["<esc>"] = telescope_actions.close
+            }
         }
     }
 })

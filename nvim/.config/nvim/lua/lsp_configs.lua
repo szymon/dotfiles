@@ -82,6 +82,8 @@ end
 
 nvim_lsp.pyright.setup {on_attach = on_attach, capabilities = capabilities, flags = {debounce_text_changes = 150}}
 
+nvim_lsp.ccls.setup {on_attach = on_attach, capabilities = capabilities, flags = {debounce_text_changes = 150}}
+
 nvim_lsp.hls.setup {on_attach = on_attach, settings = {haskell = {hlintOn = true, formattingProvider = "fourmolu"}}}
 
 -- cd lua-language-server/3rd/luamake
@@ -134,11 +136,20 @@ nvim_lsp.yamlls.setup {
     }
 }
 
-nvim_lsp.gopls.setup {on_attach = on_attach, capabilities = capabilities}
+nvim_lsp.gopls.setup {
+    cmd = {"gopls", "serve"},
+    capabilities = capabilities,
+    settings = {
+        gopls = {experimentalPostfixCompletions = true, analyses = {unusedparams = true, shadow = true}, staticcheck = true},
+        on_attach = on_attach
+    }
+}
 
 vim.cmd [[
 augroup SZYMON_AUGROUP
     au!
+    autocmd BufWritePre *.go lua vim.lsp.buf.formatting()
+    " autocmd BufWritePre *.go lua goimports(1000)
     autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
     autocmd BufWritePre *.py lua vim.lsp.buf.formatting()
     autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>

@@ -222,7 +222,10 @@ if command -v kubectl >/dev/null 2>&1; then
 
 
     export KUBECONFIG_DIR="$HOME/.kube"
-    export KUBECONFIG="$KUBECONFIG_DIR/00-magnum.yaml:$KUBECONFIG_DIR/10-codede.yaml:$KUBECONFIG_DIR/19-sydney.yaml:$KUBECONFIG_DIR/01-microk8s.yaml"
+
+    if [[ $(uname) != 'Darwin' ]]; then
+        export KUBECONFIG="$KUBECONFIG_DIR/00-magnum.yaml:$KUBECONFIG_DIR/10-codede.yaml:$KUBECONFIG_DIR/19-sydney.yaml:$KUBECONFIG_DIR/01-microk8s.yaml"
+    fi
 
 fi
 
