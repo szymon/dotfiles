@@ -35,6 +35,7 @@ vim.cmd [[colorscheme gruvbox]]
 local actions = require("telescope.actions")
 require("telescope").setup({
     defaults = {
+        file_ignore_patterns = {".git/", "venv", ".venv"},
         mappings = {
             i = {["<c-k>"] = "move_selection_previous", ["<c-j>"] = "move_selection_next", ["<c-h>"] = "which_key", ["<esc>"] = actions.close}
         }

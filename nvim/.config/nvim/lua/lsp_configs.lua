@@ -107,7 +107,7 @@ nvim_lsp.efm.setup {
     init_options = {documentFormatting = true},
     filetypes = {"lua", "python"},
     settings = {
-        rootMarkers = {".git/", ".project", vim.fn.expand("~/.config/nvim"), vim.fn.expand("~/.config/nvim/lua")},
+        rootMarkers = {".git/", ".project", "venv/", ".venv/", vim.fn.expand("~/.config/nvim"), vim.fn.expand("~/.config/nvim/lua")},
         languages = {
             lua = {
                 {
@@ -140,6 +140,7 @@ vim.cmd [[
 augroup SZYMON_AUGROUP
     au!
     autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
+    autocmd BufWritePre *.py lua vim.lsp.buf.formatting()
     autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
     autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
 augroup END
