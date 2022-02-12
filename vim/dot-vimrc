@@ -23,7 +23,7 @@ set hidden
 set exrc
 set secure
 
-set foldmethod=marker
+" set foldmethod=marker
 set langmenu=en_US.UTF-8
 
 " Make backspace usefull
@@ -31,7 +31,7 @@ set backspace=indent,eol,start
 
 
 " Other options
-if has('nvim')
+if has('clipboard')
     set clipboard=unnamedplus
 else
     set clipboard=unnamed

@@ -9,7 +9,8 @@ packages = \
 	personal \
 	tmux \
 	vim \
-	zsh
+	zsh \
+	pgcli
 
 all:
 	stow $(flags) $(packages)

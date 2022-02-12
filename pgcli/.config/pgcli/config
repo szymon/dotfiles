@@ -1,0 +1,2 @@
+[main]
+pager = pspg --menu-always

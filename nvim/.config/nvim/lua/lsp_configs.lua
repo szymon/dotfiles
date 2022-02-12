@@ -28,6 +28,23 @@ cmp.setup({
     sources = cmp.config.sources({{name = "nvim_lsp"}}, {{name = "buffer"}})
 })
 
+local custom_handlers = {
+    ["textDocument/definition"] = function(_, result, params)
+        if result == nil or vim.tbl_isempty(result) then
+            local _ = vim.lsp.log.info() and vim.lsp.log.info(params.method, "No location found")
+            return nil
+        end
+
+        if vim.tbl_islist(result) then
+            vim.lsp.util.jump_to_location(result[1])
+            vim.fn.setqflist(vim.lsp.util.locations_to_items(result))
+        else
+            vim.lsp.util.jump_to_location(result)
+        end
+
+    end
+}
+
 cmp.setup.cmdline("/", {sources = {{name = "buffer"}}})
 -- cmp.setup.cmdline(":", {sources = cmp.config.sources({{name = "path"}}, {{name = "cmdline"}})})
 
@@ -42,7 +59,7 @@ local on_attach = function(client, bufnr)
     end
 
     -- Enable completion triggered by <c-x><c-o>
-    buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+    -- buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     -- Mappings.
     local opts = {noremap = true, silent = true}
@@ -60,7 +77,7 @@ local on_attach = function(client, bufnr)
     buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
     buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
     buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
-    buf_set_keymap('n', '<leader>e', '<cmd>lua vim.lsp.diagnostic.show_line_diagnostics()<CR>', opts)
+    buf_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
     buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
     buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
     buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_quickfixlist()<CR>', opts)
@@ -69,18 +86,24 @@ local on_attach = function(client, bufnr)
     vim.cmd [[
     augroup SZYMON_AUGROUP
         au!
-        autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
+        autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync()
         autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
         autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
         autocmd FileType python setlocal expandtab ts=4 sts=4 sw=4
-        autocmd BufWritePre *.py lua vim.lsp.buf.formatting(nil, 200)
+        autocmd BufWritePre *.py lua vim.lsp.buf.formatting_sync()
     augroup END
     ]]
 
     require'illuminate'.on_attach(client)
 end
 
-nvim_lsp.pyright.setup {on_attach = on_attach, capabilities = capabilities, flags = {debounce_text_changes = 150}}
+nvim_lsp.pyright.setup {
+    handlers = custom_handlers,
+    on_attach = on_attach,
+    capabilities = capabilities,
+    flags = {debounce_text_changes = 150},
+    settings = {python = {analysis = {autoSearchPaths = true, diagnosticMode = "workspace", useLibraryCodeForTypes = true}}}
+}
 
 nvim_lsp.ccls.setup {on_attach = on_attach, capabilities = capabilities, flags = {debounce_text_changes = 150}}
 
@@ -111,13 +134,16 @@ nvim_lsp.efm.setup {
     settings = {
         rootMarkers = {".git/", ".project", "venv/", ".venv/", vim.fn.expand("~/.config/nvim"), vim.fn.expand("~/.config/nvim/lua")},
         languages = {
-            lua = {
-                {
-                    formatCommand = "lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=150 --break-after-table-lb",
-                    formatStdin = true
-                }
-            },
-            python = {{formatCommand = "black --quiet -", formatStdin = true}}
+            --            lua = {
+            --                {
+            --                    formatCommand = "lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=150 --break-after-table-lb",
+            --                    formatStdin = true
+            --                }
+            --            },
+            python = {
+                {formatCommand = "black --quiet -", formatStdin = true}, {formatCommand = "isort --profile=black -", formatStdin = true},
+                {formatCommand = "autoflake -", formatStdin = true}
+            }
         }
     }
 }
@@ -144,6 +170,8 @@ nvim_lsp.gopls.setup {
         on_attach = on_attach
     }
 }
+
+require("lsp_signature").setup {bind = true, handler_opts = {border = "shadow"}}
 
 vim.cmd [[
 augroup SZYMON_AUGROUP

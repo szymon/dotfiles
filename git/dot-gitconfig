@@ -38,6 +38,9 @@
 
 	yolo = !git commit -m "$(curl -s whatthecommit.com/index.txt)"
 
+[merge]
+	tool = vimdiff
+
 [push]
 	default = current
 
@@ -56,3 +59,6 @@
 
 [include]
 	path = ~/.gitconfig_local
+
+[commit]
+	template = /home/srams/.gitmessage
