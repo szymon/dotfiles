@@ -43,6 +43,12 @@ if [[ -d "$HOME/.pyenv" ]]; then
     export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims/:$PATH"
 fi
 
+if [ -d "$HOME/.nvm" ]; then
+    export NVM_DIR="$HOME/.nvm"
+    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+fi
+
 
 # FIXME: is there better option to do this?
 if [[ $(uname) == 'Darwin' ]]; then
@@ -89,12 +95,6 @@ fi
 
 if command -v kubectl 1>/dev/null 2>&1; then
     source <(kubectl completion zsh)
-fi
-
-if [ -d "$HOME/.nvm" ]; then
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 fi
 
 # export PYTHONBREAKPOINT=ipdb.set_trace
@@ -171,7 +171,8 @@ if [[ -r "$HOME/.zsh/completion" ]]; then
     fpath=(~/.zsh/completion $fpath)
 fi
 
-if [[ $(uname) != 'Darwin' ]]; then
+if false ; then
+# if [[ $(uname) != 'Darwin' ]]; then
     # complete -o nospace -C /home/szymon/go/bin/terraform terraform
     # eval "$(register-python-argcomplete pipx)"
 
@@ -203,22 +204,10 @@ if command -v kubectl >/dev/null 2>&1; then
     fi
 
     alias k='kubectl'
-    alias staging-processing='kubectl -n staging-processing'
-    alias dev-processing='kubectl -n dev-processing'
     alias mk='microk8s kubectl'
 
     complete -F __start_kubectl k
-    complete -F __start_kubectl staging-processing
-    complete -F __start_kubectl dev-processing
-    complete -F __start_kubectl sydney
     complete -F __start_kubectl mk
-
-
-    alias mangum-dev-processing='kubectl --context magnum --namespace dev-processing'
-    alias mangum-staging-processing='kubectl --context magnum --namespace staging-processing'
-
-    complete -F __start_kubectl mangum-dev-processing
-    complete -F __start_kubectl magnum-staging-processing
 
 
     export KUBECONFIG_DIR="$HOME/.kube"
