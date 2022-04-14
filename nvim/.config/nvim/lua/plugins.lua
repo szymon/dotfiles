@@ -14,13 +14,19 @@ return require("packer").startup(function()
     use {"lewis6991/gitsigns.nvim", requires = {"nvim-lua/plenary.nvim"}}
     use {
         "hrsh7th/cmp-nvim-lsp",
-        requires = {"neovim/nvim-lspconfig", "hrsh7th/nvim-cmp", "hrsh7th/cmp-buffer", "hrsh7th/cmp-path", "hrsh7th/cmp-cmdline"}
+        requires = {
+            "neovim/nvim-lspconfig", "hrsh7th/nvim-cmp", "hrsh7th/cmp-buffer", "hrsh7th/cmp-path", "hrsh7th/cmp-cmdline"
+        }
     }
     use "kana/vim-submode"
     use "google/jsonnet"
     use "morhetz/gruvbox"
     use "rrethy/vim-illuminate"
     use "ray-x/lsp_signature.nvim"
-    use { 'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim' }
+    use {"sindrets/diffview.nvim", requires = "nvim-lua/plenary.nvim"}
+    use "Vimjas/vim-python-pep8-indent"
+    use "google/vim-jsonnet"
+    use "tpope/vim-fugitive"
+    use "junegunn/gv.vim"
 end)
 

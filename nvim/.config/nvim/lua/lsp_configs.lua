@@ -23,30 +23,39 @@ cmp.setup({
         ["<c-y>"] = cmp.config.disable,
         ["<c-e>"] = cmp.mapping({i = cmp.mapping.abort(), c = cmp.mapping.close()}),
         --        ["<cr>"] = cmp.mapping.confirm({select = true})
-        ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(), {"i", "s"})
+        -- ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(), {"i", "s"}),
+        ["<tab>"] = function(fallback)
+            fallback()
+        end,
+        ["<s-tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), {"i", "s"})
     },
     sources = cmp.config.sources({{name = "nvim_lsp"}}, {{name = "buffer"}})
 })
 
-local custom_handlers = {
-    ["textDocument/definition"] = function(_, result, params)
-        if result == nil or vim.tbl_isempty(result) then
-            local _ = vim.lsp.log.info() and vim.lsp.log.info(params.method, "No location found")
-            return nil
-        end
+cmp.setup.filetype("gitcommit", {sources = cmp.config.sources({{name = "cmp_git"}}, {{name = "buffer"}})})
 
-        if vim.tbl_islist(result) then
-            vim.lsp.util.jump_to_location(result[1])
-            vim.fn.setqflist(vim.lsp.util.locations_to_items(result))
-        else
-            vim.lsp.util.jump_to_location(result)
-        end
-
-    end
-}
+-- local custom_handlers = {
+--    ["textDocument/definition"] = function(_, result, params)
+--        if result == nil or vim.tbl_isempty(result) then
+--            local _ = vim.lsp.log.info() and vim.lsp.log.info(params.method, "No location found")
+--            return nil
+--        end
+--
+--        if vim.tbl_islist(result) then
+--            vim.lsp.util.jump_to_location(result[1])
+--            vim.fn.setqflist(vim.lsp.util.locations_to_items(result))
+--        else
+--            vim.lsp.util.jump_to_location(result)
+--        end
+--
+--    end
+-- }
 
 cmp.setup.cmdline("/", {sources = {{name = "buffer"}}})
--- cmp.setup.cmdline(":", {sources = cmp.config.sources({{name = "path"}}, {{name = "cmdline"}})})
+cmp.setup.cmdline(":", {
+    mapping = cmp.mapping.preset.cmdline(),
+    sources = cmp.config.sources({{name = "path"}}, {{name = "buffer"}})
+})
 
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 ---@diagnostic disable-next-line: unused-local
@@ -59,7 +68,7 @@ local on_attach = function(client, bufnr)
     end
 
     -- Enable completion triggered by <c-x><c-o>
-    -- buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+    buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     -- Mappings.
     local opts = {noremap = true, silent = true}
@@ -83,27 +92,19 @@ local on_attach = function(client, bufnr)
     buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_quickfixlist()<CR>', opts)
     buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 
-    vim.cmd [[
-    augroup SZYMON_AUGROUP
-        au!
-        autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync()
-        autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
-        autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
-        autocmd FileType python setlocal expandtab ts=4 sts=4 sw=4
-        autocmd BufWritePre *.py lua vim.lsp.buf.formatting_sync()
-    augroup END
-    ]]
-
     require'illuminate'.on_attach(client)
 end
 
 nvim_lsp.pyright.setup {
-    handlers = custom_handlers,
+    -- handlers = custom_handlers,
     on_attach = on_attach,
     capabilities = capabilities,
     flags = {debounce_text_changes = 150},
-    settings = {python = {analysis = {autoSearchPaths = true, diagnosticMode = "workspace", useLibraryCodeForTypes = true}}}
+    settings = {
+        python = {analysis = {autoSearchPaths = true, diagnosticMode = "workspace", useLibraryCodeForTypes = true}}
+    }
 }
+nvim_lsp.tsserver.setup({capabilities = capabilities, on_attach = on_attach, flags = {debounce_text_changes = 150}})
 
 nvim_lsp.ccls.setup {on_attach = on_attach, capabilities = capabilities, flags = {debounce_text_changes = 150}}
 
@@ -121,7 +122,9 @@ nvim_lsp.sumneko_lua.setup {
         Lua = {
             runtime = {version = "LuaJIT", path = vim.split(package.path, ";")},
             diagnostics = {globals = {"vim"}},
-            workspace = {library = {[vim.fn.expand("$VIMRUNTIME/lua")] = true, [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true}}
+            workspace = {
+                library = {[vim.fn.expand("$VIMRUNTIME/lua")] = true, [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true}
+            }
         }
     }
 }
@@ -130,20 +133,24 @@ nvim_lsp.sumneko_lua.setup {
 -- go install github.com/mattn/efm-langserver
 nvim_lsp.efm.setup {
     init_options = {documentFormatting = true},
-    filetypes = {"lua", "python"},
+    filetypes = {"lua", "python", "typescript"},
     settings = {
-        rootMarkers = {".git/", ".project", "venv/", ".venv/", vim.fn.expand("~/.config/nvim"), vim.fn.expand("~/.config/nvim/lua")},
+        rootMarkers = {
+            ".git/", ".project", "venv/", ".venv/", vim.fn.expand("~/.config/nvim"), vim.fn.expand("~/.config/nvim/lua")
+        },
         languages = {
-            --            lua = {
-            --                {
-            --                    formatCommand = "lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=150 --break-after-table-lb",
-            --                    formatStdin = true
-            --                }
-            --            },
+            lua = {
+                {
+                    formatCommand = "lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=120 --break-after-table-lb",
+                    formatStdin = true
+                }
+            },
             python = {
-                {formatCommand = "black --quiet -", formatStdin = true}, {formatCommand = "isort --profile=black -", formatStdin = true},
+                {formatCommand = "black --quiet -", formatStdin = true},
+                {formatCommand = "isort --profile=black -", formatStdin = true},
                 {formatCommand = "autoflake -", formatStdin = true}
-            }
+            },
+            typescript = {{formatCommand = "prettier", formatStdin = true}}
         }
     }
 }
@@ -165,8 +172,11 @@ nvim_lsp.yamlls.setup {
 nvim_lsp.gopls.setup {
     cmd = {"gopls", "serve"},
     capabilities = capabilities,
-    settings = {
-        gopls = {experimentalPostfixCompletions = true, analyses = {unusedparams = true, shadow = true}, staticcheck = true},
+    settings = { --
+        gopls = { --
+            analyses = {unusedparams = true, shadow = true},
+            staticcheck = true
+        },
         on_attach = on_attach
     }
 }
@@ -180,7 +190,10 @@ augroup SZYMON_AUGROUP
     " autocmd BufWritePre *.go lua goimports(1000)
     autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
     autocmd BufWritePre *.py lua vim.lsp.buf.formatting()
+    " autocmd BufWritePre *.ts lua vim.lsp.buf.formatting()
     autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
     autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
+    autocmd FileType typescript setlocal noexpandtab ts=2 sts=2 sw=2
+    autocmd FileType html setlocal noexpandtab ts=2 sts=2 sw=2
 augroup END
 ]]

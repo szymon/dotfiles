@@ -4,7 +4,6 @@ require "plugins"
 require "lsp_configs"
 require "statusline"
 
---
 vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
 vim.opt.spell = true
@@ -67,7 +66,7 @@ require("gitsigns").setup {
         ["n <leader>hp"] = "<cmd>lua require('gitsigns').preview_hunk()<cr>",
         ["n <leader>hb"] = "<cmd>lua require('gitsigns').blame_line()<cr>"
     },
-    watch_index = {interval = 1000}
+    watch_gitdir = {interval = 1000}
 }
 
 -- insert mode refresh completions (at word, at function call)
