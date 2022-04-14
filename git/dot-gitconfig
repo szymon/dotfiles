@@ -38,6 +38,10 @@
 
 	yolo = !git commit -m "$(curl -s whatthecommit.com/index.txt)"
 
+	ignore = update-index --assume-unchanged
+	acknowledge = update-index --no-assume-unchanged
+	reword = ci --amend
+
 [merge]
 	tool = vimdiff
 
