@@ -42,6 +42,8 @@
 	acknowledge = update-index --no-assume-unchanged
 	reword = ci --amend
 
+	add-exclude = "!f() { readlink -f $1 | sed 's~'$(git rev-parse --show-toplevel)'/~~' | tee -a $(git rev-parse --show-toplevel)/.git/info/exclude ; } ; f"
+
 [merge]
 	tool = vimdiff
 
@@ -66,3 +68,6 @@
 
 [commit]
 	template = /home/srams/.gitmessage
+
+[mailmap]
+	file = ~/.mailmap

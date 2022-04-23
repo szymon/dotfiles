@@ -23,15 +23,13 @@ cmp.setup({
         ["<c-y>"] = cmp.config.disable,
         ["<c-e>"] = cmp.mapping({i = cmp.mapping.abort(), c = cmp.mapping.close()}),
         --        ["<cr>"] = cmp.mapping.confirm({select = true})
-        -- ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(), {"i", "s"}),
-        ["<tab>"] = function(fallback)
-            fallback()
-        end,
+        ["<c-n>"] = cmp.mapping(cmp.mapping.select_next_item(), {"i", "s"}),
+        ["<c-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), {"i", "s"}),
+        ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(), {"i", "s"}),
         ["<s-tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), {"i", "s"})
     },
     sources = cmp.config.sources({{name = "nvim_lsp"}}, {{name = "buffer"}})
 })
-
 cmp.setup.filetype("gitcommit", {sources = cmp.config.sources({{name = "cmp_git"}}, {{name = "buffer"}})})
 
 -- local custom_handlers = {
@@ -52,10 +50,6 @@ cmp.setup.filetype("gitcommit", {sources = cmp.config.sources({{name = "cmp_git"
 -- }
 
 cmp.setup.cmdline("/", {sources = {{name = "buffer"}}})
-cmp.setup.cmdline(":", {
-    mapping = cmp.mapping.preset.cmdline(),
-    sources = cmp.config.sources({{name = "path"}}, {{name = "buffer"}})
-})
 
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
 ---@diagnostic disable-next-line: unused-local
