@@ -8,12 +8,27 @@ vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
 vim.opt.spell = true
 
+local telescope_actions = require("telescope.actions")
+local cb = require'diffview.config'.diffview_callback
+
 local opts = {noremap = true, silent = true}
-vim.api.nvim_set_keymap("n", "<c-p>", "<cmd>lua require('telescope.builtin').find_files()<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>rr", "<cmd>lua require('telescope.builtin').live_grep()<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>gr", "<cmd>lua require('telescope.builtin').grep_string()<cr>", opts)
-vim.api.nvim_set_keymap("n", "<leader>;", "<cmd>lua require('telescope.builtin').buffers({sort_lastused = true, ignore_current_buffer = true })<cr>",
-                        opts)
+
+local function set_keymap(mode, mapping, action)
+    vim.api.nvim_set_keymap(mode, mapping, action, opts)
+end
+
+set_keymap("n", "<c-p>", "<cmd>lua require('telescope.builtin').find_files()<cr>")
+set_keymap("n", "<leader>rr", "<cmd>lua require('telescope.builtin').live_grep()<cr>")
+set_keymap("n", "<leader>gr", "<cmd>lua require('telescope.builtin').grep_string()<cr>")
+set_keymap("n", "<leader>;",
+           "<cmd>lua require('telescope.builtin').buffers({sort_lastused = true, ignore_current_buffer = true })<cr>")
+set_keymap("n", "<leader>fh", "<cmd>lua require('telescope.builtin').help_tags()<cr>")
+set_keymap("n", "<leader>fk", "<cmd>lua require('telescope.builtin').keymaps()<cr>")
+set_keymap("n", "<leader>fs", "<cmd>lua require('telescope.builtin').spell_suggest()<cr>")
+set_keymap("n", "<leader>fgc", "<cmd>lua require('telescope.builtin').git_commits()<cr>")
+set_keymap("n", "<leader>fgb", "<cmd>lua require('telescope.builtin').git_bcommits()<cr>")
+set_keymap("n", "<leader>fgs", "<cmd>lua require('telescope.builtin').git_status()<cr>")
+
 -- vim.api.nvim_set_keymap("n", "<leader>j", "<cmd>cn<cr>", opts)
 -- vim.api.nvim_set_keymap("n", "<leader>k", "<cmd>cp<cr>", opts)
 
@@ -34,20 +49,58 @@ vim.g.submode_keep_leaving_key = 1
 
 vim.cmd [[colorscheme gruvbox]]
 
-local telescope_actions = require("telescope.actions")
+-- insert mode refresh completions (at word, at function call)
+-- scrolling window with completions
+--
+-- some way to define actions on save (format, sort imports...)
+vim.g.Illuminate_delay = 300
+vim.api.nvim_command [[ hi def link LspReferenceText CursorLine ]]
+vim.api.nvim_command [[ hi def link LspReferenceWrite CursorLine ]]
+vim.api.nvim_command [[ hi def link LspReferenceRead CursorLine ]]
+
+-- pop-up window for diagnostic is unreadable, now sure how to change it
+-- so instead change text color to pink
+vim.api.nvim_command [[ hi DiagnosticFloatingError guifg=Pink ]]
+
+-- Telescope_scroll_window {{{
+function Telescope_scroll_window(prompt_bufnr, direction, mod)
+    local action_state = require 'telescope.actions.state'
+    local state = require 'telescope.state'
+    -- mostly stolen from https://github.com/nvim-telescope/telescope.nvim/blob/8b02088743c07c2f82aec2772fbd2b3774195448/lua/telescope/actions/set.lua#L168
+
+    local previewer = action_state.get_current_picker(prompt_bufnr).previewer
+
+    -- Check if we actually have a previewer
+    if type(previewer) ~= "table" or previewer.scroll_fn == nil then return end
+
+    local status = state.get_status(prompt_bufnr)
+    local default_speed = vim.api.nvim_win_get_height(status.preview_win) / mod
+    local speed = status.picker.layout_config.scroll_speed or default_speed
+
+    previewer:scroll_fn(math.floor(speed * direction))
+end
+-- }}}
+-- telescope {{{
 require("telescope").setup({
     defaults = {
         mappings = {
             i = {
-                ["<c-k>"] = "move_selection_previous",
-                ["<c-j>"] = "move_selection_next",
-                ["<c-h>"] = "which_key",
+                ["<c-f>"] = function(pbn)
+                    Telescope_scroll_window(pbn, 1, 1)
+                end,
+                ["<c-b>"] = function(pbn)
+                    Telescope_scroll_window(pbn, -1, 1)
+                end,
+                ["<c-k>"] = telescope_actions.move_selection_previous,
+                ["<c-j>"] = telescope_actions.move_selection_next,
+                ["<c-h>"] = telescope_actions.which_key,
                 ["<esc>"] = telescope_actions.close
             }
         }
     }
 })
-
+-- }}}
+-- gitsigns {{{
 require("gitsigns").setup {
     signs = {
         add = {hl = "SignAdd", text = "+"},
@@ -68,22 +121,8 @@ require("gitsigns").setup {
     },
     watch_gitdir = {interval = 1000}
 }
-
--- insert mode refresh completions (at word, at function call)
--- scrolling window with completions
---
--- some way to define actions on save (format, sort imports...)
-vim.g.Illuminate_delay = 300
-vim.api.nvim_command [[ hi def link LspReferenceText CursorLine ]]
-vim.api.nvim_command [[ hi def link LspReferenceWrite CursorLine ]]
-vim.api.nvim_command [[ hi def link LspReferenceRead CursorLine ]]
-
--- popup window for diagnostic is unreadable, now sure how to change it
--- so instead change text color to pink
-vim.api.nvim_command [[ hi DiagnosticFloatingError guifg=Pink ]]
-
-local cb = require'diffview.config'.diffview_callback
-
+-- }}}
+-- diffview {{{
 require'diffview'.setup {
     diff_binaries = false, -- Show diffs for binaries
     enhanced_diff_hl = false, -- See ':h diffview-config-enhanced_diff_hl'
@@ -175,4 +214,6 @@ require'diffview'.setup {
         option_panel = {["<tab>"] = cb("select"), ["q"] = cb("close")}
     }
 }
+-- }}}
 
+-- vim: foldmethod=marker :

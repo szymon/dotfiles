@@ -1,3 +1,4 @@
+local util = require "lspconfig/util"
 local nvim_lsp = require("lspconfig")
 USER = vim.fn.expand("$USER")
 
@@ -15,18 +16,37 @@ else
 end
 
 local cmp = require("cmp")
+
+-- cmp setup -{{{
+local cmp_options_insert = {behavior = require'cmp.types'.cmp.SelectBehavior.Insert}
+local cmp_options_select = {behavior = require'cmp.types'.cmp.SelectBehavior.Select}
+
+local c_n = function()
+
+    -- return cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), {"i", "c", "s"})
+    return {
+        i = function(fallback)
+            if not require('cmp').select_next_item(cmp_options_insert) then
+                local release = require('cmp').core:suspend()
+                fallback()
+                vim.schedule(release)
+            end
+        end
+    }
+end
+
 cmp.setup({
     mapping = {
-        ["<c-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), {'i', 'c'}),
-        ["<c-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), {'i', 'c'}),
-        ["<c-space>"] = cmp.mapping(cmp.mapping.complete(), {'i', 'c'}),
+        ["<c-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), {'i', 'c', 's'}),
+        ["<c-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), {'i', 'c', 's'}),
+        ["<c-space>"] = cmp.mapping(cmp.mapping.complete(), {'i', 'c', 's'}),
         ["<c-y>"] = cmp.config.disable,
-        ["<c-e>"] = cmp.mapping({i = cmp.mapping.abort(), c = cmp.mapping.close()}),
+        ["<c-e>"] = {i = cmp.mapping.abort(), c = cmp.mapping.close()},
         --        ["<cr>"] = cmp.mapping.confirm({select = true})
-        ["<c-n>"] = cmp.mapping(cmp.mapping.select_next_item(), {"i", "s"}),
-        ["<c-p>"] = cmp.mapping(cmp.mapping.select_prev_item(), {"i", "s"}),
-        ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(), {"i", "s"}),
-        ["<s-tab>"] = cmp.mapping(cmp.mapping.select_prev_item(), {"i", "s"})
+        ["<c-n>"] = c_n(),
+        ["<c-p>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_options_insert), {"i", "c", "s"}),
+        ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), {"i", "c", "s"}),
+        ["<s-tab>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_options_insert), {"i", "c", "s"})
     },
     sources = cmp.config.sources({{name = "nvim_lsp"}}, {{name = "buffer"}})
 })
@@ -51,18 +71,50 @@ cmp.setup.filetype("gitcommit", {sources = cmp.config.sources({{name = "cmp_git"
 
 cmp.setup.cmdline("/", {sources = {{name = "buffer"}}})
 
+-- -}}}
+
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
+-- local capabilities = {}
+
+---@param method string
+local function select_client(method)
+    local clients = vim.tbl_values(vim.lsp.buf_get_clients())
+    clients = vim.tbl_filter(function(client)
+        return client.supports_method(method)
+    end, clients)
+
+    for i = 1, #clients do if clients[i].name == "efm" then return clients[i] end end
+    return clients[1]
+end
+
+function Formatting(options, timeout_ms)
+    ---@diagnostic disable-next-line: redefined-local
+    local util = vim.lsp.util
+    local params = util.make_formatting_params(options)
+    local bufnr = vim.api.nvim_get_current_buf()
+    local client = select_client("textDocument/formatting")
+    if client == nil then return end
+
+    local result, err = client.request_sync("textDocument/formatting", params, timeout_ms, bufnr)
+    if result and result.result then
+        util.apply_text_edits(result.result, bufnr, client.offset_encoding)
+    elseif err then
+        vim.notify("vim.lsp.buf.formatting_sync" .. err, vim.log.levels.WARN)
+    end
+
+end
+
 ---@diagnostic disable-next-line: unused-local
 local on_attach = function(client, bufnr)
     local function buf_set_keymap(...)
         vim.api.nvim_buf_set_keymap(bufnr, ...)
     end
-    local function buf_set_option(...)
-        vim.api.nvim_buf_set_option(bufnr, ...)
-    end
+    -- local function buf_set_option(...)
+    --     vim.api.nvim_buf_set_option(bufnr, ...)
+    -- end
 
     -- Enable completion triggered by <c-x><c-o>
-    buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+    -- buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
     -- Mappings.
     local opts = {noremap = true, silent = true}
@@ -87,12 +139,27 @@ local on_attach = function(client, bufnr)
     buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 
     require'illuminate'.on_attach(client)
+
+    vim.cmd [[
+    augroup My_group
+        au!
+        autocmd BufWritePre * lua Formatting()
+        " autocmd BufWritePre *.lua lua vim.lsp.buf.formatting()
+        " autocmd BufWritePre *.py lua vim.lsp.buf.formatting()
+        " autocmd BufWritePre *.ts lua vim.lsp.buf.formatting()
+        autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
+        autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
+        autocmd FileType typescript setlocal noexpandtab ts=2 sts=2 sw=2
+        autocmd FileType html setlocal noexpandtab ts=2 sts=2 sw=2
+    augroup END
+    ]]
+
 end
 
 nvim_lsp.pyright.setup {
     -- handlers = custom_handlers,
     on_attach = on_attach,
-    capabilities = capabilities,
+    -- capabilities = capabilities,
     flags = {debounce_text_changes = 150},
     settings = {
         python = {analysis = {autoSearchPaths = true, diagnosticMode = "workspace", useLibraryCodeForTypes = true}}
@@ -117,7 +184,11 @@ nvim_lsp.sumneko_lua.setup {
             runtime = {version = "LuaJIT", path = vim.split(package.path, ";")},
             diagnostics = {globals = {"vim"}},
             workspace = {
-                library = {[vim.fn.expand("$VIMRUNTIME/lua")] = true, [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true}
+                library = {
+                    [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                    [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true
+                    -- [vim.fn.expand(vim.fn.stdpath('data') .. "")] = true
+                }
             }
         }
     }
@@ -165,29 +236,32 @@ nvim_lsp.yamlls.setup {
 
 nvim_lsp.gopls.setup {
     cmd = {"gopls", "serve"},
-    capabilities = capabilities,
-    settings = { --
-        gopls = { --
-            analyses = {unusedparams = true, shadow = true},
-            staticcheck = true
-        },
-        on_attach = on_attach
-    }
+    on_attach = on_attach,
+    filetypes = {"go", "gomod"},
+    root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+    settings = {gopls = {analyses = {unusedparams = true, shadow = true}, staticcheck = true}}
 }
+
+function GoOrdImports(wait_ms)
+    local params = vim.lsp.util.make_range_params()
+    params.context = {only = {"source.organizeImports"}}
+    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction", params, wait_ms)
+    for _, res in pairs(result or {}) do
+        for _, r in pairs(res.result or {}) do
+            if r.edit then
+                vim.lsp.util.apply_workspace_edit(r.edit, "UTF-8")
+            else
+                vim.lsp.buf.execute_command(r.command)
+            end
+        end
+    end
+end
+
+function GoOnPreWrite()
+    vim.lsp.buf.formatting_sync()
+    -- GoOrdImports(1000)
+end
 
 require("lsp_signature").setup {bind = true, handler_opts = {border = "shadow"}}
 
-vim.cmd [[
-augroup SZYMON_AUGROUP
-    au!
-    autocmd BufWritePre *.go lua vim.lsp.buf.formatting()
-    " autocmd BufWritePre *.go lua goimports(1000)
-    autocmd BufWritePre *.lua lua vim.lsp.buf.formatting_sync(nil, 100)
-    autocmd BufWritePre *.py lua vim.lsp.buf.formatting()
-    " autocmd BufWritePre *.ts lua vim.lsp.buf.formatting()
-    autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
-    autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
-    autocmd FileType typescript setlocal noexpandtab ts=2 sts=2 sw=2
-    autocmd FileType html setlocal noexpandtab ts=2 sts=2 sw=2
-augroup END
-]]
+-- vim: foldmethod=marker foldmarker=-{{{,-}}}:
