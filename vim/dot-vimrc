@@ -72,6 +72,8 @@ nnoremap Q <nop>
 nnoremap <silent><c-h> :tabprev<cr>
 nnoremap <silent><c-l> :tabnext<cr>
 
+tnoremap <esc> <c-\><c-n>
+
 
 " emacs movement in cmd mode
 cnoremap <C-A>		<Home>

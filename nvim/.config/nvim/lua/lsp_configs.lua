@@ -15,27 +15,13 @@ else
     print("Unsupported system for sumneko")
 end
 
-local cmp = require("cmp")
-
 -- cmp setup -{{{
+local cmp = require("cmp")
 local cmp_options_insert = {behavior = require'cmp.types'.cmp.SelectBehavior.Insert}
 local cmp_options_select = {behavior = require'cmp.types'.cmp.SelectBehavior.Select}
 
-local c_n = function()
-
-    -- return cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), {"i", "c", "s"})
-    return {
-        i = function(fallback)
-            if not require('cmp').select_next_item(cmp_options_insert) then
-                local release = require('cmp').core:suspend()
-                fallback()
-                vim.schedule(release)
-            end
-        end
-    }
-end
-
 cmp.setup({
+    preselect = cmp.PreselectMode.None,
     mapping = {
         ["<c-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), {'i', 'c', 's'}),
         ["<c-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), {'i', 'c', 's'}),
@@ -43,7 +29,7 @@ cmp.setup({
         ["<c-y>"] = cmp.config.disable,
         ["<c-e>"] = {i = cmp.mapping.abort(), c = cmp.mapping.close()},
         --        ["<cr>"] = cmp.mapping.confirm({select = true})
-        ["<c-n>"] = c_n(),
+        ["<c-n>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), {"i", "c", "s"}),
         ["<c-p>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_options_insert), {"i", "c", "s"}),
         ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), {"i", "c", "s"}),
         ["<s-tab>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_options_insert), {"i", "c", "s"})
@@ -69,7 +55,13 @@ cmp.setup.filetype("gitcommit", {sources = cmp.config.sources({{name = "cmp_git"
 --    end
 -- }
 
-cmp.setup.cmdline("/", {sources = {{name = "buffer"}}})
+cmp.setup.cmdline("/", {mapping = cmp.mapping.preset.cmdline(), sources = {{name = "buffer"}}})
+
+local mapping = cmp.mapping.preset.cmdline()
+mapping["<c-n>"] = nil
+mapping["<c-p>"] = nil
+
+cmp.setup.cmdline(":", {sources = cmp.config.sources({{name = "path"}}, {{name = "cmdline"}})})
 
 -- -}}}
 
@@ -120,33 +112,34 @@ local on_attach = function(client, bufnr)
     local opts = {noremap = true, silent = true}
 
     -- See `:help vim.lsp.*` for documentation on any of the below functions
-    buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
     buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+    buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
     buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
     buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+
     buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+
     buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
     buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
     buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
     buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
     buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
     buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
     buf_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
-    buf_set_keymap('n', '[d', '<cmd>lua vim.lsp.diagnostic.goto_prev()<CR>', opts)
-    buf_set_keymap('n', ']d', '<cmd>lua vim.lsp.diagnostic.goto_next()<CR>', opts)
-    buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_quickfixlist()<CR>', opts)
+    -- buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_quickfixlist()<CR>', opts)
     buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
 
-    require'illuminate'.on_attach(client)
+    -- require'illuminate'.on_attach(client)
 
     vim.cmd [[
     augroup My_group
         au!
-        autocmd BufWritePre * lua Formatting()
-        " autocmd BufWritePre *.lua lua vim.lsp.buf.formatting()
-        " autocmd BufWritePre *.py lua vim.lsp.buf.formatting()
-        " autocmd BufWritePre *.ts lua vim.lsp.buf.formatting()
+        " autocmd BufWritePre * lua Formatting()
+        autocmd BufWritePre *.go lua Formatting()
+        autocmd BufWritePre *.lua lua vim.lsp.buf.formatting()
+        autocmd BufWritePre *.py lua vim.lsp.buf.formatting()
+        autocmd BufWritePre *.ts lua Formatting()
         autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
         autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
         autocmd FileType typescript setlocal noexpandtab ts=2 sts=2 sw=2
@@ -193,30 +186,31 @@ nvim_lsp.sumneko_lua.setup {
         }
     }
 }
+local languages = {
+    lua = {
+        {
+            formatCommand = "lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=120 --break-after-table-lb",
+            formatStdin = true
+        }
+    },
+    python = {
+        {formatCommand = "black --quiet -", formatStdin = true},
+        {formatCommand = "isort --profile=black -", formatStdin = true},
+        {formatCommand = "autoflake -", formatStdin = true}
+    },
+    typescript = {{formatCommand = "prettier", formatStdin = true}}
+}
 
 -- luarocks install --server=https://luarocks.org/dev luaformatter
 -- go install github.com/mattn/efm-langserver
 nvim_lsp.efm.setup {
     init_options = {documentFormatting = true},
-    filetypes = {"lua", "python", "typescript"},
+    filetypes = vim.tbl_keys(languages),
     settings = {
         rootMarkers = {
             ".git/", ".project", "venv/", ".venv/", vim.fn.expand("~/.config/nvim"), vim.fn.expand("~/.config/nvim/lua")
         },
-        languages = {
-            lua = {
-                {
-                    formatCommand = "lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=120 --break-after-table-lb",
-                    formatStdin = true
-                }
-            },
-            python = {
-                {formatCommand = "black --quiet -", formatStdin = true},
-                {formatCommand = "isort --profile=black -", formatStdin = true},
-                {formatCommand = "autoflake -", formatStdin = true}
-            },
-            typescript = {{formatCommand = "prettier", formatStdin = true}}
-        }
+        languages = languages
     }
 }
 

@@ -94,15 +94,25 @@ _G.packer_plugins = {
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/diffview.nvim",
     url = "https://github.com/sindrets/diffview.nvim"
   },
+  ["editorconfig-vim"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/editorconfig-vim",
+    url = "https://github.com/editorconfig/editorconfig-vim"
+  },
   ["gitsigns.nvim"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
     url = "https://github.com/lewis6991/gitsigns.nvim"
   },
-  gruvbox = {
+  ["gruvbox-material"] = {
     loaded = true,
-    path = "/home/srams/.local/share/nvim/site/pack/packer/start/gruvbox",
-    url = "https://github.com/morhetz/gruvbox"
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/gruvbox-material",
+    url = "https://github.com/sainnhe/gruvbox-material"
+  },
+  ["gv.vim"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/gv.vim",
+    url = "https://github.com/junegunn/gv.vim"
   },
   jsonnet = {
     loaded = true,
@@ -139,6 +149,12 @@ _G.packer_plugins = {
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/plenary.nvim",
     url = "https://github.com/nvim-lua/plenary.nvim"
   },
+  ["spellsitter.nvim"] = {
+    config = { "\27LJ\2\nH\0\0\3\0\4\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\3\0B\0\2\1K\0\1\0\1\0\1\venable\2\nsetup\16spellsitter\frequire\0" },
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/spellsitter.nvim",
+    url = "https://github.com/lewis6991/spellsitter.nvim"
+  },
   ["telescope.nvim"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/telescope.nvim",
@@ -149,20 +165,40 @@ _G.packer_plugins = {
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/traces.vim",
     url = "https://github.com/markonm/traces.vim"
   },
+  ["trouble.nvim"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/trouble.nvim",
+    url = "https://github.com/folke/trouble.nvim"
+  },
   ["vim-cool"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-cool",
     url = "https://github.com/romainl/vim-cool"
+  },
+  ["vim-fugitive"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-fugitive",
+    url = "https://github.com/tpope/vim-fugitive"
   },
   ["vim-illuminate"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-illuminate",
     url = "https://github.com/rrethy/vim-illuminate"
   },
+  ["vim-jsonnet"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-jsonnet",
+    url = "https://github.com/google/vim-jsonnet"
+  },
   ["vim-monokai-pro"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-monokai-pro",
     url = "https://github.com/phanviet/vim-monokai-pro"
+  },
+  ["vim-python-pep8-indent"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-python-pep8-indent",
+    url = "https://github.com/Vimjas/vim-python-pep8-indent"
   },
   ["vim-submode"] = {
     loaded = true,
@@ -172,10 +208,15 @@ _G.packer_plugins = {
 }
 
 time([[Defining packer_plugins]], false)
+-- Config for: spellsitter.nvim
+time([[Config for spellsitter.nvim]], true)
+try_loadstring("\27LJ\2\nH\0\0\3\0\4\0\a6\0\0\0'\2\1\0B\0\2\0029\0\2\0005\2\3\0B\0\2\1K\0\1\0\1\0\1\venable\2\nsetup\16spellsitter\frequire\0", "config", "spellsitter.nvim")
+time([[Config for spellsitter.nvim]], false)
 if should_profile then save_profiles() end
 
 end)
 
 if not no_errors then
+  error_msg = error_msg:gsub('"', '\\"')
   vim.api.nvim_command('echohl ErrorMsg | echom "Error in packer_compiled: '..error_msg..'" | echom "Please check your config for correctness" | echohl None')
 end

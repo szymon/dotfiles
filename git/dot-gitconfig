@@ -19,6 +19,8 @@
 	dc = diff --cached
 	clear = clean
 
+	au = add -u
+
 	# a shortcut for seeig the fetched commits
 	lc = log ORIG_HEAD.. --stat --no-merges
 
@@ -43,6 +45,10 @@
 	reword = ci --amend
 
 	add-exclude = "!f() { readlink -f $1 | sed 's~'$(git rev-parse --show-toplevel)'/~~' | tee -a $(git rev-parse --show-toplevel)/.git/info/exclude ; } ; f"
+
+	dfu = "!d() { ( git diff --color ; git ls-files --other --exclude-standard | while read -r i; do git diff --color -- /dev/null $i; done ) | `git config --get core.pager`; }; d"
+
+	la = "!git config --global --list | grep '^alias'"
 
 [merge]
 	tool = vimdiff
@@ -71,3 +77,5 @@
 
 [mailmap]
 	file = ~/.mailmap
+[safe]
+	directory = /home/srams/tools/neovim
