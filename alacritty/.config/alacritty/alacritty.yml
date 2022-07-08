@@ -1,0 +1,31 @@
+
+window:
+  decorations: full
+
+font:
+  normal:
+    family: "Comic Code Ligatures"
+    style: Medium
+  bold:
+    family: "Comic Code Ligatures"
+    style: Bold
+  italic:
+    family: "Comic Code Ligatures"
+    style: Italic
+  bold_italic:
+    family: "Comic Code Ligatures"
+    style: BoldItalic
+
+  size: 12
+
+key_bindings:
+  - { key: Return, mods: Control|Shift,                   action: SpawnNewInstance }
+  - { key: Q,                           mode: Vi|~Search, action: ClearSelection   }
+  - { key: Q,                           mode: Vi,         action: ToggleViMode     }
+
+visual_bell:
+  animation: EaseOutExpo
+  duration: 0
+
+
+live_config_reload: true
