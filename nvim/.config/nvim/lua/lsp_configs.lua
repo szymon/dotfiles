@@ -1,5 +1,6 @@
 local util = require "lspconfig/util"
 local nvim_lsp = require("lspconfig")
+
 USER = vim.fn.expand("$USER")
 
 local sumneko_root_path = ""
@@ -187,12 +188,12 @@ nvim_lsp.sumneko_lua.setup {
     }
 }
 local languages = {
-    lua = {
-        {
-            formatCommand = "lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=120 --break-after-table-lb",
-            formatStdin = true
-        }
-    },
+    -- lua = {
+    --     {
+    --         formatCommand = "lua-format -i --no-keep-simple-function-one-line --no-break-after-operator --column-limit=120 --break-after-table-lb",
+    --         formatStdin = true
+    --     }
+    -- },
     python = {
         {formatCommand = "black --quiet -", formatStdin = true},
         {formatCommand = "isort --profile=black -", formatStdin = true},

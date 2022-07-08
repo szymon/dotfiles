@@ -38,7 +38,7 @@
 	ls = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
 	ls10 = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative -10
 
-	yolo = !git commit -m "$(curl -s whatthecommit.com/index.txt)"
+	yolo = !sh -c 'git commit -m "$(curl -s whatthecommit.com/index.txt)"'
 
 	ignore = update-index --assume-unchanged
 	acknowledge = update-index --no-assume-unchanged
@@ -73,9 +73,9 @@
 	path = ~/.gitconfig_local
 
 [commit]
-	template = /home/srams/.gitmessage
+	# template = /home/srams/.gitmessage
 
 [mailmap]
-	file = ~/.mailmap
+	# file = ~/.mailmap
 [safe]
-	directory = /home/srams/tools/neovim
+	# directory = /home/srams/tools/neovim

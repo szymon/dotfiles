@@ -10,6 +10,7 @@ vim.opt.spell = true
 vim.opt.relativenumber = true
 vim.opt.number = true
 vim.opt.syntax = "off"
+vim.opt.spell = false
 
 vim.opt.colorcolumn = "88"
 
@@ -52,6 +53,14 @@ call submode#map('quickfixlist', 'n', '', 'j', '<cmd>cn<cr>')
 call submode#map('quickfixlist', 'n', '', 'k', '<cmd>cp<cr>')
 ]]
 
+vim.cmd [[
+augroup MY_WRITING
+    au!
+    autocmd BufEnter *.md set textwidth=88 showbreak=+++ linebreak
+    autocmd BufEnter *.txt set textwidth=88 showbreak=+++ linebreak
+augroup END
+]]
+
 vim.g.submode_timeout = 0
 vim.g.submode_keep_leaving_key = 1
 
@@ -81,6 +90,7 @@ function Telescope_scroll_window(prompt_bufnr, direction, mod)
 
     -- Check if we actually have a previewer
     if type(previewer) ~= "table" or previewer.scroll_fn == nil then return end
+    if type(mod) == "function" then mod = mod(prompt_bufnr) end
 
     local status = state.get_status(prompt_bufnr)
     local default_speed = vim.api.nvim_win_get_height(status.preview_win) / mod
@@ -88,8 +98,13 @@ function Telescope_scroll_window(prompt_bufnr, direction, mod)
 
     previewer:scroll_fn(math.floor(speed * direction))
 end
--- }}}
--- telescope {{{
+
+local function get_window_height(bufnr)
+    local state = require 'telescope.state'
+    local status = state.get_status(bufnr)
+    return vim.api.nvim_win_get_height(status.preview_win)
+end
+
 require("telescope").setup({
     defaults = {
         mappings = {
@@ -99,6 +114,12 @@ require("telescope").setup({
                 end,
                 ["<c-b>"] = function(pbn)
                     Telescope_scroll_window(pbn, -1, 1)
+                end,
+                ["<c-e>"] = function(pbn)
+                    Telescope_scroll_window(pbn, 1, get_window_height)
+                end,
+                ["<c-y>"] = function(pbn)
+                    Telescope_scroll_window(pbn, -1, get_window_height)
                 end,
                 ["<c-k>"] = telescope_actions.move_selection_previous,
                 ["<c-j>"] = telescope_actions.move_selection_next,
@@ -118,18 +139,17 @@ require("gitsigns").setup {
         topdelete = {hl = "SignDelete", text = "-"},
         changedelete = {hl = "SignChange", text = "~"}
     },
-    keymaps = {
-        noremap = true,
-        buffer = true,
-        ["n <leader>hs"] = "<cmd>lua require('gitsigns').stage_hunk()<cr>",
-        ["n <leader>hu"] = "<cmd>lua require('gitsigns').undo_stage_hunk()<cr>",
-        ["n <leader>hr"] = "<cmd>lua require('gitsigns').reset_hunk()<cr>",
-        ["n <leader>hR"] = "<cmd>lua require('gitsigns').reset_buffer()<cr>",
-        ["n <leader>hp"] = "<cmd>lua require('gitsigns').preview_hunk()<cr>",
-        ["n <leader>hb"] = "<cmd>lua require('gitsigns').blame_line()<cr>"
-    },
     watch_gitdir = {interval = 1000}
 }
+
+set_keymap('n', '<leader>hs', "<cmd>lua require('gitsigns').stage_hunk()<cr>");
+set_keymap('n', '<leader>hu', "<cmd>lua require('gitsigns').undo_stage_hunk()<cr>");
+set_keymap('n', '<leader>hr', "<cmd>lua require('gitsigns').reset_hunk()<cr>");
+set_keymap('n', '<leader>hR', "<cmd>lua require('gitsigns').reset_buffer()<cr>");
+set_keymap('n', '<leader>hp', "<cmd>lua require('gitsigns').preview_hunk()<cr>");
+set_keymap('n', '<leader>hb', "<cmd>lua require('gitsigns').blame_line()<cr>");
+set_keymap('v', '<leader>hs', "<cmd>lua require('functions').stage_selection()<cr>");
+
 -- }}}
 -- diffview {{{
 -- require'diffview'.setup {

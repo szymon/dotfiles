@@ -19,6 +19,7 @@ set hls
 set ruler
 set mouse=a
 set hidden
+set spell
 
 set exrc
 set secure
