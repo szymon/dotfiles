@@ -62,7 +62,7 @@ local mapping = cmp.mapping.preset.cmdline()
 mapping["<c-n>"] = nil
 mapping["<c-p>"] = nil
 
-cmp.setup.cmdline(":", {sources = cmp.config.sources({{name = "path"}}, {{name = "cmdline"}})})
+-- cmp.setup.cmdline(":", {sources = cmp.config.sources({{name = "path"}, {name = "history"}}, {{name = "cmdline"}})})
 
 -- -}}}
 
