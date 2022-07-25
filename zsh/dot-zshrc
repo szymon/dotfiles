@@ -5,6 +5,9 @@
 # variables. .zshenv should not contain commands that produce output or assume that we are connected
 # to tty when executing it.
 
+
+umask 0022
+
 # If you come from bash you might have to change your $PATH.
 # export PATH=$HOME/bin:/usr/local/bin:$PATH
 if [[ $(uname) == 'Darwin' ]] && [ -f /etc/profile ]; then
@@ -34,14 +37,10 @@ fi
 # always add $PATH at the end.
 
 # .local/bin is the installation folder for pip3 install --user
-[ -d "$HOME/.cargo" ] && export PATH="$HOME/.cargo/bin:$PATH"
-[ -d "$HOME/go"     ] && export PATH="$HOME/go/bin/:$PATH"
+[ -d "$HOME/.cargo"      ] && export PATH="$HOME/.cargo/bin:$PATH"
+[ -d "$HOME/go"          ] && export PATH="$HOME/go/bin/:$PATH"
+[ -d "/usr/local/go/bin" ] && export PATH="/usr/local/go/bin:$PATH"
 
-# add pyenv
-if [[ -d "$HOME/.pyenv" ]]; then
-    export PYENV_ROOT="$HOME/.pyenv"
-    export PATH="$PYENV_ROOT/bin:$PYENV_ROOT/shims/:$PATH"
-fi
 
 
 # FIXME: is there better option to do this?
@@ -53,8 +52,13 @@ if [[ $(uname) == 'Darwin' ]]; then
     export PATH="$HOME/.localpython/3.8.3/bin:$PATH"
 fi
 
+if [ -d "/var/lib/flatpak/exports/share" ]; then
+    export PATH="/var/lib/flatpak/exports/share:/home/srams/.local/share/flatpak/exports/share:$PATH"
+fi
+
 # add custom cuda installs, /usr/bin/cuda can be
 # managed by update-alternatives and point to the correct version of cuda
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 export PATH="/usr/local/bin:$PATH"
 export PATH="/usr/local/cuda/bin:$PATH"
 export PATH="$PATH:/usr/local/go/bin"
@@ -79,10 +83,6 @@ if command -v rg 2>&1 >/dev/null; then
     export FZF_DEFAULT_COMMAND='rg --files --hidden --follow'
 fi
 
-if command -v pyenv 1>/dev/null 2>&1; then
-    eval "$(pyenv init -)"
-fi
-
 if command -v argo 1>/dev/null 2>&1; then
     source <(argo completion zsh)
 fi
@@ -97,24 +97,12 @@ if [ -d "$HOME/.nvm" ]; then
     [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
 fi
 
-# export PYTHONBREAKPOINT=ipdb.set_trace
-# set the default directory for virtualenvs
-export WORKON_HOME="$HOME/.virtualenvs"
-export VIRTUALENVWRAPPER_VIRTUALENV_ARGS=""
-
-if [[ -f "$HOME/.local/bin/virtualenvwrapper.sh" ]]; then
-    source "$HOME/.local/bin/virtualenvwrapper.sh"
-fi
 
 # disable automatic titles for tmuxp
 export DISABLE_AUTO_TITLE='true'
 
 # Set the default editor
-if [[ $(uname) != "Darwin" ]]; then
-    export EDITOR="/usr/bin/nvim"
-else
-    export EDITOR="/usr/local/bin/nvim"
-fi
+export EDITOR="/usr/local/bin/nvim"
 
 # this file is sourced in interactive shell. It should contain commands to set up aliases, functions
 # options, key bindings, etc.
@@ -132,7 +120,6 @@ unsetopt HIST_VERIFY
 
 source $ZSH/oh-my-zsh.sh
 
-
 alias gs='git status'
 alias gd='git diff'
 alias gc='git commit'
@@ -141,6 +128,7 @@ alias sr="cd $HOME/code/serenity"
 alias tmux-hyper="tmuxp load hyper"
 alias tmux-hyper-old="tmuxp load hyper-old"
 alias hpr="cd ~/code/hypernetworks-kd/"
+alias dps='docker ps --format="table {{.ID}}	{{.Names}}	{{.Image}}	{{.Command}}	{{.Status}}"'
 
 if [[ $(uname) != 'Darwin' ]]; then
     alias open="xdg-open"
@@ -203,29 +191,12 @@ if command -v kubectl >/dev/null 2>&1; then
     fi
 
     alias k='kubectl'
-    alias staging-processing='kubectl -n staging-processing'
-    alias dev-processing='kubectl -n dev-processing'
-    alias mk='microk8s kubectl'
 
     complete -F __start_kubectl k
-    complete -F __start_kubectl staging-processing
-    complete -F __start_kubectl dev-processing
-    complete -F __start_kubectl sydney
-    complete -F __start_kubectl mk
-
-
-    alias mangum-dev-processing='kubectl --context magnum --namespace dev-processing'
-    alias mangum-staging-processing='kubectl --context magnum --namespace staging-processing'
-
-    complete -F __start_kubectl mangum-dev-processing
-    complete -F __start_kubectl magnum-staging-processing
 
 
     export KUBECONFIG_DIR="$HOME/.kube"
-
-    if [[ $(uname) != 'Darwin' ]]; then
-        export KUBECONFIG="$KUBECONFIG_DIR/00-magnum.yaml:$KUBECONFIG_DIR/10-codede.yaml:$KUBECONFIG_DIR/19-sydney.yaml:$KUBECONFIG_DIR/01-microk8s.yaml"
-    fi
+    # export KUBECONFIG="$KUBECONFIG_DIR/00-cyrus.yaml:$KUBECONFIG_DIR/01-microk8s.yaml:$KUBECONFIG_DIR/02-magnum.yaml::$KUBECONFIG_DIR/10-codede.yaml:$KUBECONFIG_DIR/19-sydney.yaml"
 
 fi
 
@@ -233,25 +204,23 @@ if command -v tk >/dev/null 2>&1; then
     complete -o nospace -C /usr/local/bin/tk tk
 fi
 
-activate() {
-    if [ -d "$PWD/venv" ]; then
-        source "$PWD/venv/bin/activate"
-    elif [ -d "$PWD/.venv" ]; then
-        source "$PWD/.venv/bin/activate"
-    else
-        echo 'no venv or .venv directory'
-        return 1
-    fi
-}
-
 if command -v ssh-askpass >/dev/null 2>&1; then
     export SSH_ASKPASS=$(which ssh-askpass)
 fi
 
-source_is_present() {
+if command -v aactivator >/dev/null 2>&1; then
+    eval "$(aactivator init)"
+fi
+
+source_if_present() {
     if [ -f "$1" ]; then
         source "$1"
     fi
 }
-source_is_present ~/.personal
-source_is_present ~/.cloudferro
+source_if_present ~/.personal
+source_if_present ~/.cloudferro
+
+[ -f "/home/srams/.ghcup/env" ] && source "/home/srams/.ghcup/env" # ghcup-env
+
+autoload -U +X bashcompinit && bashcompinit
+complete -o nospace -C /usr/bin/vault vault
