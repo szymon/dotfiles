@@ -208,10 +208,6 @@ if command -v ssh-askpass >/dev/null 2>&1; then
     export SSH_ASKPASS=$(which ssh-askpass)
 fi
 
-if command -v aactivator >/dev/null 2>&1; then
-    eval "$(aactivator init)"
-fi
-
 source_if_present() {
     if [ -f "$1" ]; then
         source "$1"
@@ -224,3 +220,5 @@ source_if_present ~/.cloudferro
 
 autoload -U +X bashcompinit && bashcompinit
 complete -o nospace -C /usr/bin/vault vault
+
+eval "$(direnv hook zsh)"
