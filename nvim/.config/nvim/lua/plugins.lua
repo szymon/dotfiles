@@ -37,5 +37,6 @@ return require("packer").startup(function()
     }
 
     use {"folke/trouble.nvim"}
+    use {"jose-elias-alvarez/null-ls.nvim"}
 end)
 

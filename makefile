@@ -10,7 +10,8 @@ packages = \
 	tmux \
 	vim \
 	zsh \
-	pgcli
+	pgcli \
+	i3
 
 all:
 	stow $(flags) $(packages)

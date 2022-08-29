@@ -62,7 +62,7 @@ local mapping = cmp.mapping.preset.cmdline()
 mapping["<c-n>"] = nil
 mapping["<c-p>"] = nil
 
--- cmp.setup.cmdline(":", {sources = cmp.config.sources({{name = "path"}, {name = "history"}}, {{name = "cmdline"}})})
+cmp.setup.cmdline(":", {sources = cmp.config.sources({{name = "path"}, {name = "history"}}, {{name = "cmdline"}})})
 
 -- -}}}
 
@@ -137,10 +137,8 @@ local on_attach = function(client, bufnr)
     augroup My_group
         au!
         " autocmd BufWritePre * lua Formatting()
-        autocmd BufWritePre *.go lua Formatting()
-        autocmd BufWritePre *.lua lua vim.lsp.buf.formatting()
-        autocmd BufWritePre *.py lua vim.lsp.buf.formatting()
-        autocmd BufWritePre *.ts lua Formatting()
+        autocmd BufWritePre *.go,*.ts lua Formatting()
+        autocmd BufWritePre *.lua,*.py lua vim.lsp.buf.formatting()
         autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
         autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
         autocmd FileType typescript setlocal noexpandtab ts=2 sts=2 sw=2
@@ -149,15 +147,28 @@ local on_attach = function(client, bufnr)
     ]]
 
 end
-
+--[[
 nvim_lsp.pyright.setup {
-    -- handlers = custom_handlers,
     on_attach = on_attach,
-    -- capabilities = capabilities,
+    capabilities = capabilities,
     flags = {debounce_text_changes = 150},
     settings = {
-        python = {analysis = {autoSearchPaths = true, diagnosticMode = "workspace", useLibraryCodeForTypes = true}}
+        python = {analysis = {autoSearchPaths = true, diagnosticMode = "workspace", useLibraryCodeForTypes = true,
+        typeCheckingmode = "off",
+
+
+    }}
     }
+}
+--]]
+
+
+nvim_lsp.pylsp.setup {
+    on_attach = on_attach,
+    capabilities = capabilities,
+    flags = { debounce_text_changes = 150 },
+    settings = {
+    },
 }
 nvim_lsp.tsserver.setup({capabilities = capabilities, on_attach = on_attach, flags = {debounce_text_changes = 150}})
 
@@ -194,11 +205,11 @@ local languages = {
     --         formatStdin = true
     --     }
     -- },
-    python = {
-        {formatCommand = "black --quiet -", formatStdin = true},
-        {formatCommand = "isort --profile=black -", formatStdin = true},
-        {formatCommand = "autoflake -", formatStdin = true}
-    },
+    -- python = {
+    --     {formatCommand = "black --quiet -", formatStdin = true},
+    --     {formatCommand = "isort --profile=black -", formatStdin = true},
+    --     {formatCommand = "autoflake -", formatStdin = true}
+    -- },
     typescript = {{formatCommand = "prettier", formatStdin = true}}
 }
 
@@ -258,5 +269,25 @@ function GoOnPreWrite()
 end
 
 require("lsp_signature").setup {bind = true, handler_opts = {border = "shadow"}}
+
+local nls_utils = require("null-ls.utils")
+
+local nls_with_diagnostics = function(builtin)
+    return builtin.with {
+        diagnostics_format="#{m} [#{c}]"
+    }
+end
+
+local null_ls = require("null-ls")
+
+null_ls.setup {
+    sources = {
+        null_ls.builtins.formatting.black,
+        -- null_ls.builtins.formatting.isort,
+        nls_with_diagnostics(null_ls.builtins.diagnostics.flake8),
+        nls_with_diagnostics(null_ls.builtins.diagnostics.mypy),
+    },
+
+}
 
 -- vim: foldmethod=marker foldmarker=-{{{,-}}}:
