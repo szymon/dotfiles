@@ -13,12 +13,13 @@ vim.opt.laststatus = 3
 vim.opt.background = "dark"
 
 vim.g.gruvbox_flat_style = "hard"
-
-vim.cmd [[ colorscheme tokyonight-night ]]
-vim.cmd [[ hi WinSeperator guibg=none ]]
-
-
 vim.g.Illuminate_delay = 300
-vim.api.nvim_command [[ hi def link LspReferenceText CursorLine ]]
-vim.api.nvim_command [[ hi def link LspReferenceWrite CursorLine ]]
-vim.api.nvim_command [[ hi def link LspReferenceRead CursorLine ]]
+
+vim.cmd [[ 
+    colorscheme gruvbox-material
+
+    hi WinSeperator guibg=none
+    hi def link LspReferenceText CursorLine
+    hi def link LspReferenceWrite CursorLine
+    hi def link LspReferenceRead CursorLine
+]]

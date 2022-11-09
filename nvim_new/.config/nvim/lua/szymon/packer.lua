@@ -26,9 +26,13 @@ return require("packer").startup(function()
     -- use "ray-x/lsp_signature.nvim"
     use "tpope/vim-fugitive"
     -- use "junegunn/gv.vim"
-    -- use "sainnhe/gruvbox-material"
+    use "sainnhe/gruvbox-material"
     use "eddyekofo94/gruvbox-flat.nvim"
+    use "phanviet/vim-monokai-pro"
     use "folke/tokyonight.nvim"
     use "jose-elias-alvarez/null-ls.nvim"
+    use {"petertriho/cmp-git", requires = "nvim-lua/plenary.nvim"}
+    use "Vimjas/vim-python-pep8-indent"
+    use "google/vim-jsonnet"
 
 end)
