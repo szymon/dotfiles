@@ -53,13 +53,13 @@ call submode#map('quickfixlist', 'n', '', 'j', '<cmd>cn<cr>')
 call submode#map('quickfixlist', 'n', '', 'k', '<cmd>cp<cr>')
 ]]
 
-vim.cmd [[
-augroup MY_WRITING
-    au!
-    autocmd BufEnter *.md set textwidth=88 showbreak=+++ linebreak
-    autocmd BufEnter *.txt set textwidth=88 showbreak=+++ linebreak
-augroup END
-]]
+-- vim.cmd [[
+-- augroup mywriting
+--     au!
+--     autocmd BufEnter *.md set textwidth=88 showbreak=+++ linebreak
+--     autocmd BufEnter *.txt set textwidth=88 showbreak=+++ linebreak
+-- augroup END
+-- ]]
 
 vim.g.submode_timeout = 0
 vim.g.submode_keep_leaving_key = 1

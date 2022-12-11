@@ -150,6 +150,11 @@ _G.packer_plugins = {
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/packer.nvim",
     url = "https://github.com/wbthomason/packer.nvim"
   },
+  playground = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/playground",
+    url = "https://github.com/nvim-treesitter/playground"
+  },
   ["plenary.nvim"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/plenary.nvim",
@@ -185,15 +190,20 @@ _G.packer_plugins = {
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-fugitive",
     url = "https://github.com/tpope/vim-fugitive"
   },
-  ["vim-illuminate"] = {
+  ["vim-jsonnet"] = {
     loaded = true,
-    path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-illuminate",
-    url = "https://github.com/rrethy/vim-illuminate"
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-jsonnet",
+    url = "https://github.com/google/vim-jsonnet"
   },
   ["vim-monokai-pro"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-monokai-pro",
     url = "https://github.com/phanviet/vim-monokai-pro"
+  },
+  ["vim-python-pep8-indent"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-python-pep8-indent",
+    url = "https://github.com/Vimjas/vim-python-pep8-indent"
   },
   ["vim-submode"] = {
     loaded = true,

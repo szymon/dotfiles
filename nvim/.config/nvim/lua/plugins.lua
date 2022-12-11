@@ -38,5 +38,8 @@ return require("packer").startup(function()
 
     use {"folke/trouble.nvim"}
     use {"jose-elias-alvarez/null-ls.nvim"}
+
+    use("L3MON4D3/LuaSnip")
+    use("rafamadriz/friendly-snippets")
 end)
 

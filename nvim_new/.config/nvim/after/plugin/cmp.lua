@@ -29,14 +29,10 @@ cmp.setup {
         ["<c-space>"] = cmp.mapping(cmp.mapping.complete(), cmp_modes),
         ["<c-y>"] = cmp.mapping.confirm({select = true}),
         ["<c-e>"] = {i = cmp.mapping.abort(), c = cmp.mapping.close()},
-        ["<c-n>"] = cmp.mapping(
-            cmp.mapping.select_next_item(cmp_options_insert), cmp_modes),
-        ["<c-p>"] = cmp.mapping(
-            cmp.mapping.select_prev_item(cmp_options_insert), cmp_modes),
-        ["<tab>"] = cmp.mapping(
-            cmp.mapping.select_next_item(cmp_options_insert), cmp_modes),
-        ["<s-tab>"] = cmp.mapping(cmp.mapping.select_prev_item(
-                                      cmp_options_insert), cmp_modes)
+        ["<c-n>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), cmp_modes),
+        ["<c-p>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_options_insert), cmp_modes),
+        ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), cmp_modes),
+        ["<s-tab>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_options_insert), cmp_modes)
     },
     formatting = {
         format = function(entry, vim_item)
@@ -48,23 +44,21 @@ cmp.setup {
     sources = {{name = "nvim_lsp"}, {name = "luasnip"}, {name = "buffer"}}
 }
 
+local cmdline_mapping = cmp.mapping.preset.cmdline()
+
 cmp.setup.filetype("gitcommit", {
     sources = cmp.config.sources({{name = "cmp_git"}}, {{name = "buffer"}})
 })
-cmp.setup.filetype({"/", "?"}, {
-    mapping = cmp.mapping.preset.cmdline(),
+cmp.setup.cmdline({"/", "?"}, {
+    mapping = cmdline_mapping,
     sources = {{name = "buffer"}}
 })
 
-local cmdline_mapping = cmp.mapping.preset.cmdline()
-cmdline_mapping["<c-n>"] = nil
-cmdline_mapping["<c-p>"] = nil
-
-cmp.setup.filetype(":", {
+cmp.setup.cmdline(":", {
     mapping = cmdline_mapping,
-    sources = cmp.config.sources({{name = "path"}, {name = "history"}},
-                                 {{name = "buffer"}})
+    sources = cmp.config.sources({{ name = "history" }, { name = "path" }}, {{ name = "cmdline" }})
 })
+
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
@@ -138,7 +132,6 @@ local on_attach = function(_client, bufnr)
     -- require'illuminate'.on_attach(client)
 
 end
----[[
 nvim_lsp.pyright.setup {
     on_attach = on_attach,
     capabilities = capabilities,
@@ -154,17 +147,7 @@ nvim_lsp.pyright.setup {
         }
     }
 }
----]]
 
---[[
-nvim_lsp.pylsp.setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-    flags = { debounce_text_changes = 150 },
-    settings = {
-    },
-}
---]]
 nvim_lsp.tsserver.setup({
     capabilities = capabilities,
     on_attach = on_attach,
@@ -214,26 +197,12 @@ nvim_lsp.sumneko_lua.setup {
     }
 }
 
-local function GoOrdImports(wait_ms)
-    local params = vim.lsp.util.make_range_params()
-    params.context = {only = {"source.organizeImports"}}
-    local result = vim.lsp.buf_request_sync(0, "textDocument/codeAction",
-                                            params, wait_ms)
-    for _, res in pairs(result or {}) do
-        for _, r in pairs(res.result or {}) do
-            if r.edit then
-                vim.lsp.util.apply_workspace_edit(r.edit, "UTF-8")
-            else
-                vim.lsp.buf.execute_command(r.command)
-            end
-        end
-    end
-end
 
 function GoOnPreWrite()
     vim.lsp.buf.formatting_sync()
     -- GoOrdImports(1000)
 end
+
 
 -- require("lsp_signature").setup {bind = true, handler_opts = {border = "shadow"}}
 
@@ -246,10 +215,14 @@ end
 local null_ls = require("null-ls")
 
 null_ls.setup {
+    on_attach = on_attach,
+    -- debug = true,
     sources = {
-        null_ls.builtins.formatting.black, null_ls.builtins.formatting.isort,
+        null_ls.builtins.formatting.black,
+        null_ls.builtins.formatting.isort,
         nls_with_diagnostics(null_ls.builtins.diagnostics.flake8),
-        nls_with_diagnostics(null_ls.builtins.diagnostics.mypy),
+
+        nls_with_diagnostics(null_ls.builtins.diagnostics.mypy.with({extra_args={'--follow-imports', 'normal'}})),
 
         null_ls.builtins.formatting.lua_format,
         nls_with_diagnostics(null_ls.builtins.diagnostics.luacheck)
@@ -266,7 +239,7 @@ vim.api.nvim_create_autocmd("BufWritePre", {
 })
 vim.api.nvim_create_autocmd("BufWritePre", {
     pattern = "*.go",
-    callback = function() print("formatting") end,
+    callback = function() Formatting({async = false}) end,
     group = group
 })
 vim.api.nvim_create_autocmd("FileType", {
@@ -279,3 +252,36 @@ vim.api.nvim_create_autocmd("FileType", {
     command = "setlocal noexpandtab ts=4 sts=4 sw=4",
     group = group
 })
+
+
+local function filter(arr, func)
+	-- Filter in place
+	-- https://stackoverflow.com/questions/49709998/how-to-filter-a-lua-array-inplace
+	local new_index = 1
+	local size_orig = #arr
+	for old_index, v in ipairs(arr) do
+		if func(v, old_index) then
+			arr[new_index] = v
+			new_index = new_index + 1
+		end
+	end
+	for i = new_index, size_orig do arr[i] = nil end
+end
+
+
+local function filter_diagnostics(diagnostic)
+	-- Only filter out Pyright stuff for now
+	if diagnostic.source == "Pyright" then
+		return false
+	end
+
+    return true
+end
+
+local function custom_on_publish_diagnostics(a, params, client_id, c, config)
+
+	filter(params.diagnostics, filter_diagnostics)
+	vim.lsp.diagnostic.on_publish_diagnostics(a, params, client_id, c, config)
+end
+
+vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(custom_on_publish_diagnostics, {})

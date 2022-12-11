@@ -49,6 +49,9 @@
 	dfu = "!d() { ( git diff --color ; git ls-files --other --exclude-standard | while read -r i; do git diff --color -- /dev/null $i; done ) | `git config --get core.pager`; }; d"
 
 	la = "!git config --global --list | grep '^alias'"
+	wip = commit -m "wip" --no-verify
+	m = merge
+	mc = merge --continue
 
 [merge]
 	tool = vimdiff
@@ -79,3 +82,6 @@
 	# file = ~/.mailmap
 [safe]
 	# directory = /home/srams/tools/neovim
+
+# [url "ssh://git@gitlab.cloudferro.com"]
+# 	insteadOf = "https://gitlab.cloudferro.com"

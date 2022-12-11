@@ -39,3 +39,6 @@ nnoremap("<leader>=", "<cmd>lua require('telescope.builtin').spell_suggest()<cr>
 nnoremap("<leader>fgc", "<cmd>lua require('telescope.builtin').git_commits()<cr>")
 nnoremap("<leader>fgb", "<cmd>lua require('telescope.builtin').git_bcommits()<cr>")
 nnoremap("<leader>fgs", "<cmd>lua require('telescope.builtin').git_status()<cr>")
+
+
+nnoremap("<leader>tt", "<cmd>TroubleToggle<cr>")

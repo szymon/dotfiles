@@ -11,6 +11,7 @@ return require("packer").startup(function()
     }
 
     use {"nvim-treesitter/nvim-treesitter", ["do"] = "TSUpdate"}
+    use {"nvim-treesitter/playground"}
     use "neovim/nvim-lspconfig"
     use "markonm/traces.vim"
     use "romainl/vim-cool"
@@ -22,7 +23,7 @@ return require("packer").startup(function()
         }
     }
     use "kana/vim-submode"
-    use "rrethy/vim-illuminate"
+    -- use "rrethy/vim-illuminate"
     -- use "ray-x/lsp_signature.nvim"
     use "tpope/vim-fugitive"
     -- use "junegunn/gv.vim"
@@ -34,5 +35,14 @@ return require("packer").startup(function()
     use {"petertriho/cmp-git", requires = "nvim-lua/plenary.nvim"}
     use "Vimjas/vim-python-pep8-indent"
     use "google/vim-jsonnet"
+
+    use {
+        'folke/trouble.nvim',
+        config = function()
+            require("trouble").setup {
+                icons = false,
+            }
+        end
+    }
 
 end)

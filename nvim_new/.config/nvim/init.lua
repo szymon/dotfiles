@@ -23,3 +23,7 @@ vim.cmd [[
     hi def link LspReferenceWrite CursorLine
     hi def link LspReferenceRead CursorLine
 ]]
+
+vim.cmd [[
+    command! GoImports lua require("szymon.golang").ord_imports()
+]]

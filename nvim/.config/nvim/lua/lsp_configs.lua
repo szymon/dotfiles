@@ -16,18 +16,32 @@ else
     print("Unsupported system for sumneko")
 end
 
--- cmp setup -{{{
+
+local source_mapping = {
+    buffer = "[BUF]",
+    luasnip = "[SNIP]",
+    nvim_lsp = "[LSP]",
+    nvim_lua = "[Lua]",
+    path = "[path]",
+}
+
+-- cmp setup
 local cmp = require("cmp")
 local cmp_options_insert = {behavior = require'cmp.types'.cmp.SelectBehavior.Insert}
 local cmp_options_select = {behavior = require'cmp.types'.cmp.SelectBehavior.Select}
 
 cmp.setup({
+    snippet = {
+        expand = function(args)
+            require("luasnip").lsp_expand(args.body)
+        end,
+    },
     preselect = cmp.PreselectMode.None,
     mapping = {
         ["<c-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), {'i', 'c', 's'}),
         ["<c-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), {'i', 'c', 's'}),
         ["<c-space>"] = cmp.mapping(cmp.mapping.complete(), {'i', 'c', 's'}),
-        ["<c-y>"] = cmp.config.disable,
+        ["<c-y>"] = cmp.mapping.confirm({select = true }),
         ["<c-e>"] = {i = cmp.mapping.abort(), c = cmp.mapping.close()},
         --        ["<cr>"] = cmp.mapping.confirm({select = true})
         ["<c-n>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), {"i", "c", "s"}),
@@ -35,10 +49,41 @@ cmp.setup({
         ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), {"i", "c", "s"}),
         ["<s-tab>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_options_insert), {"i", "c", "s"})
     },
-    sources = cmp.config.sources({{name = "nvim_lsp"}}, {{name = "buffer"}})
+    formatting = {
+        format = function(entry, vim_item)
+            local menu = source_mapping[entry.source.name]
+            vim_item.menu = menu
+            return vim_item
+        end,
+    },
+    sources = {
+        { name = "nvim_lsp" },
+        { name = "luasnip" },
+        { name = "buffer" },
+    },
+    --cmp.config.sources({{name = "nvim_lsp"}}, {{name = "buffer"}})
 })
 cmp.setup.filetype("gitcommit", {sources = cmp.config.sources({{name = "cmp_git"}}, {{name = "buffer"}})})
 
+
+local function snippets_paths()
+    local plugins = {"friendly-snippets"}
+    local paths = {}
+    local path
+    local root_path = vim.env.HOME .. "/.vim/plugged/"
+    for _, plug in ipairs(plugins) do
+        path = root_path .. plug
+        if vim.fn.isdirectory(path) ~= 0 then
+            table.insert(paths, path)
+        end
+    end
+end
+
+-- require("luasnip.loaders.from_vscode").lazy_load({ paths = snippets_paths(), include = {"python"}, exclude = {} })
+
+require("luasnip.loaders.from_lua").lazy_load { paths = vim.fn.stdpath 'config' .. '/lua/snip/snippets/'}
+
+vim.cmd [[command! LuaSnipEdit :lua require("luasnip.loaders.from_lua").edit_snippet_files()]]
 -- local custom_handlers = {
 --    ["textDocument/definition"] = function(_, result, params)
 --        if result == nil or vim.tbl_isempty(result) then
@@ -64,9 +109,8 @@ mapping["<c-p>"] = nil
 
 cmp.setup.cmdline(":", {sources = cmp.config.sources({{name = "path"}, {name = "history"}}, {{name = "cmdline"}})})
 
--- -}}}
-
 local capabilities = require("cmp_nvim_lsp").update_capabilities(vim.lsp.protocol.make_client_capabilities())
+capabilities.textDocument.completion.completionItem.snippetSupport = true
 -- local capabilities = {}
 
 ---@param method string
@@ -76,7 +120,11 @@ local function select_client(method)
         return client.supports_method(method)
     end, clients)
 
-    for i = 1, #clients do if clients[i].name == "efm" then return clients[i] end end
+    for i = 1, #clients do
+        if clients[i].name == "efm" or clients[i].name == "null-ls" then
+            return clients[i]
+        end
+    end
     return clients[1]
 end
 
@@ -134,11 +182,11 @@ local on_attach = function(client, bufnr)
     -- require'illuminate'.on_attach(client)
 
     vim.cmd [[
-    augroup My_group
+    augroup Mygroup
         au!
         " autocmd BufWritePre * lua Formatting()
         autocmd BufWritePre *.go,*.ts lua Formatting()
-        autocmd BufWritePre *.lua,*.py lua vim.lsp.buf.formatting()
+        autocmd BufWritePre *.py,*.lua lua vim.lsp.buf.format({async = true})
         autocmd FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
         autocmd FileType go setlocal noexpandtab ts=4 sts=4 sw=4
         autocmd FileType typescript setlocal noexpandtab ts=2 sts=2 sw=2
@@ -147,22 +195,25 @@ local on_attach = function(client, bufnr)
     ]]
 
 end
---[[
+---[[
 nvim_lsp.pyright.setup {
     on_attach = on_attach,
     capabilities = capabilities,
     flags = {debounce_text_changes = 150},
     settings = {
-        python = {analysis = {autoSearchPaths = true, diagnosticMode = "workspace", useLibraryCodeForTypes = true,
-        typeCheckingmode = "off",
-
-
-    }}
+        python = {
+            analysis = {
+                autoSearchPaths = true,
+                diagnosticMode = "workspace",
+                useLibraryCodeForTypes = true,
+                typeCheckingMode = "off",
+            }
+        }
     }
 }
---]]
+---]]
 
-
+--[[
 nvim_lsp.pylsp.setup {
     on_attach = on_attach,
     capabilities = capabilities,
@@ -170,6 +221,7 @@ nvim_lsp.pylsp.setup {
     settings = {
     },
 }
+--]]
 nvim_lsp.tsserver.setup({capabilities = capabilities, on_attach = on_attach, flags = {debounce_text_changes = 150}})
 
 nvim_lsp.ccls.setup {on_attach = on_attach, capabilities = capabilities, flags = {debounce_text_changes = 150}}
@@ -283,7 +335,7 @@ local null_ls = require("null-ls")
 null_ls.setup {
     sources = {
         null_ls.builtins.formatting.black,
-        -- null_ls.builtins.formatting.isort,
+        null_ls.builtins.formatting.isort,
         nls_with_diagnostics(null_ls.builtins.diagnostics.flake8),
         nls_with_diagnostics(null_ls.builtins.diagnostics.mypy),
     },
