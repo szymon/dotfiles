@@ -2,7 +2,6 @@ vim.cmd [[ source ~/.vimrc ]]
 
 require "szymon"
 
-
 vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
 vim.opt.spell = false

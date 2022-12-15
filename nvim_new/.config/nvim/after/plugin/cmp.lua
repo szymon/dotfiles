@@ -2,13 +2,7 @@ if not pcall(require, "cmp") then return end
 
 local util = require "lspconfig/util"
 local nvim_lsp = require("lspconfig")
-local source_mapping = {
-    buffer = "[BUF]",
-    lusnip = "[SNIP]",
-    nvim_lsp = "[LSP]",
-    nvim_lua = "[lua]",
-    path = "[path]"
-}
+local source_mapping = {buffer = "[BUF]", lusnip = "[SNIP]", nvim_lsp = "[LSP]", nvim_lua = "[lua]", path = "[path]"}
 
 local cmp = require("cmp")
 local cmp_types = require("cmp.types")
@@ -17,271 +11,198 @@ local cmp_options_select = {behavior = cmp_types.cmp.SelectBehavior.Select}
 local cmp_modes = {"i", "c", "s"}
 
 cmp.setup {
-    snippet = function(args)
-        if not pcall(require, "luasnip") then return end
-        require("luasnip").lsp_expand(args.body)
-    end,
+  snippet = function(args)
+    if not pcall(require, "luasnip") then return end
+    require("luasnip").lsp_expand(args.body)
+  end,
 
-    preselect = cmp.PreselectMode.None,
-    mapping = {
-        ["<c-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), cmp_modes),
-        ["<c-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), cmp_modes),
-        ["<c-space>"] = cmp.mapping(cmp.mapping.complete(), cmp_modes),
-        ["<c-y>"] = cmp.mapping.confirm({select = true}),
-        ["<c-e>"] = {i = cmp.mapping.abort(), c = cmp.mapping.close()},
-        ["<c-n>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), cmp_modes),
-        ["<c-p>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_options_insert), cmp_modes),
-        ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), cmp_modes),
-        ["<s-tab>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_options_insert), cmp_modes)
-    },
-    formatting = {
-        format = function(entry, vim_item)
-            local menu = source_mapping[entry.source.name]
-            vim_item.menu = menu
-            return vim_item
-        end
-    },
-    sources = {{name = "nvim_lsp"}, {name = "luasnip"}, {name = "buffer"}}
+  preselect = cmp.PreselectMode.None,
+  mapping = {
+    ["<c-b>"] = cmp.mapping(cmp.mapping.scroll_docs(-4), cmp_modes),
+    ["<c-f>"] = cmp.mapping(cmp.mapping.scroll_docs(4), cmp_modes),
+    ["<c-space>"] = cmp.mapping(cmp.mapping.complete(), cmp_modes),
+    ["<c-y>"] = cmp.mapping.confirm({select = true}),
+    ["<c-e>"] = {i = cmp.mapping.abort(), c = cmp.mapping.close()},
+    ["<c-n>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), cmp_modes),
+    ["<c-p>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_options_insert), cmp_modes),
+    ["<tab>"] = cmp.mapping(cmp.mapping.select_next_item(cmp_options_insert), cmp_modes),
+    ["<s-tab>"] = cmp.mapping(cmp.mapping.select_prev_item(cmp_options_insert), cmp_modes)
+  },
+  formatting = {
+    format = function(entry, vim_item)
+      local menu = source_mapping[entry.source.name]
+      vim_item.menu = menu
+      return vim_item
+    end
+  },
+  sources = {{name = "nvim_lsp"}, {name = "luasnip"}, {name = "buffer"}}
 }
 
 local cmdline_mapping = cmp.mapping.preset.cmdline()
 
-cmp.setup.filetype("gitcommit", {
-    sources = cmp.config.sources({{name = "cmp_git"}}, {{name = "buffer"}})
-})
-cmp.setup.cmdline({"/", "?"}, {
-    mapping = cmdline_mapping,
-    sources = {{name = "buffer"}}
-})
+cmp.setup.filetype("gitcommit", {sources = cmp.config.sources({{name = "cmp_git"}}, {{name = "buffer"}})})
+cmp.setup.cmdline({"/", "?"}, {mapping = cmdline_mapping, sources = {{name = "buffer"}}})
 
-cmp.setup.cmdline(":", {
-    mapping = cmdline_mapping,
-    sources = cmp.config.sources({{ name = "history" }, { name = "path" }}, {{ name = "cmdline" }})
-})
+cmp.setup.cmdline(":", {mapping = cmdline_mapping, sources = cmp.config.sources({{name = "history"}, {name = "path"}}, {{name = "cmdline"}})})
 
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
 local function select_client(method)
-    local clients = vim.tbl_values(vim.lsp.buf_get_clients())
-    clients = vim.tbl_filter(function(client)
-        return client.supports_method(method)
-    end, clients)
+  local clients = vim.tbl_values(vim.lsp.buf_get_clients())
+  clients = vim.tbl_filter(function(client) return client.supports_method(method) end, clients)
 
-    for i = 1, #clients do
-        if clients[i].name == "efm" or clients[i].name == "null-ls" then
-            return clients[i]
-        end
-    end
+  for i = 1, #clients do if clients[i].name == "efm" or clients[i].name == "null-ls" then return clients[i] end end
 
-    return clients[1]
+  return clients[1]
 end
 
 function Formatting(options, timeout_ms)
-    ---@diagnostic disable-next-line: redefined-local
-    local util = vim.lsp.util
-    local params = util.make_formatting_params(options)
-    local bufnr = vim.api.nvim_get_current_buf()
-    local client = select_client("textDocument/formatting")
-    if client == nil then return end
+  ---@diagnostic disable-next-line: redefined-local
+  local util = vim.lsp.util
+  local params = util.make_formatting_params(options)
+  local bufnr = vim.api.nvim_get_current_buf()
+  local client = select_client("textDocument/formatting")
+  if client == nil then return end
 
-    local result, err = client.request_sync("textDocument/formatting", params, timeout_ms, bufnr)
-    if result and result.result then
-        util.apply_text_edits(result.result, bufnr, client.offset_encoding)
-    elseif err then
-        vim.notify("vim.lsp.buf.formatting_sync" .. err, vim.log.levels.WARN)
-    end
+  local result, err = client.request_sync("textDocument/formatting", params, timeout_ms, bufnr)
+  if result and result.result then
+    util.apply_text_edits(result.result, bufnr, client.offset_encoding)
+  elseif err then
+    vim.notify("vim.lsp.buf.formatting_sync" .. err, vim.log.levels.WARN)
+  end
 
 end
 
 ---@diagnostic disable-next-line: unused-local
-local on_attach = function(_client, bufnr)
-    local function buf_set_keymap(...)
-        vim.api.nvim_buf_set_keymap(bufnr, ...)
-    end
+local on_attach = function(client, bufnr)
+  local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
 
-    -- local function buf_set_option(...)
-    --     vim.api.nvim_buf_set_option(bufnr, ...)
-    -- end
+  if client.server_capabilities.documentSymbolProvider then if pcall(require, "nvim-navic") then require("nvim-navic").attach(client, bufnr) end end
 
-    -- Enable completion triggered by <c-x><c-o>
-    -- buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
+  -- local function buf_set_option(...)
+  --     vim.api.nvim_buf_set_option(bufnr, ...)
+  -- end
 
-    -- Mappings.
-    local opts = {noremap = true, silent = true}
+  -- Enable completion triggered by <c-x><c-o>
+  -- buf_set_option('omnifunc', 'v:lua.vim.lsp.omnifunc')
 
-    -- See `:help vim.lsp.*` for documentation on any of the below functions
-    buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
-    buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
-    buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
-    buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
-    buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
+  -- Mappings.
+  local opts = {noremap = true, silent = true}
 
-    buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+  -- See `:help vim.lsp.*` for documentation on any of the below functions
+  buf_set_keymap('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<CR>', opts)
+  buf_set_keymap('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<CR>', opts)
+  buf_set_keymap('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>', opts)
+  buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
+  buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
 
-    buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
-    buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
-    buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
-    buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
-    buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
-    buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
-    buf_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
-    -- buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_quickfixlist()<CR>', opts)
-    buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+  buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
 
-    -- require'illuminate'.on_attach(client)
+  buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
+  buf_set_keymap('n', '<leader>wl', '<cmd>lua print(vim.inspect(vim.lsp.buf.list_workspace_folders()))<CR>', opts)
+  buf_set_keymap('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>', opts)
+  buf_set_keymap('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>', opts)
+  buf_set_keymap('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>', opts)
+  buf_set_keymap('n', '<leader>e', '<cmd>lua vim.diagnostic.open_float()<CR>', opts)
+  -- buf_set_keymap('n', '<leader>q', '<cmd>lua vim.lsp.diagnostic.set_quickfixlist()<CR>', opts)
+  buf_set_keymap('n', '<leader>f', '<cmd>lua vim.lsp.buf.formatting()<CR>', opts)
+
+  -- require'illuminate'.on_attach(client)
 
 end
 nvim_lsp.pyright.setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-    flags = {debounce_text_changes = 150},
-    settings = {
-        python = {
-            analysis = {
-                autoSearchPaths = true,
-                diagnosticMode = "workspace",
-                useLibraryCodeForTypes = true,
-                typeCheckingMode = "off"
-            }
-        }
-    }
+  on_attach = on_attach,
+  capabilities = capabilities,
+  flags = {debounce_text_changes = 150},
+  settings = {python = {analysis = {autoSearchPaths = true, diagnosticMode = "workspace", useLibraryCodeForTypes = true, typeCheckingMode = "off"}}}
 }
 
-nvim_lsp.tsserver.setup({
-    capabilities = capabilities,
-    on_attach = on_attach,
-    flags = {debounce_text_changes = 150}
-})
+nvim_lsp.tsserver.setup({capabilities = capabilities, on_attach = on_attach, flags = {debounce_text_changes = 150}})
 
-nvim_lsp.ccls.setup {
-    on_attach = on_attach,
-    capabilities = capabilities,
-    flags = {debounce_text_changes = 150}
-}
+nvim_lsp.ccls.setup {on_attach = on_attach, capabilities = capabilities, flags = {debounce_text_changes = 150}}
 
 nvim_lsp.yamlls.setup {
-    capabilities = capabilities,
-    settings = {
-        yamlls = {
-            schemas = {
-                ["https://raw.githubusercontent.com/argoproj/argo-workflows/master/api/jsonschema/schema.json"] = "~/code/argonaut",
-                ["https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.16.0-standalone-strict/all.json"] = ".*\\.k8s\\.yaml"
-            },
-            schemaDownload = {enable = true},
-            validate = true
-        }
+  capabilities = capabilities,
+  settings = {
+    yamlls = {
+      schemas = {
+        ["https://raw.githubusercontent.com/argoproj/argo-workflows/master/api/jsonschema/schema.json"] = "~/code/argonaut",
+        ["https://raw.githubusercontent.com/instrumenta/kubernetes-json-schema/master/v1.16.0-standalone-strict/all.json"] = ".*\\.k8s\\.yaml"
+      },
+      schemaDownload = {enable = true},
+      validate = true
     }
+  }
 }
 
 nvim_lsp.gopls.setup {
-    cmd = {"gopls", "serve"},
-    on_attach = on_attach,
-    filetypes = {"go", "gomod"},
-    root_dir = util.root_pattern("go.work", "go.mod", ".git"),
-    settings = {
-        gopls = {
-            analyses = {unusedparams = true, shadow = true},
-            staticcheck = true
-        }
-    }
+  cmd = {"gopls", "serve"},
+  on_attach = on_attach,
+  filetypes = {"go", "gomod"},
+  root_dir = util.root_pattern("go.work", "go.mod", ".git"),
+  settings = {gopls = {analyses = {unusedparams = true, shadow = true}, staticcheck = true}}
 }
-nvim_lsp.sumneko_lua.setup {
-    on_attach = on_attach,
-    settings = {
-        Lua = {
-            diagnostic = false,
-            workspace = {library = vim.api.nvim_get_runtime_file("", true)},
-            telemetry = {enable = false}
-        }
-    }
-}
-
+nvim_lsp.sumneko_lua.setup {on_attach = on_attach, settings = {Lua = {diagnostic = {globals = {"vim"}}, workspace = {library = vim.api.nvim_get_runtime_file("", true)}, telemetry = {enable = false}}}}
 
 function GoOnPreWrite()
-    vim.lsp.buf.formatting_sync()
-    -- GoOrdImports(1000)
+  vim.lsp.buf.formatting_sync()
+  -- GoOrdImports(1000)
 end
-
 
 -- require("lsp_signature").setup {bind = true, handler_opts = {border = "shadow"}}
 
 local nls_utils = require("null-ls.utils")
 
-local nls_with_diagnostics = function(builtin)
-    return builtin.with {diagnostics_format = "#{m} [#{c}]"}
-end
+local nls_with_diagnostics = function(builtin) return builtin.with {diagnostics_format = "#{m} [#{c}]"} end
 
 local null_ls = require("null-ls")
 
 null_ls.setup {
-    on_attach = on_attach,
-    -- debug = true,
-    sources = {
-        null_ls.builtins.formatting.black,
-        null_ls.builtins.formatting.isort,
-        nls_with_diagnostics(null_ls.builtins.diagnostics.flake8),
+  on_attach = on_attach,
+  -- debug = true,
+  sources = {
+    null_ls.builtins.formatting.black, null_ls.builtins.formatting.isort, nls_with_diagnostics(null_ls.builtins.diagnostics.flake8),
 
-        nls_with_diagnostics(null_ls.builtins.diagnostics.mypy.with({extra_args={'--follow-imports', 'normal'}})),
+    -- nls_with_diagnostics(null_ls.builtins.diagnostics.mypy.with({extra_args={'--follow-imports', 'normal'}})),
+    nls_with_diagnostics(null_ls.builtins.diagnostics.mypy), null_ls.builtins.formatting.lua_format, nls_with_diagnostics(null_ls.builtins.diagnostics.luacheck)
 
-        null_ls.builtins.formatting.lua_format,
-        nls_with_diagnostics(null_ls.builtins.diagnostics.luacheck)
-
-    }
+  }
 
 }
 
 local group = vim.api.nvim_create_augroup("MyGroup", {clear = true});
-vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = "*.py",
-    callback = function() Formatting({async = true}) end,
-    group = group
-})
-vim.api.nvim_create_autocmd("BufWritePre", {
-    pattern = "*.go",
-    callback = function() Formatting({async = false}) end,
-    group = group
-})
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "yaml",
-    command = "setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>",
-    group = group
-})
-vim.api.nvim_create_autocmd("FileType", {
-    pattern = "go",
-    command = "setlocal noexpandtab ts=4 sts=4 sw=4",
-    group = group
-})
-
+vim.api.nvim_create_autocmd("BufWritePre", {pattern = "*.py,*.lua", callback = function() Formatting({async = true}) end, group = group})
+vim.api.nvim_create_autocmd("BufWritePre", {pattern = "*.go", callback = function() Formatting({async = false}) end, group = group})
+vim.api.nvim_create_autocmd("FileType", {pattern = "yaml", command = "setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>", group = group})
+vim.api.nvim_create_autocmd("FileType", {pattern = "go", command = "setlocal noexpandtab ts=4 sts=4 sw=4", group = group})
 
 local function filter(arr, func)
-	-- Filter in place
-	-- https://stackoverflow.com/questions/49709998/how-to-filter-a-lua-array-inplace
-	local new_index = 1
-	local size_orig = #arr
-	for old_index, v in ipairs(arr) do
-		if func(v, old_index) then
-			arr[new_index] = v
-			new_index = new_index + 1
-		end
-	end
-	for i = new_index, size_orig do arr[i] = nil end
+  -- Filter in place
+  -- https://stackoverflow.com/questions/49709998/how-to-filter-a-lua-array-inplace
+  local new_index = 1
+  local size_orig = #arr
+  for old_index, v in ipairs(arr) do
+    if func(v, old_index) then
+      arr[new_index] = v
+      new_index = new_index + 1
+    end
+  end
+  for i = new_index, size_orig do arr[i] = nil end
 end
 
-
 local function filter_diagnostics(diagnostic)
-	-- Only filter out Pyright stuff for now
-	if diagnostic.source == "Pyright" then
-		return false
-	end
+  -- Only filter out Pyright stuff for now
+  if diagnostic.source == "Pyright" then return false end
 
-    return true
+  return true
 end
 
 local function custom_on_publish_diagnostics(a, params, client_id, c, config)
 
-	filter(params.diagnostics, filter_diagnostics)
-	vim.lsp.diagnostic.on_publish_diagnostics(a, params, client_id, c, config)
+  filter(params.diagnostics, filter_diagnostics)
+  vim.lsp.diagnostic.on_publish_diagnostics(a, params, client_id, c, config)
 end
 
 vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(custom_on_publish_diagnostics, {})

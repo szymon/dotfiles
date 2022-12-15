@@ -14,7 +14,6 @@ xnoremap("<leader>p", '"_dP')
 
 nnoremap("Q", "<nop>")
 
-
 -- gitsigns
 
 nnoremap("<leader>hs", "<cmd>lua require('gitsigns').stage_hunk()<cr>")
@@ -33,12 +32,11 @@ nnoremap("<c-p>", "<cmd>lua require('telescope.builtin').find_files({})<cr>")
 nnoremap("<leader>rr", "<cmd>lua require('telescope.builtin').live_grep()<cr>")
 nnoremap("<leader>gr", "<cmd>lua require('telescope.builtin').grep_string()<cr>")
 nnoremap("<leader>;", "<cmd>lua require('telescope.builtin').buffers({sort_lastuse = true, ignore_current_buffer = true})<cr>")
---nnoremap("<leader>fh", "<cmd>lua require('telescope.builtin').help_tags()<cr>")
+-- nnoremap("<leader>fh", "<cmd>lua require('telescope.builtin').help_tags()<cr>")
 nnoremap("<leader>fk", "<cmd>lua require('telescope.builtin').keymaps()<cr>")
 nnoremap("<leader>=", "<cmd>lua require('telescope.builtin').spell_suggest()<cr>")
 nnoremap("<leader>fgc", "<cmd>lua require('telescope.builtin').git_commits()<cr>")
 nnoremap("<leader>fgb", "<cmd>lua require('telescope.builtin').git_bcommits()<cr>")
 nnoremap("<leader>fgs", "<cmd>lua require('telescope.builtin').git_status()<cr>")
-
 
 nnoremap("<leader>tt", "<cmd>TroubleToggle<cr>")
