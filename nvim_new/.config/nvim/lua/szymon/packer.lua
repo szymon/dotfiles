@@ -1,6 +1,17 @@
-return require("packer").startup(function()
+local install_path = vim.fn.stdpath 'data' .. '/site/pack/packer/start/packer.nvim'
+local is_bootstrap = false
+
+if vim.fn.empty(vim.fn.glob(install_path)) > 0 then
+  is_bootstrap = true
+  vim.fn.system({'git', 'clone', '--depth', '1', 'https://github.com/wbthomason/packer.nvim'}, install_path)
+  vim.cmd [[ packadd packer.nvim ]]
+end
+
+return require("packer").startup(function(use)
+  -- let packer manage itself
   use "wbthomason/packer.nvim"
 
+  -- lsp config
   use "nvim-lua/plenary.nvim"
   use "nvim-lua/popup.nvim"
   use "nvim-telescope/telescope.nvim"
@@ -28,6 +39,8 @@ return require("packer").startup(function()
   use "Vimjas/vim-python-pep8-indent"
   use "google/vim-jsonnet"
 
+  use {"szymon/undotree", branch = "fix-matchwhat"}
+
   -- use "kyazdani42/nvim-web-devicons" -- optional
   use {'folke/trouble.nvim', config = function() end}
 
@@ -36,7 +49,9 @@ return require("packer").startup(function()
   use {
     "utilyre/barbecue.nvim",
     requires = {
-      "neovim/nvim-lspconfig", "smiteshp/nvim-navic", "kyazdani42/nvim-web-devicons" -- optional
+      "neovim/nvim-lspconfig",
+      "smiteshp/nvim-navic",
+      "kyazdani42/nvim-web-devicons" -- optional
     }
   }
 

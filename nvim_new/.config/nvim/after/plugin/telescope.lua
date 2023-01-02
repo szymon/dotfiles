@@ -1,7 +1,7 @@
 if not pcall(require, "telescope") then return end
 
 local t = require("szymon.telescope")
-
+local nnoremap = require("szymon.keymap").nnoremap
 local actions = require("telescope.actions")
 
 require("telescope").setup({
@@ -21,3 +21,18 @@ require("telescope").setup({
     }
   }
 })
+
+local telescope_actions = require("telescope.actions")
+
+nnoremap("<c-p>", require('telescope.builtin').find_files)
+nnoremap("<leader>rr", require('telescope.builtin').live_grep)
+nnoremap("<leader>gr", function() require('telescope.builtin').grep_string {search = vim.fn.input("Grep > ")} end)
+nnoremap("<leader>;", function() require('telescope.builtin').buffers({sort_lastuse = true, ignore_current_buffer = true}) end)
+-- nnoremap("<leader>fh", "<cmd>lua require('telescope.builtin').help_tags())
+nnoremap("<leader>fk", require('telescope.builtin').keymaps)
+nnoremap("<leader>=", require('telescope.builtin').spell_suggest)
+nnoremap("<leader>fgc", require('telescope.builtin').git_commits)
+nnoremap("<leader>fgb", require('telescope.builtin').git_bcommits)
+nnoremap("<leader>fgs", require('telescope.builtin').git_status)
+
+pcall(require("telescope").load_extension, "fzf")

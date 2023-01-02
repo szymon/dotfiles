@@ -1,5 +1,7 @@
 if not pcall(require, "trouble") then return end
 
+local nnoremap = require("szymon.keymap").nnoremap
+
 require("trouble").setup({
   icons = false,
   fold_open = "v", -- icon used for open folds
@@ -14,3 +16,5 @@ require("trouble").setup({
   },
   use_diagnostic_signs = false -- enabling this will use the signs defined in your lsp client
 })
+
+nnoremap("<leader>tt", "<cmd>TroubleToggle<cr>")

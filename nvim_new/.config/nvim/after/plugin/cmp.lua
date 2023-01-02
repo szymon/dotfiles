@@ -48,32 +48,6 @@ cmp.setup.cmdline(":", {mapping = cmdline_mapping, sources = cmp.config.sources(
 local capabilities = require("cmp_nvim_lsp").default_capabilities()
 capabilities.textDocument.completion.completionItem.snippetSupport = true
 
-local function select_client(method)
-  local clients = vim.tbl_values(vim.lsp.buf_get_clients())
-  clients = vim.tbl_filter(function(client) return client.supports_method(method) end, clients)
-
-  for i = 1, #clients do if clients[i].name == "efm" or clients[i].name == "null-ls" then return clients[i] end end
-
-  return clients[1]
-end
-
-function Formatting(options, timeout_ms)
-  ---@diagnostic disable-next-line: redefined-local
-  local util = vim.lsp.util
-  local params = util.make_formatting_params(options)
-  local bufnr = vim.api.nvim_get_current_buf()
-  local client = select_client("textDocument/formatting")
-  if client == nil then return end
-
-  local result, err = client.request_sync("textDocument/formatting", params, timeout_ms, bufnr)
-  if result and result.result then
-    util.apply_text_edits(result.result, bufnr, client.offset_encoding)
-  elseif err then
-    vim.notify("vim.lsp.buf.formatting_sync" .. err, vim.log.levels.WARN)
-  end
-
-end
-
 ---@diagnostic disable-next-line: unused-local
 local on_attach = function(client, bufnr)
   local function buf_set_keymap(...) vim.api.nvim_buf_set_keymap(bufnr, ...) end
@@ -163,20 +137,18 @@ null_ls.setup {
   on_attach = on_attach,
   -- debug = true,
   sources = {
-    null_ls.builtins.formatting.black, null_ls.builtins.formatting.isort, nls_with_diagnostics(null_ls.builtins.diagnostics.flake8),
+    null_ls.builtins.formatting.black,
+    null_ls.builtins.formatting.isort,
+    nls_with_diagnostics(null_ls.builtins.diagnostics.flake8),
 
     -- nls_with_diagnostics(null_ls.builtins.diagnostics.mypy.with({extra_args={'--follow-imports', 'normal'}})),
-    nls_with_diagnostics(null_ls.builtins.diagnostics.mypy), null_ls.builtins.formatting.lua_format, nls_with_diagnostics(null_ls.builtins.diagnostics.luacheck)
+    nls_with_diagnostics(null_ls.builtins.diagnostics.mypy),
+    null_ls.builtins.formatting.lua_format,
+    nls_with_diagnostics(null_ls.builtins.diagnostics.luacheck)
 
   }
 
 }
-
-local group = vim.api.nvim_create_augroup("MyGroup", {clear = true});
-vim.api.nvim_create_autocmd("BufWritePre", {pattern = "*.py,*.lua", callback = function() Formatting({async = true}) end, group = group})
-vim.api.nvim_create_autocmd("BufWritePre", {pattern = "*.go", callback = function() Formatting({async = false}) end, group = group})
-vim.api.nvim_create_autocmd("FileType", {pattern = "yaml", command = "setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>", group = group})
-vim.api.nvim_create_autocmd("FileType", {pattern = "go", command = "setlocal noexpandtab ts=4 sts=4 sw=4", group = group})
 
 local function filter(arr, func)
   -- Filter in place
