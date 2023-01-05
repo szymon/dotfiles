@@ -1,3 +1,4 @@
+local M = {}
 
 local function select_client(method)
   local clients = vim.tbl_values(vim.lsp.buf_get_clients())
@@ -8,7 +9,7 @@ local function select_client(method)
   return clients[1]
 end
 
-function Formatting(options, timeout_ms)
+M.format = function(options, timeout_ms)
   ---@diagnostic disable-next-line: redefined-local
   local util = vim.lsp.util
   local params = util.make_formatting_params(options)
@@ -25,8 +26,28 @@ function Formatting(options, timeout_ms)
 
 end
 
+local function run_sql_formatter(text)
 
-local custom_formatting = vim.api.nvim_create_augroup("custom_on_write", {clear = true});
-vim.api.nvim_create_autocmd("BufWritePre", {pattern = "*.py,*.lua", callback = function() Formatting({async = true}) end, group = custom_formatting})
-vim.api.nvim_create_autocmd("BufWritePre", {pattern = "*.go", callback = function() Formatting({async = false}) end, group = custom_formatting})
+  -- local bin = vim.api.nvim_get_runtime_file("bin/sql-format-via-python.py", false)[1]
+  local bin = '/home/srams/.local/share/nvm/v18.1.0/bin/sql-formatter-cli'
 
+  local j = require("plenary.job"):new{command = "node", args = {bin}, writer = {text}}
+  return j:sync()
+end
+
+M.format_dat_sql = function(bufnr)
+  bufnr = bufnr or vim.api.nvim_get_current_buf()
+
+  if vim.bo[bufnr].filetype == "sql" then
+    local text = table.concat(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), "\n")
+    local formatted = run_sql_formatter(text)
+
+    vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted)
+
+  elseif vim.bo[bufnr].filetype ~= "python" then
+    vim.notify "can only be used on sql or python file"
+    return
+  end
+end
+
+return M

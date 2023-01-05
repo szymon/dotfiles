@@ -60,8 +60,8 @@ nnoremap <Down> :resize +2<cr>
 nnoremap <Left> :vertical resize -2<cr>
 nnoremap <Right> :vertical resize +2<cr>
 
-nnoremap <A-j> :cnext<cr>
-nnoremap <A-k> :cprev<cr>
+nnoremap <A-j> :cnext<cr>zz
+nnoremap <A-k> :cprev<cr>zz
 nnoremap <A-q> :cclose<cr>
 
 xnoremap <leader>p "_dP
