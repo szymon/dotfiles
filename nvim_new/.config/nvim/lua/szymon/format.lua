@@ -35,8 +35,9 @@ local function run_sql_formatter(text)
   return j:sync()
 end
 
-M.format_dat_sql = function(bufnr)
+M.format_dat_sql = function(bufnr, options)
   bufnr = bufnr or vim.api.nvim_get_current_buf()
+  options = options or {selection = false}
 
   if vim.bo[bufnr].filetype == "sql" then
     local text = table.concat(vim.api.nvim_buf_get_lines(bufnr, 0, -1, false), "\n")
@@ -44,9 +45,14 @@ M.format_dat_sql = function(bufnr)
 
     vim.api.nvim_buf_set_lines(bufnr, 0, -1, false, formatted)
 
-  elseif vim.bo[bufnr].filetype ~= "python" then
-    vim.notify "can only be used on sql or python file"
-    return
+  elseif options.selection then
+    local start_mark = vim.api.nvim_buf_get_mark(bufnr, "<")
+    local end_mark = vim.api.nvim_buf_get_mark(bufnr, ">")
+    local text = table.concat(vim.api.nvim_buf_get_lines(bufnr, start_mark[1] - 1, end_mark[1], false), "\n")
+    local formatted = run_sql_formatter(text)
+
+    vim.api.nvim_buf_set_lines(bufnr, start_mark[1] - 1, end_mark[1], false, formatted)
+
   end
 end
 

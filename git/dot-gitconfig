@@ -52,6 +52,7 @@
 	wip = commit -m "wip" --no-verify
 	m = merge
 	mc = merge --continue
+	l = ls10
 
 [merge]
 	tool = vimdiff

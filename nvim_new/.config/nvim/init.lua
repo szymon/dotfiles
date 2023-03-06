@@ -53,6 +53,7 @@ nnoremap("N", "Nzzzv")
 
 nnoremap("<leader>gs", vim.cmd.Git)
 nnoremap("<leader>u", vim.cmd.UndotreeToggle)
+nnoremap("<leader>x", "<cmd>!chmod +x %<cr>")
 
 vim.cmd [[ 
     colorscheme gruvbox-material
@@ -65,7 +66,7 @@ vim.cmd [[
 
 vim.cmd [[
     command! GoImports lua require("szymon.golang").ord_imports()
-		command! SqlFormat lua require("szymon.format").format_dat_sql()
+    command! -range SqlFormat lua require("szymon.format").format_dat_sql(nil, {selection=true})
 ]]
 
 local overwrite_filetype_defaults = vim.api.nvim_create_augroup("overwrite_filetype_defaults", {clear = true});
@@ -76,7 +77,3 @@ vim.api.nvim_create_autocmd("FileType", {pattern = "lua", command = "setlocal no
 local hightlight_group = vim.api.nvim_create_augroup("YankHi", {clear = true})
 vim.api.nvim_create_autocmd("TextYankPost", {callback = function() vim.highlight.on_yank() end, group = hightlight_group, pattern = "*"})
 
-local custom_formatting = vim.api.nvim_create_augroup("custom_on_write", {clear = true});
-vim.api.nvim_create_autocmd("BufWritePre", {pattern = "*.py,*.lua", callback = function() formatters.format({async = true}) end, group = custom_formatting})
-vim.api.nvim_create_autocmd("BufWritePre", {pattern = "*.go", callback = function() formatters.format({async = false}) end, group = custom_formatting})
-vim.api.nvim_create_autocmd("BufWritePre", {pattern = "*.py,*.sql", callback = function() formatters.format_dat_sql() end, group = custom_formatting})
