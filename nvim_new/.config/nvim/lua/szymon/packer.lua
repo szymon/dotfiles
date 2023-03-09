@@ -42,10 +42,9 @@ return require("packer").startup(function(use)
       {'hrsh7th/cmp-nvim-lua'},
 
       -- Snippets
-      {'L3MON4D3/LuaSnip'},
+      {'L3MON4D3/LuaSnip'}
     }
   }
-
 
   use "kana/vim-submode"
   use "rrethy/vim-illuminate"
@@ -70,7 +69,5 @@ return require("packer").startup(function(use)
 
   -- use { 'fgheng/winbar.nvim' }
 
-  use "github/copilot.vim"
-
-
+  use {"github/copilot.vim"}
 end)

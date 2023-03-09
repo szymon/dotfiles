@@ -24,6 +24,7 @@ local cmp_mappings = lsp.defaults.cmp_mappings({
 
 cmp_mappings["<Tab>"] = nil
 cmp_mappings["<S-Tab>"] = nil
+cmp_mappings["<CR>"] = nil
 
 lsp.setup_nvim_cmp({mapping = cmp_mappings, select_behavior = cmp_types.cmp.SelectBehavior.Insert})
 
@@ -71,22 +72,25 @@ lsp.configure("pyright", {
 lsp.on_attach(on_attach)
 lsp.setup()
 
-local nls_with_diagnostics = function(builtin) return builtin.with {diagnostics_format = "#{m} [#{c}]"} end
+local nls_with_diagnostics = function(func) return func.with {diagnostics_format = "#{m} [#{c}]"} end
 
 local lspformat = vim.api.nvim_create_augroup("LspFormat", {clear = true})
 local null_ls = require("null-ls")
 
 null_ls.setup {
+  -- debug = true,
   on_attach = function(client, bufnr)
     if client.supports_method("textDocument/formatting") then
       vim.api.nvim_clear_autocmds({group = lspformat, buffer = bufnr})
       vim.api.nvim_create_autocmd("BufWritePre", {group = lspformat, buffer = bufnr, callback = function() vim.lsp.buf.format(nil, 1000) end})
     end
   end,
-  -- debug = true,
   sources = {
     null_ls.builtins.formatting.black,
     null_ls.builtins.formatting.isort,
+    null_ls.builtins.formatting.golines.with({extra_args = {"-m", "120", "-w"}}),
+    null_ls.builtins.formatting.goimports,
+    nls_with_diagnostics(null_ls.builtins.diagnostics.staticcheck),
     nls_with_diagnostics(null_ls.builtins.diagnostics.flake8),
 
     -- nls_with_diagnostics(null_ls.builtins.diagnostics.mypy.with({extra_args={'--follow-imports', 'normal'}})),
