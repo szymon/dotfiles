@@ -98,6 +98,9 @@ null_ls.setup {
     null_ls.builtins.formatting.lua_format,
     nls_with_diagnostics(null_ls.builtins.diagnostics.luacheck)
 
+		null_ls.builtins.code_action.statix,
+		null_ls.builtins.formatting.alejandra,
+
   }
 
 }

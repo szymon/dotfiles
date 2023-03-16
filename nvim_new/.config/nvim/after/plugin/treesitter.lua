@@ -1,7 +1,7 @@
 if not pcall(require, "nvim-treesitter") then return end
 
 local _ = require("nvim-treesitter.configs").setup({
-  ensure_installed = {"go", "html", "javascript", "json", "markdown", "python", "query", "rust", "toml", "yaml"},
+  ensure_installed = {"go", "html", "javascript", "json", "markdown", "python", "query", "rust", "toml", "yaml", "nix"},
 
   highlight = {enable = true, additional_vim_regex_highlighting = false},
 
