@@ -38,7 +38,6 @@ kubectl completion fish | source
 function k --wraps kubectl; kubectl $argv; end
 function __direnv_export_eval --on-event fish_postexec; "/usr/bin/direnv" export fish | source; end
 
-if [ -f ~/.cloudferro.fish ]; then
+if test -f ~/.cloudferro.fish
     source ~/.cloudferro.fish
-fi
-
+end
