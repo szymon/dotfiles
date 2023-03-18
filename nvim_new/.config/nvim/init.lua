@@ -70,9 +70,9 @@ vim.cmd [[
 ]]
 
 local overwrite_filetype_defaults = vim.api.nvim_create_augroup("overwrite_filetype_defaults", {clear = true});
-vim.api.nvim_create_autocmd("FileType", {pattern = "yaml", command = "setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>", group = overwrite_filetype_defaults})
-vim.api.nvim_create_autocmd("FileType", {pattern = "go", command = "setlocal noexpandtab ts=4 sts=4 sw=4", group = overwrite_filetype_defaults})
-vim.api.nvim_create_autocmd("FileType", {pattern = "lua", command = "setlocal noexpandtab ts=2 sts=2 sw=2", group = overwrite_filetype_defaults})
+vim.api.nvim_create_autocmd("FileType", {pattern = {"*.yaml"}, command = "setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>", group = overwrite_filetype_defaults})
+vim.api.nvim_create_autocmd("FileType", {pattern = {"*.go"}, command = "setlocal noexpandtab ts=4 sts=4 sw=4", group = overwrite_filetype_defaults})
+vim.api.nvim_create_autocmd("FileType", {pattern = {"*.lua", "*.nix"}, command = "setlocal noexpandtab ts=2 sts=2 sw=2", group = overwrite_filetype_defaults})
 
 local hightlight_group = vim.api.nvim_create_augroup("YankHi", {clear = true})
 vim.api.nvim_create_autocmd("TextYankPost", {callback = function() vim.highlight.on_yank() end, group = hightlight_group, pattern = "*"})
