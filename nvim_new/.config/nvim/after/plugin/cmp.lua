@@ -69,15 +69,6 @@ lsp.configure("pyright", {
   end
 })
 
-lsp.configure("gopls", {
-	settings = {
-		gopls = {
-			ui = {
-				staticcheck = false,
-			}
-		}
-	}
-})
 
 lsp.on_attach(on_attach)
 lsp.setup()
@@ -92,7 +83,12 @@ null_ls.setup {
   on_attach = function(client, bufnr)
     if client.supports_method("textDocument/formatting") then
       vim.api.nvim_clear_autocmds({group = lspformat, buffer = bufnr})
-      vim.api.nvim_create_autocmd("BufWritePre", {group = lspformat, buffer = bufnr, callback = function() vim.lsp.buf.format(nil, 1000) end})
+      vim.api.nvim_create_autocmd("BufWritePre", {
+          group = lspformat,
+          buffer = bufnr,
+          callback = function() 
+				vim.lsp.buf.format(nil, 1000) end
+            })
     end
   end,
   sources = {
@@ -106,10 +102,9 @@ null_ls.setup {
     -- nls_with_diagnostics(null_ls.builtins.diagnostics.mypy.with({extra_args={'--follow-imports', 'normal'}})),
     nls_with_diagnostics(null_ls.builtins.diagnostics.mypy),
     null_ls.builtins.formatting.lua_format,
-    nls_with_diagnostics(null_ls.builtins.diagnostics.luacheck)
+    nls_with_diagnostics(null_ls.builtins.diagnostics.luacheck),
 
-		null_ls.builtins.code_action.statix,
-		null_ls.builtins.formatting.alejandra,
+	null_ls.builtins.formatting.alejandra,
 
   }
 
