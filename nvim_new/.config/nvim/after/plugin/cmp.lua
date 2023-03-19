@@ -69,6 +69,16 @@ lsp.configure("pyright", {
   end
 })
 
+lsp.configure("gopls", {
+	settings = {
+		gopls = {
+			ui = {
+				staticcheck = false,
+			}
+		}
+	}
+})
+
 lsp.on_attach(on_attach)
 lsp.setup()
 
@@ -90,7 +100,7 @@ null_ls.setup {
     null_ls.builtins.formatting.isort,
     null_ls.builtins.formatting.golines.with({extra_args = {"-m", "120", "-w"}}),
     null_ls.builtins.formatting.goimports,
-    nls_with_diagnostics(null_ls.builtins.diagnostics.staticcheck),
+		-- nls_with_diagnostics(null_ls.builtins.diagnostics.staticcheck),
     nls_with_diagnostics(null_ls.builtins.diagnostics.flake8),
 
     -- nls_with_diagnostics(null_ls.builtins.diagnostics.mypy.with({extra_args={'--follow-imports', 'normal'}})),
