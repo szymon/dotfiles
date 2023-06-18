@@ -55,13 +55,13 @@ nnoremap("<leader>gs", vim.cmd.Git)
 nnoremap("<leader>u", vim.cmd.UndotreeToggle)
 nnoremap("<leader>x", "<cmd>!chmod +x %<cr>")
 
-vim.cmd [[ 
+vim.cmd [[
     colorscheme gruvbox-material
 
     hi WinSeperator guibg=none
     hi def link LspReferenceText CursorLine
     hi def link LspReferenceWrite CursorLine
-    hi def link LspReferenceRead CursorLine
+	  hi def link LspReferenceRead CursorLine
 ]]
 
 vim.cmd [[
@@ -77,3 +77,8 @@ vim.api.nvim_create_autocmd("FileType", {pattern = {"*.lua", "*.nix"}, command =
 local hightlight_group = vim.api.nvim_create_augroup("YankHi", {clear = true})
 vim.api.nvim_create_autocmd("TextYankPost", {callback = function() vim.highlight.on_yank() end, group = hightlight_group, pattern = "*"})
 
+vim.cmd [[
+	  hi Normal guibg=none ctermbg=none
+    hi EndOfBuffer guibg=none ctermbg=none
+    hi EndOfBuffer guibg=none ctermbg=none
+]]

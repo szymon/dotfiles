@@ -9,6 +9,7 @@
 	st = status -s
 	cl = clone
 	ci = commit
+	ca = commit --amend
 	co = checkout
 	br = branch
 	r = reset
@@ -84,5 +85,3 @@
 [safe]
 	# directory = /home/srams/tools/neovim
 
-# [url "ssh://git@gitlab.cloudferro.com"]
-# 	insteadOf = "https://gitlab.cloudferro.com"

@@ -124,6 +124,11 @@ _G.packer_plugins = {
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
     url = "https://github.com/lewis6991/gitsigns.nvim"
   },
+  ["go.nvim"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/go.nvim",
+    url = "https://github.com/ray-x/go.nvim"
+  },
   ["gruvbox-flat.nvim"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/gruvbox-flat.nvim",
@@ -133,11 +138,6 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/gruvbox-material",
     url = "https://github.com/sainnhe/gruvbox-material"
-  },
-  ["lsp-format.nvim"] = {
-    loaded = true,
-    path = "/home/srams/.local/share/nvim/site/pack/packer/start/lsp-format.nvim",
-    url = "https://github.com/lukas-reineke/lsp-format.nvim"
   },
   ["lsp-zero.nvim"] = {
     loaded = true,
@@ -260,6 +260,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-submode",
     url = "https://github.com/kana/vim-submode"
+  },
+  ["vim-transparent"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-transparent",
+    url = "https://github.com/tribela/vim-transparent"
   }
 }
 

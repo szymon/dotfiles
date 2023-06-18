@@ -60,9 +60,9 @@ nnoremap <Down> :resize +2<cr>
 nnoremap <Left> :vertical resize -2<cr>
 nnoremap <Right> :vertical resize +2<cr>
 
-nnoremap <A-j> :cnext<cr>zz
-nnoremap <A-k> :cprev<cr>zz
-nnoremap <A-q> :cclose<cr>
+nnoremap <leader>j :cnext<cr>zz
+nnoremap <leader>k :cprev<cr>zz
+nnoremap <C-q> :cclose<cr>
 
 xnoremap <leader>p "_dP
 vnoremap <leader>p "_dP
@@ -100,6 +100,7 @@ augroup SZYMON_FILETYPES
     au!
     au FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
     au FileType jsonnet setlocal ts=2 sts=2 sw=2 expandtab
+    au FileType php setlocal ts=8 sts=8 sw=8 noexpandtab
 
 augroup END
 

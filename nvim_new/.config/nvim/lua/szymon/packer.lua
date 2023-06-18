@@ -70,4 +70,9 @@ return require("packer").startup(function(use)
   -- use { 'fgheng/winbar.nvim' }
 
   use {"github/copilot.vim"}
+
+  use {"ray-x/go.nvim"}
+
+  use {"tribela/vim-transparent"}
+  use {"yorik1984/zola.nvim", requires = {"Glench/Vim-Jinja2-Syntax"}}
 end)
