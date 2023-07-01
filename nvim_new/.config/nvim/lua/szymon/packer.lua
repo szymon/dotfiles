@@ -21,8 +21,6 @@ return require("packer").startup(function(use)
   use {"nvim-treesitter/nvim-treesitter", run = ":TSUpdate"}
   use {"nvim-treesitter/playground"}
 
-  use "markonm/traces.vim"
-  use "romainl/vim-cool"
   use {"lewis6991/gitsigns.nvim", requires = {"nvim-lua/plenary.nvim"}}
 
   use {
@@ -46,32 +44,19 @@ return require("packer").startup(function(use)
     }
   }
 
-  use "kana/vim-submode"
-  use "rrethy/vim-illuminate"
-  -- use "ray-x/lsp_signature.nvim"
   use "tpope/vim-fugitive"
-  -- use "junegunn/gv.vim"
   use "sainnhe/gruvbox-material"
-  use "eddyekofo94/gruvbox-flat.nvim"
-  use "phanviet/vim-monokai-pro"
-  -- use "folke/tokyonight.nvim"
   use "jose-elias-alvarez/null-ls.nvim"
   use {"petertriho/cmp-git", requires = "nvim-lua/plenary.nvim"}
   use "Vimjas/vim-python-pep8-indent"
   use "google/vim-jsonnet"
 
-  use {'sindrets/diffview.nvim', requires = 'nvim-lua/plenary.nvim'}
-
-  use {"szymon/undotree", branch = "fix-matchwhat"}
-
-  -- use "kyazdani42/nvim-web-devicons" -- optional
   use {'folke/trouble.nvim', config = function() end}
-
-  -- use { 'fgheng/winbar.nvim' }
 
   use {"github/copilot.vim"}
 
   use {"ray-x/go.nvim"}
+  use {"ray-x/lsp_signature.nvim"}
 
   use {"tribela/vim-transparent"}
   use {"yorik1984/zola.nvim", requires = {"Glench/Vim-Jinja2-Syntax"}}

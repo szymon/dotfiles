@@ -55,6 +55,8 @@ nnoremap("<leader>gs", vim.cmd.Git)
 nnoremap("<leader>u", vim.cmd.UndotreeToggle)
 nnoremap("<leader>x", "<cmd>!chmod +x %<cr>")
 
+nnoremap("<leader>tp", "<cmd>:TSPlaygroundToggle<cr>")
+
 vim.cmd [[
     colorscheme gruvbox-material
 
@@ -69,13 +71,19 @@ vim.cmd [[
     command! -range SqlFormat lua require("szymon.format").format_dat_sql(nil, {selection=true})
 ]]
 
-local overwrite_filetype_defaults = vim.api.nvim_create_augroup("overwrite_filetype_defaults", {clear = true});
-vim.api.nvim_create_autocmd("FileType", {pattern = {"*.yaml"}, command = "setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>", group = overwrite_filetype_defaults})
-vim.api.nvim_create_autocmd("FileType", {pattern = {"*.go"}, command = "setlocal noexpandtab ts=4 sts=4 sw=4", group = overwrite_filetype_defaults})
-vim.api.nvim_create_autocmd("FileType", {pattern = {"*.lua", "*.nix"}, command = "setlocal noexpandtab ts=2 sts=2 sw=2", group = overwrite_filetype_defaults})
+local overwrite_filetype_defaults = vim.api.nvim_create_augroup("overwrite_filetype_defaults", { clear = true });
+vim.api.nvim_create_autocmd("FileType",
+    { pattern = { "*.yaml" }, command = "setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>",
+        group = overwrite_filetype_defaults })
+vim.api.nvim_create_autocmd("FileType",
+    { pattern = { "*.go" }, command = "setlocal noexpandtab ts=4 sts=4 sw=4", group = overwrite_filetype_defaults })
+vim.api.nvim_create_autocmd("FileType",
+    { pattern = { "*.lua", "*.nix" }, command = "setlocal noexpandtab ts=2 sts=2 sw=2",
+        group = overwrite_filetype_defaults })
 
-local hightlight_group = vim.api.nvim_create_augroup("YankHi", {clear = true})
-vim.api.nvim_create_autocmd("TextYankPost", {callback = function() vim.highlight.on_yank() end, group = hightlight_group, pattern = "*"})
+local hightlight_group = vim.api.nvim_create_augroup("YankHi", { clear = true })
+vim.api.nvim_create_autocmd("TextYankPost",
+    { callback = function() vim.highlight.on_yank() end, group = hightlight_group, pattern = "*" })
 
 vim.cmd [[
 	  hi Normal guibg=none ctermbg=none

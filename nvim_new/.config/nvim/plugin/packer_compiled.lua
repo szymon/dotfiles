@@ -79,6 +79,11 @@ _G.packer_plugins = {
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/LuaSnip",
     url = "https://github.com/L3MON4D3/LuaSnip"
   },
+  ["Vim-Jinja2-Syntax"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/Vim-Jinja2-Syntax",
+    url = "https://github.com/Glench/Vim-Jinja2-Syntax"
+  },
   ["cmp-buffer"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/cmp-buffer",
@@ -114,11 +119,6 @@ _G.packer_plugins = {
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/copilot.vim",
     url = "https://github.com/github/copilot.vim"
   },
-  ["diffview.nvim"] = {
-    loaded = true,
-    path = "/home/srams/.local/share/nvim/site/pack/packer/start/diffview.nvim",
-    url = "https://github.com/sindrets/diffview.nvim"
-  },
   ["gitsigns.nvim"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/gitsigns.nvim",
@@ -129,11 +129,6 @@ _G.packer_plugins = {
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/go.nvim",
     url = "https://github.com/ray-x/go.nvim"
   },
-  ["gruvbox-flat.nvim"] = {
-    loaded = true,
-    path = "/home/srams/.local/share/nvim/site/pack/packer/start/gruvbox-flat.nvim",
-    url = "https://github.com/eddyekofo94/gruvbox-flat.nvim"
-  },
   ["gruvbox-material"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/gruvbox-material",
@@ -143,6 +138,11 @@ _G.packer_plugins = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/lsp-zero.nvim",
     url = "https://github.com/VonHeikemen/lsp-zero.nvim"
+  },
+  ["lsp_signature.nvim"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/lsp_signature.nvim",
+    url = "https://github.com/ray-x/lsp_signature.nvim"
   },
   ["lualine.nvim"] = {
     loaded = true,
@@ -210,61 +210,36 @@ _G.packer_plugins = {
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/telescope.nvim",
     url = "https://github.com/nvim-telescope/telescope.nvim"
   },
-  ["traces.vim"] = {
-    loaded = true,
-    path = "/home/srams/.local/share/nvim/site/pack/packer/start/traces.vim",
-    url = "https://github.com/markonm/traces.vim"
-  },
   ["trouble.nvim"] = {
     config = { "\27LJ\2\n\v\0\0\1\0\0\0\1K\0\1\0\0" },
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/trouble.nvim",
     url = "https://github.com/folke/trouble.nvim"
   },
-  undotree = {
-    loaded = true,
-    path = "/home/srams/.local/share/nvim/site/pack/packer/start/undotree",
-    url = "https://github.com/szymon/undotree"
-  },
-  ["vim-cool"] = {
-    loaded = true,
-    path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-cool",
-    url = "https://github.com/romainl/vim-cool"
-  },
   ["vim-fugitive"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-fugitive",
     url = "https://github.com/tpope/vim-fugitive"
-  },
-  ["vim-illuminate"] = {
-    loaded = true,
-    path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-illuminate",
-    url = "https://github.com/rrethy/vim-illuminate"
   },
   ["vim-jsonnet"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-jsonnet",
     url = "https://github.com/google/vim-jsonnet"
   },
-  ["vim-monokai-pro"] = {
-    loaded = true,
-    path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-monokai-pro",
-    url = "https://github.com/phanviet/vim-monokai-pro"
-  },
   ["vim-python-pep8-indent"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-python-pep8-indent",
     url = "https://github.com/Vimjas/vim-python-pep8-indent"
   },
-  ["vim-submode"] = {
-    loaded = true,
-    path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-submode",
-    url = "https://github.com/kana/vim-submode"
-  },
   ["vim-transparent"] = {
     loaded = true,
     path = "/home/srams/.local/share/nvim/site/pack/packer/start/vim-transparent",
     url = "https://github.com/tribela/vim-transparent"
+  },
+  ["zola.nvim"] = {
+    loaded = true,
+    path = "/home/srams/.local/share/nvim/site/pack/packer/start/zola.nvim",
+    url = "https://github.com/yorik1984/zola.nvim"
   }
 }
 
