@@ -1,6 +1,9 @@
 require("mason").setup()
 require("mason-lspconfig").setup()
-require("lsp_signature").setup()
+
+if pcall('require', 'lsp_signature') then
+    require("lsp_signature").setup()
+end
 
 local lsp = require("lsp-zero").preset("recommended")
 
@@ -48,7 +51,7 @@ local on_attach = function(client, bufnr)
     buf_set_keymap('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>', opts)
     buf_set_keymap('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>', opts)
 
-    buf_set_keymap('n', '<C-k>', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
+    buf_set_keymap('n', '<leader>k', '<cmd>lua vim.lsp.buf.signature_help()<CR>', opts)
 
     -- buf_set_keymap('n', '<leader>wa', '<cmd>lua vim.lsp.buf.add_workspace_folder()<CR>', opts)
     -- buf_set_keymap('n', '<leader>wr', '<cmd>lua vim.lsp.buf.remove_workspace_folder()<CR>', opts)
@@ -97,6 +100,7 @@ lsp.configure("tailwindcss", {
         "erb",
         "eruby",
         "gohtml",
+        "gohtmltmpl",
         "haml",
         "handlebars",
         "hbs",
@@ -142,6 +146,24 @@ local nls_with_diagnostics = function(func) return func.with { diagnostics_forma
 local lspformat = vim.api.nvim_create_augroup("LspFormat", { clear = true })
 local null_ls = require("null-ls")
 
+local enable_format_on_save = false
+
+vim.api.nvim_create_user_command("ToggleFormatOnSave",
+    function()
+        enable_format_on_save = not enable_format_on_save
+        if enable_format_on_save then
+            print("Format on save enabled")
+        else
+            print("Format on save disabled")
+        end
+    end,
+    {
+        nargs = 0,
+    }
+)
+
+local local_home_bin = vim.fn.expand("~/.local/bin")
+
 null_ls.setup {
     -- debug = true,
     on_attach = function(client, bufnr)
@@ -151,22 +173,24 @@ null_ls.setup {
                 group = lspformat,
                 buffer = bufnr,
                 callback = function()
-                    vim.lsp.buf.format({ async = false, timeout_ms = 5000 })
+                    if enable_format_on_save then
+                        vim.lsp.buf.format({ async = false, timeout_ms = 5000 })
+                    end
                 end
             })
         end
     end,
     sources = {
-        null_ls.builtins.formatting.black,
-        null_ls.builtins.formatting.djlint,
-        nls_with_diagnostics(null_ls.builtins.diagnostics.curlylint),
-        null_ls.builtins.formatting.isort,
-        null_ls.builtins.formatting.golines.with({ extra_args = { "-m", "120", "-w" } }),
+        null_ls.builtins.formatting.djlint.with({ command = local_home_bin .. "/djlint" }),
+        nls_with_diagnostics(null_ls.builtins.diagnostics.curlylint.with({ command = local_home_bin .. "/curlylint" })),
+        null_ls.builtins.formatting.black.with({ command = local_home_bin .. "/black" }),
+        null_ls.builtins.formatting.isort.with({ comamnd = local_home_bin .. "/isort" }),
+        null_ls.builtins.formatting.golines.with({ extra_args = { "-m", "120" } }),
         null_ls.builtins.formatting.goimports,
         nls_with_diagnostics(null_ls.builtins.diagnostics.flake8),
 
         -- nls_with_diagnostics(null_ls.builtins.diagnostics.mypy.with({extra_args={'--follow-imports', 'normal'}})),
-        nls_with_diagnostics(null_ls.builtins.diagnostics.mypy),
+        nls_with_diagnostics(null_ls.builtins.diagnostics.mypy.with({ command = local_home_bin .. "/mypy" })),
         -- null_ls.builtins.formatting.lua_format.with({extra_args = {"--column-limit", "90"}}),
         nls_with_diagnostics(null_ls.builtins.diagnostics.luacheck),
         nls_with_diagnostics(null_ls.builtins.diagnostics.golangci_lint)

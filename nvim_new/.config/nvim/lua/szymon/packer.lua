@@ -14,7 +14,7 @@ return require("packer").startup(function(use)
   use {"nvim-telescope/telescope.nvim", requires = {{"nvim-lua/plenary.nvim"}}}
 
   -- lsp config
-  use "nvim-lua/popup.nvim"
+  -- use "nvim-lua/popup.nvim"
 
   use {"nvim-lualine/lualine.nvim", requires = {"kyazdani42/nvim-web-devicons", opt = true}}
 
@@ -56,8 +56,15 @@ return require("packer").startup(function(use)
   use {"github/copilot.vim"}
 
   use {"ray-x/go.nvim"}
-  use {"ray-x/lsp_signature.nvim"}
+  -- use {"ray-x/lsp_signature.nvim"}
 
   use {"tribela/vim-transparent"}
   use {"yorik1984/zola.nvim", requires = {"Glench/Vim-Jinja2-Syntax"}}
+
+  use {"ThePrimeagen/git-worktree.nvim"}
+
+  use {"mfussenegger/nvim-lint"}
+
+  -- use {"mhartington/formatter.nvim"}
+  -- use {"nvimdev/guard.nvim"}
 end)

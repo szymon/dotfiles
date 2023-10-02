@@ -223,3 +223,6 @@ complete -o nospace -C /usr/bin/vault vault
 
 eval "$(direnv hook zsh)"
 eval "$(aactivator init)"
+
+
+complete -o nospace -C /home/srams/go/bin/tk tk

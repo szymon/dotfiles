@@ -85,3 +85,8 @@
 [safe]
 	# directory = /home/srams/tools/neovim
 
+[gpg]
+	format = ssh
+
+[gpg "ssh"]
+	program = "/opt/1Password/op-ssh-sign"
