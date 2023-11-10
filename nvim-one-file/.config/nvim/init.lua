@@ -84,9 +84,9 @@ nnoremap("<leader>x", "<cmd>!chmod +x %<cr>")
 
 nnoremap("<leader>tp", "<cmd>:TSPlaygroundToggle<cr>")
 
-nnoremap("<leader>u", vim.cmd.UndotreeToggle)
+-- nnoremap("<leader>u", vim.cmd.UndotreeToggle)
 
-nnoremap("<leader>gs", vim.cmd.Git)
+nnoremap("<leader>gs", "<cmd>Git<cr>")
 
 
 -- }}}
@@ -190,22 +190,14 @@ require("lazy").setup({
     -- { "nvim-lualine/lualine.nvim" },
     {
         "nvim-treesitter/nvim-treesitter",
-        dependencies = { "nvim-treesitter/playground" },
+        dependencies = { "nvim-treesitter/playground", "nvim-treesitter/nvim-treesitter" },
+        build = ":TSUpdate",
         config = function()
             require("nvim-treesitter.configs").setup({
 
                 ensure_installed = {
-                    "go",
-                    "html",
-                    "javascript",
-                    "json",
-                    "markdown",
-                    "python",
-                    "query",
-                    "rust",
-                    "toml",
-                    "yaml",
-                    "nix"
+                    "go", "html", "javascript", "json", "markdown", "python", "query",
+                    "rust", "toml", "yaml", "nix", "lua", "css", "bash", "dockerfile",
                 },
 
 
@@ -232,7 +224,14 @@ require("lazy").setup({
                 playground = {
                     enable = true,
                     updatetime = 25,
-                }
+                },
+
+                textobjects = {
+                    enable = true,
+                    lookahead = true,
+                    keymaps = {
+                    },
+                },
             })
         end
     },
@@ -303,16 +302,11 @@ require("lazy").setup({
             cmp_mappings["<S-Tab>"] = nil
             cmp_mappings["<CR>"] = nil
 
-            lsp.ensure_installed({ "pyright", "gopls", "lua_ls" })
-
-            lsp.setup_nvim_cmp({ mapping = cmp_mappings, select_behavior = cmp_options_insert })
-
             local function on_attach(client, bufnr)
                 local function k(mode, pattern, command)
                     local opts = { noremap = true, silent = true }
                     vim.api.nvim_buf_set_keymap(bufnr, mode, pattern, command, opts)
                 end
-
                 if client.server_capabilities.documentSymbolProvider then
                     require("nvim-navic").attach(client, bufnr)
                 end
@@ -322,9 +316,8 @@ require("lazy").setup({
                 k('n', 'K', '<cmd>lua vim.lsp.buf.hover()<CR>')
                 k('n', 'gi', '<cmd>lua vim.lsp.buf.implementation()<CR>')
                 k('n', 'gr', '<cmd>lua vim.lsp.buf.references()<CR>')
-
+                -- k('n', '<c-space>', '<cmd>lua vim.lsp.buf.complete()<cr>')
                 k('n', '<leader>k', '<cmd>lua vim.lsp.buf.signature_help()<CR>')
-
                 k('n', '<leader>D', '<cmd>lua vim.lsp.buf.type_definition()<CR>')
                 k('n', '<leader>rn', '<cmd>lua vim.lsp.buf.rename()<CR>')
                 k('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<CR>')
@@ -387,6 +380,18 @@ require("lazy").setup({
             })
 
             lsp.on_attach(on_attach)
+
+            require("mason").setup()
+            require("mason-lspconfig").setup({
+                ensure_installed = {
+                    "pyright", "gopls", "lua_ls", "tailwindcss"
+                },
+            })
+
+            cmp.setup({
+                mapping = cmp_mappings,
+            })
+
             lsp.setup()
 
             vim.lsp.handlers["textDocument/definition"] = function(_, result)
@@ -394,7 +399,6 @@ require("lazy").setup({
                     print("[LSP] Could not find definition")
                     return
                 end
-
                 if vim.tbl_islist(result) then
                     vim.lsp.util.jump_to_location(result[1], "utf-8")
                 else
@@ -406,6 +410,7 @@ require("lazy").setup({
                 filter(params.diagnostics, filter_diagnostics)
                 vim.lsp.diagnostic.on_publish_diagnostics(a, params, client_id, c, config)
             end, {})
+
             vim.lsp.handlers["textDocument/publishDiagnostics"] =
                 vim.lsp.with(vim.lsp.handlers["textDocument/publishDiagnostics"], {
                     signs = {
@@ -469,12 +474,14 @@ require("lazy").setup({
                     null_ls.builtins.formatting.isort.with({ comamnd = local_home_bin .. "/isort" }),
                     null_ls.builtins.formatting.golines.with({ extra_args = { "-m", "120" } }),
                     null_ls.builtins.formatting.goimports,
-                    with_diagnostics(null_ls.builtins.diagnostics.flake8),
+                    -- with_diagnostics(null_ls.builtins.diagnostics.flake8),
 
                     -- nls_with_diagnostics(null_ls.builtins.diagnostics.mypy.with({extra_args={'--follow-imports', 'normal'}})),
                     with_diagnostics(null_ls.builtins.diagnostics.mypy),
                     -- null_ls.builtins.formatting.lua_format.with({extra_args = {"--column-limit", "90"}}),
-                    with_diagnostics(null_ls.builtins.diagnostics.luacheck),
+                    with_diagnostics(null_ls.builtins.diagnostics.luacheck.with({
+                        extra_args = { "--globals", "vim" },
+                    })),
                     with_diagnostics(null_ls.builtins.diagnostics.golangci_lint)
                 }
             })
@@ -482,10 +489,27 @@ require("lazy").setup({
     },
     -- { "petertriho/cmp-git",           dependencies = "nvim-lua/plenary.nvim" },
     { "Vimjas/vim-python-pep8-indent" },
-    { "google/vim-jsonnet" },
+    {
+        "google/vim-jsonnet",
+        event = {
+            "BufEnter",
+        },
+        filetype = {
+            "jsonnet"
+        },
+    },
     -- {'folke/trouble.nvim', config = function() end},
     { "github/copilot.vim" },
-    { "ray-x/go.nvim" },
+    {
+        "ray-x/go.nvim",
+        event = { "CmdlineEnter" },
+        ft = { "go", "gomod" },
+        config = function()
+            require("go").setup()
+        end,
+        build = ":lua require('go.install').update_all_sync()",
+
+    },
     -- { "yorik1984/zola.nvim",          dependencies = { "Glench/Vim-Jinja2-Syntax" } },
     {
         "ThePrimeagen/git-worktree.nvim",

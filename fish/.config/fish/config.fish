@@ -1,28 +1,19 @@
+xset r rate 200 40
 
 umask 0022
 
 # Do not show any greeting
 set --universal --erase fish_greeting
-function fish_greeting; end
-funcsave fish_greeting
-
-# set -g theme_color_scheme gruvbox
-theme_gruvbox dark
 
 set -x EDITOR nvim
 set -x GIT_EDITOR $EDITOR
-
-set __fish_git_prompt_showdirtystate 'yes'
-set __fish_git_prompt_showstashstate 'yes'
-set __fish_git_prompt_showuntrackedfiles 'yes'
-set __fish_git_prompt_show_informative_status 'yes'
-set __fish_git_prompt_showupstream 'yes'
-
 set --universal nvm_default_version v18.1.0
 
+function fd --wraps fdfind; fdfind $args; end
+function bat --wraps batcat; batcat $args; end
 
-fzf_configure_bindings
 
+contains $HOME/.vector $fish_user_paths; or set -Ua fish_user_paths $HOME/.vector
 contains $HOME/.local/bin $fish_user_paths; or set -Ua fish_user_paths $HOME/.local/bin
 contains $HOME/.krew/bin $fish_user_paths; or set -Ua fish_user_paths $HOME/.krew/bin
 contains $HOME/go/bin $fish_user_paths; or set -Ua fish_user_paths $HOME/go/bin
@@ -40,4 +31,24 @@ function __direnv_export_eval --on-event fish_postexec; "/usr/bin/direnv" export
 
 if test -f ~/.cloudferro.fish
     source ~/.cloudferro.fish
+end
+
+function urlencode
+    jq -rn --arg v "$argv" '$v|@uri'
+end
+
+if status --is-interactive
+    # set -g theme_color_scheme gruvbox
+    theme_gruvbox dark
+
+    set __fish_git_prompt_showdirtystate 'yes'
+    set __fish_git_prompt_showstashstate 'yes'
+    set __fish_git_prompt_showuntrackedfiles 'yes'
+    set __fish_git_prompt_show_informative_status 'yes'
+    set __fish_git_prompt_showupstream 'yes'
+
+
+    fzf_configure_bindings
+
+    bind \e\cf 'tmux-sessionizer'
 end
