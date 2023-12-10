@@ -8,6 +8,8 @@ set --universal --erase fish_greeting
 set -x EDITOR nvim
 set -x GIT_EDITOR $EDITOR
 set --universal nvm_default_version v18.1.0
+set -x PAGER "pspg -b --menu-always --only-for-tables --reprint-on-exit --quit-if-one-screen"
+set -x MYSQL_PAGER "$PAGER"
 
 function fd --wraps fdfind; fdfind $args; end
 function bat --wraps batcat; batcat $args; end

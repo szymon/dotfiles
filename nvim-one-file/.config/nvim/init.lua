@@ -82,8 +82,6 @@ nnoremap("N", "Nzzzv")
 
 nnoremap("<leader>x", "<cmd>!chmod +x %<cr>")
 
-nnoremap("<leader>tp", "<cmd>:TSPlaygroundToggle<cr>")
-
 -- nnoremap("<leader>u", vim.cmd.UndotreeToggle)
 
 nnoremap("<leader>gs", "<cmd>Git<cr>")
@@ -129,7 +127,16 @@ require("lazy").setup({
         keys = {
             { "<c-p>",      function() require('telescope.builtin').find_files() end },
             { "<leader>rr", function() require('telescope.builtin').live_grep() end },
-            { "<leader>gr", function() require('telescope.builtin').grep_string({ search = vim.fn.input("Grep > ") }) end },
+            { "<leader>gr",
+                function()
+                    local ok, input = pcall(vim.fn.input, "Grep > ")
+                    if not ok then return end
+
+                    require('telescope.builtin').grep_string({
+                        search = input,
+                    })
+                end
+            },
             { "<leader>;",
                 function()
                     require('telescope.builtin').buffers({
@@ -338,10 +345,10 @@ require("lazy").setup({
             lsp.configure("pyright", {
                 on_init = function(client)
                     print("init pyright")
-                    if client.name == "pyright" then
-                        client.server_capabilities.documentFormattingProvider = false
-                        client.server_capabilities.documentFormattingRangeProvider = false
-                    end
+                    -- if client.name == "pyright" then
+                    --     client.server_capabilities.documentFormattingProvider = false
+                    --     client.server_capabilities.documentFormattingRangeProvider = false
+                    -- end
                 end,
             })
 
@@ -474,7 +481,7 @@ require("lazy").setup({
                     null_ls.builtins.formatting.isort.with({ comamnd = local_home_bin .. "/isort" }),
                     null_ls.builtins.formatting.golines.with({ extra_args = { "-m", "120" } }),
                     null_ls.builtins.formatting.goimports,
-                    -- with_diagnostics(null_ls.builtins.diagnostics.flake8),
+                    with_diagnostics(null_ls.builtins.diagnostics.flake8),
 
                     -- nls_with_diagnostics(null_ls.builtins.diagnostics.mypy.with({extra_args={'--follow-imports', 'normal'}})),
                     with_diagnostics(null_ls.builtins.diagnostics.mypy),
@@ -557,7 +564,21 @@ require("lazy").setup({
     --     end
     -- }
 
+
+    -- LOCAL PLUGINS
+    {
+        "szymon/pytest.nvim",
+        ft = "python",
+        dev = true,
+        config = function()
+            vim.keymap.set("n", "<leader>tp", "<cmd>Pytest<cr>", { noremap = true })
+        end
+    }
+
 }, {
+    dev = {
+        path = "~/code/neovim_plugins/",
+    },
     ui = {
         icons = {
             cmd = "<cmd> ",
@@ -757,5 +778,40 @@ local indentation = vim.api.nvim_create_augroup("Indentation", { clear = true })
 vim.api.nvim_create_autocmd({ "BufRead", "BufEnter", "BufNewFile" },
     { group = indentation, pattern = "*.c,*.h,*.cpp", command = "setlocal expandtab tabstop=2 shiftwidth=2" }
 )
+
+vim.api.nvim_create_autocmd("LspAttach", {
+    callback = function(ev)
+        local opts = { buffer = ev.bufnr }
+        vim.keymap.set("n", "<leader>v", "<cmd>vsplit | lua vim.lsp.buf.definition()<cr>", opts)
+    end,
+})
+
+vim.api.nvim_create_user_command("LspCapabilities", function()
+    local curBuf = vim.api.nvim_get_current_buf()
+    local clients = vim.lsp.get_active_clients { bufnr = curBuf }
+
+    for _, client in pairs(clients) do
+        if client.name ~= "null-ls" then
+            local capAsList = {}
+            for key, value in pairs(client.server_capabilities) do
+                if value and key:find("Provider") then
+                    local capability = key:gsub("Provider$", "")
+                    table.insert(capAsList, "- " .. capability)
+                end
+            end
+            table.sort(capAsList) -- sorts alphabetically
+            local msg = "# " .. client.name .. "\n" .. table.concat(capAsList, "\n")
+            vim.notify(msg, "trace", {
+                on_open = function(win)
+                    local buf = vim.api.nvim_win_get_buf(win)
+                    vim.api.nvim_buf_set_option(buf, "filetype", "markdown")
+                end,
+                timeout = 14000,
+            })
+            vim.fn.setreg("+", "Capabilities = " .. vim.inspect(client.server_capabilities))
+        end
+    end
+end, {})
+
 
 -- }}}
