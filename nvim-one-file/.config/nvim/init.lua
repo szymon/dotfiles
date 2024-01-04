@@ -2,14 +2,6 @@ vim.cmd [[ source ~/.vimrc ]]
 
 
 -- Helper Functions {{{
-local function bind(op, outer_opts)
-    return function(lhs, rhs, opts)
-        outer_opts = outer_opts or {}
-        opts = vim.tbl_extend("force", outer_opts, opts or {})
-        vim.keymap.set(op, lhs, rhs, opts)
-    end
-end
-
 local function filter(arr, func)
     -- Filter in place
     -- https://stackoverflow.com/questions/49709998/how-to-filter-a-lua-array-inplace
@@ -30,10 +22,6 @@ local function filter_diagnostics(diagnostic)
 
     return true
 end
-
-local nnoremap = bind("n")
-local vnoremap = bind("v")
-local xnoremap = bind("x")
 
 -- }}}
 
@@ -59,35 +47,30 @@ vim.g.Illuminate_delay = 300
 vim.g.undotree_DiffAutoOpen = false
 
 -- Keymaps {{{
-vnoremap("J", ":m '>+1<cr>gv=gv")
-vnoremap("L", ":m '<-2<cr>gv=gv")
+vim.keymap.set("v", "J", ":m '>+1<cr>gv=gv", { desc = "[general] move selected line down" })
+vim.keymap.set("v", "L", ":m '<-2<cr>gv=gv", { desc = "[general] move selected line up" })
 
-nnoremap("Y", "yg$")
+vim.keymap.set("n", "Y", "yg$", { desc = "[general] yank to end of line" })
 
-xnoremap("<leader>p", '"_dP')
+vim.keymap.set("x", "<leader>p", '"_dP', { desc = "[general] paste without overwriting clipboard" })
 
 -- disable ex mode
-nnoremap("Q", "<nop>")
+vim.keymap.set("n", "Q", "<nop>", { desc = "[general] disable ex mode" })
 
 -- keep cursor inplace when joining lines
-nnoremap("J", "mzJ`z")
+vim.keymap.set("n", "J", "mzJ`z", { desc = "[general] join lines without moving the cursor" })
 
 -- keep cursor in the center when jumping half page
-nnoremap("<c-d>", "<c-d>zz")
-nnoremap("<c-u>", "<c-u>zz")
+vim.keymap.set("n", "<c-d>", "<c-d>zz", { desc = "[general] jump half page down and center the cursor" })
+vim.keymap.set("n", "<c-u>", "<c-u>zz", { desc = "[general] jump half page up and center the cursor" })
 
 -- keep cursor in the center when searching with n/N
-nnoremap("n", "nzzzv")
-nnoremap("N", "Nzzzv")
+vim.keymap.set("n", "n", "nzzzv", { desc = "[general] search next and center the cursor" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "[general] search previous and center the cursor" })
 
-nnoremap("<leader>x", "<cmd>!chmod +x %<cr>")
+vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<cr>", { desc = "[general] make file executable" })
 
-nnoremap("<leader>tp", "<cmd>:TSPlaygroundToggle<cr>")
-
--- nnoremap("<leader>u", vim.cmd.UndotreeToggle)
-
-nnoremap("<leader>gs", "<cmd>Git<cr>")
-
+-- vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
 
 -- }}}
 
@@ -109,40 +92,28 @@ vim.opt.rtp:prepend(lazypath)
 
 require("lazy").setup({
     {
-        "sainnhe/gruvbox-material",
-        lazy = false,
+        "ellisonleao/gruvbox.nvim",
         priority = 1000,
         config = function()
-            vim.cmd [[
-           colorscheme gruvbox-material
-        ]]
-        end
+            require("gruvbox").setup({
+                bold = false,
+                italics = {
+                    comments = false,
+                    keywords = false,
+                    functions = false,
+                    strings = false,
+                    variables = false,
+                },
+            })
+            vim.cmd("colorscheme gruvbox")
+        end,
     },
 
     {
         "nvim-telescope/telescope.nvim",
-        dependencies = { { "nvim-lua/plenary.nvim" },
-
+        dependencies = {
+            { "nvim-lua/plenary.nvim" },
             { "tribela/vim-transparent" },
-        },
-        lazy = false,
-        keys = {
-            { "<c-p>",      function() require('telescope.builtin').find_files() end },
-            { "<leader>rr", function() require('telescope.builtin').live_grep() end },
-            { "<leader>gr", function() require('telescope.builtin').grep_string({ search = vim.fn.input("Grep > ") }) end },
-            { "<leader>;",
-                function()
-                    require('telescope.builtin').buffers({
-                        sort_lastuse = true,
-                        ignore_current_buffer = true
-                    })
-                end },
-            { "<leader>sk",  function() require('telescope.builtin').keymaps() end },
-            { "<leader>=",   function() require('telescope.builtin').spell_suggest() end },
-            { "<leader>sgc", function() require('telescope.builtin').git_commits() end },
-            { "<leader>sgb", function() require('telescope.builtin').git_bcommits() end },
-            { "<leader>sgs", function() require('telescope.builtin').git_status() end },
-
         },
         config = function()
             local state = require("telescope.state")
@@ -184,13 +155,60 @@ require("lazy").setup({
             })
 
             pcall(require("telescope").load_extension, "fzf")
+
+            vim.keymap.set("n", "<c-p>", function() require('telescope.builtin').find_files() end,
+                { silent = true, noremap = true, desc = "[telescope] open" }
+            )
+            vim.keymap.set("n", "<leader>hh",
+                function() require("telescope.builtin").help_tags({ show_version = true }) end,
+                { silent = true, noremap = true, desc = "[telescope] help" }
+            )
+            vim.keymap.set("n", "<leader>sw",
+                function()
+                    local word = vim.fn.expand("<cword>")
+                    require("telescope.builtin").grep_string({ search = word })
+                end,
+                { silent = true, noremap = true, desc = "[telescope] search cword" }
+            )
+            vim.keymap.set("n", "<leader>sW",
+                function()
+                    local word = vim.fn.expand("<cWORD>")
+                    require("telescope.builtin").grep_string({ search = word })
+                end,
+                { silent = true, noremap = true, desc = "[telescope] search cWORD" }
+            )
+            vim.keymap.set("n", "<leader>rr", function() require('telescope.builtin').live_grep() end,
+                { silent = true, noremap = true, desc = "[telescope] live grep" }
+            )
+            vim.keymap.set("n", "<leader>gr",
+                function() require('telescope.builtin').grep_string({ search = vim.fn.input("Grep > ") }) end,
+                { silent = true, noremap = true, desc = "[telescope] open files after searching for a string" }
+            )
+            vim.keymap.set("n", "<leader>;",
+                function() require('telescope.builtin').buffers({ sort_lastuse = true, ignore_current_buffer = true }) end,
+                { silent = true, noremap = true, desc = "[telescope] open buffer list" }
+            )
+            vim.keymap.set("n", "<leader>sk", function() require('telescope.builtin').keymaps() end,
+                { silent = true, noremap = true, desc = "[telescope] open keymaps" }
+            )
+            vim.keymap.set("n", "<leader>=", function() require('telescope.builtin').spell_suggest() end,
+                { silent = true, noremap = true, desc = "[telescope] spelling" }
+            )
+            vim.keymap.set("n", "<leader>sgc", function() require('telescope.builtin').git_commits() end,
+                { silent = true, noremap = true, desc = "[telescope] commits" }
+            )
+            vim.keymap.set("n", "<leader>sgb", function() require('telescope.builtin').git_bcommits() end,
+                { silent = true, noremap = true, desc = "[telescope] bcommits" }
+            )
+            vim.keymap.set("n", "<leader>sgs", function() require('telescope.builtin').git_status() end,
+                { silent = true, noremap = true, desc = "[telescope] git status" }
+            )
         end
     },
 
     -- { "nvim-lualine/lualine.nvim" },
     {
         "nvim-treesitter/nvim-treesitter",
-        dependencies = { "nvim-treesitter/playground", "nvim-treesitter/nvim-treesitter" },
         build = ":TSUpdate",
         config = function()
             require("nvim-treesitter.configs").setup({
@@ -236,17 +254,13 @@ require("lazy").setup({
         end
     },
     {
+        "nvim-treesitter/playground",
+        dependencies = { "nvim-treesitter/nvim-treesitter" },
+    },
+    {
         "lewis6991/gitsigns.nvim",
         dependencies = { "nvim-lua/plenary.nvim" },
         lazy = false,
-        keys = {
-            { "<leader>hs", function() require('gitsigns').stage_hunk() end },
-            { "<leader>hu", function() require('gitsigns').undo_stage_hunk() end },
-            { "<leader>hr", function() require('gitsigns').reset_hunk() end },
-            { "<leader>hR", function() require('gitsigns').reset_buffer() end },
-            { "<leader>hp", function() require('gitsigns').preview_hunk() end },
-            { "<leader>hb", function() require('gitsigns').blame_line() end },
-        },
         config = function()
             require("gitsigns").setup {
                 signs = {
@@ -259,6 +273,21 @@ require("lazy").setup({
                 },
                 watch_gitdir = { interval = 1000 }
             }
+
+            vim.keymap.set("n", "<leader>hs", function() require("gitsigns").stage_hunk() end,
+                { silent = true, noremap = true, desc = "[gitsigns] stage hunk" })
+            vim.keymap.set("n", "<leader>hs", function() require('gitsigns').stage_hunk() end,
+                { silent = true, noremap = true, desc = "[gitsigns] stage hunk" })
+            vim.keymap.set("n", "<leader>hu", function() require('gitsigns').undo_stage_hunk() end,
+                { silent = true, noremap = true, desc = "[gitsigns] undo stage hunk" })
+            vim.keymap.set("n", "<leader>hr", function() require('gitsigns').reset_hunk() end,
+                { silent = true, noremap = true, desc = "[gitsigns] reset hunk" })
+            vim.keymap.set("n", "<leader>hR", function() require('gitsigns').reset_buffer() end,
+                { silent = true, noremap = true, desc = "[gitsigns] reset buffer" })
+            vim.keymap.set("n", "<leader>hp", function() require('gitsigns').preview_hunk() end,
+                { silent = true, noremap = true, desc = "[gitsigns] preview hunk" })
+            vim.keymap.set("n", "<leader>hb", function() require('gitsigns').blame_line() end,
+                { silent = true, noremap = true, desc = "[gitsigns] blame line" })
         end,
     },
 
@@ -329,21 +358,21 @@ require("lazy").setup({
                 settings = {
                     Lua = {
                         diagnostics = {
-                            globals = { "vim" }
+                            globals = { "vim", "hs" }
                         }
                     }
                 }
             })
 
             lsp.configure("pyright", {
-                on_init = function(client)
-                    print("init pyright")
-                    if client.name == "pyright" then
-                        client.server_capabilities.documentFormattingProvider = false
-                        client.server_capabilities.documentFormattingRangeProvider = false
-                    end
-                end,
+                capabilities = (function()
+                    local capabilities = vim.lsp.protocol.make_client_capabilities()
+                    capabilities.textDocument.publishDiagnostics.tagSupport.valueSet = { 2 }
+                    return capabilities
+                end)(),
             })
+
+            lsp.configure("clangd", {})
 
             lsp.configure("gopls", {
                 settings = {
@@ -424,7 +453,14 @@ require("lazy").setup({
         end
     },
 
-    { "tpope/vim-fugitive" },
+    {
+        "tpope/vim-fugitive",
+        config = function()
+            vim.keymap.set("n", "<leader>gs", function() vim.cmd("Git") end,
+                { silent = true, noremap = true, desc = "[fugitive] open git status" }
+            )
+        end,
+    },
     {
         "jose-elias-alvarez/null-ls.nvim",
         config = function()
@@ -498,7 +534,20 @@ require("lazy").setup({
             "jsonnet"
         },
     },
-    -- {'folke/trouble.nvim', config = function() end},
+    {
+        'folke/trouble.nvim',
+        config = function()
+            require("trouble").setup({
+                icons = false,
+            })
+
+            vim.keymap.set("n", "[d", function() require("trouble").previous({ jump = true, skip_groups = true }) end)
+            vim.keymap.set("n", "]d", function() require("trouble").next({ jump = true, skip_groups = true }) end)
+            vim.keymap.set("n", "gtt", function() require("trouble").toggle({}) end)
+        end,
+        keys = {
+        }
+    },
     { "github/copilot.vim" },
     {
         "ray-x/go.nvim",
@@ -517,8 +566,8 @@ require("lazy").setup({
             "nvim-telescope/telescope.nvim",
         },
         keys = {
-            { "<leader>wl", function() require('telescope').extensions.git_worktree.git_worktrees() end },
-            { "<leader>wc", function() require('telescope').extensions.git_worktree.create_git_worktree() end },
+            { "<leader>wl", function() require('telescope').extensions.git_worktree.git_worktrees() end,       desc = "[git-worktree] list worktress" },
+            { "<leader>wc", function() require('telescope').extensions.git_worktree.create_git_worktree() end, desc = "[git-worktree] create" },
         },
         config = function()
             pcall(require("telescope").load_extension, "git-worktree")
@@ -556,6 +605,35 @@ require("lazy").setup({
     --         })
     --     end
     -- }
+
+    {
+
+        "folke/which-key.nvim",
+        event = "VeryLazy",
+        init = function()
+            vim.o.timeout = true
+            vim.o.timeoutlen = 300
+        end,
+        opts = {
+            plugins = {
+                presets = {
+                    operators = false,
+                    motions = false,
+                    text_objects = false,
+                },
+            },
+        }
+    },
+
+    {
+        "dstein64/vim-startuptime",
+        -- lazy-load on a command
+        cmd = "StartupTime",
+        -- init is called during startup. Configuration for vim plugins typically should be set in an init function
+        init = function()
+            vim.g.startuptime_tries = 10
+        end,
+    },
 
 }, {
     ui = {
