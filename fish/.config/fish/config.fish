@@ -1,54 +1,65 @@
-xset r rate 200 40
-
+# vim: set sw=2 :
 umask 0022
 
-# Do not show any greeting
-set --universal --erase fish_greeting
+set -Ua fish_user_paths \
+  /opt/homebrew/bin \
+  $HOME/.vector \
+  $HOME/.local/bin \
+  $HOME/go/bin \
+  $HOME/.cargo/bin \
+  /usr/local/go/bin \
+  /usr/local/bin
 
-set -x EDITOR nvim
-set -x GIT_EDITOR $EDITOR
-set --universal nvm_default_version v18.1.0
+set -Ua LD_LIBRARY_PATH /usr/local/lib
 
-function fd --wraps fdfind; fdfind $args; end
-function bat --wraps batcat; batcat $args; end
+set -Ux DOCKER_HOST "unix://$HOME/.colima/docker.sock"
+set -Ux SSH_AUTH_SOCK "~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 
-
-contains $HOME/.vector $fish_user_paths; or set -Ua fish_user_paths $HOME/.vector
-contains $HOME/.local/bin $fish_user_paths; or set -Ua fish_user_paths $HOME/.local/bin
-contains $HOME/.krew/bin $fish_user_paths; or set -Ua fish_user_paths $HOME/.krew/bin
-contains $HOME/go/bin $fish_user_paths; or set -Ua fish_user_paths $HOME/go/bin
-contains /usr/local/go/bin $fish_user_paths; or set -Ua fish_user_paths /usr/local/go/bin
-contains /usr/local/bin $fish_user_paths; or set -Ua fish_user_paths /usr/local/bin
-contains /usr/local/lib $LD_LIBRARY_PATH; or set -Ua LD_LIBRARY_PATH /usr/local/lib
-
-set -x FZF_DEFAULT_COMMAND 'rg --files --hidden --follow'
-set -x DISABLE_AUTO_TITLE true
-
-kubectl completion fish | source
-
-function k --wraps kubectl; kubectl $argv; end
-function __direnv_export_eval --on-event fish_postexec; "/usr/bin/direnv" export fish | source; end
-
-if test -f ~/.cloudferro.fish
-    source ~/.cloudferro.fish
+if test -e ~/.cloudferro.fish
+  source ~/.cloudferro.fish
 end
 
-function urlencode
-    jq -rn --arg v "$argv" '$v|@uri'
+if test -e ~/.macos.fish
+  source ~/.macos.fish
 end
 
-if status --is-interactive
-    # set -g theme_color_scheme gruvbox
-    theme_gruvbox dark
+if status is-interactive
+  # Do not show any greeting
+  set -Ue fish_greeting
 
-    set __fish_git_prompt_showdirtystate 'yes'
-    set __fish_git_prompt_showstashstate 'yes'
-    set __fish_git_prompt_showuntrackedfiles 'yes'
-    set __fish_git_prompt_show_informative_status 'yes'
-    set __fish_git_prompt_showupstream 'yes'
+  set -U fish_cursor_default block
+  set -U fish_cursor_insert block
+  set -U fish_cursor_visual block
+
+  set -Ux hydro_symbol_prompt ";"
+
+  set -U EDITOR nvim
+  set -U GIT_EDITOR $EDITOR
+  set -U nvm_default_version v18.1.0
+  set -U FZF_DEFAULT_COMMAND 'rg --files --hidden --follow'
+  set -U FZF_DEFAULT_OPTIONS '--bind c-f:preview-page-down,c-b:preview-page-up,ctrl-d:preview-half-page-down,ctrl-u:preview-half-page-up --preview # \'bat --color=always {}\''
+  set -U DISABLE_AUTO_TITLE true
+
+  if command -v direnv >/dev/null
+    direnv export fish | source
+    function __direnv_export_eval --on-event fish_postexec; direnv export fish | source; end
+  end
+
+  if command -v kubectl >/dev/null
+    kubectl completion fish | source
+    function k --wraps kubectl; kubectl $argv; end
+  end
 
 
-    fzf_configure_bindings
+  function s3prod --wraps s5cmd; s5cmd --endpoint-url https://s3rw.apps.cole.intra.cloudferro.com --credentials-file ~/.s3prod-credentials $argv; end
+  function s3code --wraps s5cmd; s5cmd --endpoint-url https://data-pub.cloud.code-de.org --credentials-file ~/.s3code-credentials $argv; end
 
-    bind \e\cf 'tmux-sessionizer'
+  bind \co 'tmux-sessionizer'
 end
+
+# pnpm
+set -gx PNPM_HOME "/Users/srams/Library/pnpm"
+if not string match -q -- $PNPM_HOME $PATH
+  set -gx PATH "$PNPM_HOME" $PATH
+end
+# pnpm end

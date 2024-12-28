@@ -1,3 +1,5 @@
+" Some sane defaults for both vim and neovim
+
 
 filetype plugin on
 syntax on
@@ -28,6 +30,8 @@ set langmenu=en_US.UTF-8
 " Make backspace usefull
 set backspace=indent,eol,start
 
+let g:omni_sql_no_default_maps=1
+
 
 " Other options
 if has('clipboard')
@@ -47,10 +51,13 @@ colorscheme default
 
 nnoremap <leader>, :w<cr>
 nnoremap <leader><space> :noh<cr>
-nnoremap <leader>cc gg"+yG<c-o>
+nnoremap <leader>cc mzgg"+yG`zzz
 
 noremap <silent> <expr> j (v:count == 0 ? 'gj' : 'j')
 noremap <silent> <expr> k (v:count == 0 ? 'gk' : 'k')
+
+sunmap k
+sunmap j
 
 vnoremap J :m '>+1<cr>gv=gv
 vnoremap K :m '<-2<cr>gv=gv
@@ -95,6 +102,8 @@ if has('presistent_undo')
 endif
 set nobackup
 set noswapfile
+
+com! -nargs=* -bar -bang -count=0 -complete=dir	E call netrw#Explore(<count>,0,0+<bang>0,<q-args>)
 
 augroup SZYMON_FILETYPES
     au!

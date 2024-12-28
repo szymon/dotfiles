@@ -1,1 +1,0 @@
-/home/srams/.fzf/shell/key-bindings.fish

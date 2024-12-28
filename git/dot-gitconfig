@@ -15,9 +15,10 @@
 	r = reset
 	cp = cherry-pick
 	fp = fetch --progress
-	poh = push origin head
+	pf = push --force-with-lease
 	df = diff
 	dc = diff --cached
+	bl = blame -w -C -C -C
 	clear = clean
 
 	au = add -u
@@ -34,26 +35,28 @@
 	graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
 
 	# pretty logs
-	lg = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
-	lga = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative --all
-	ls = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
-	ls10 = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%cn] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative -10
+	lg = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%aN] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
+	lga = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%aN] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative --all
+	ls = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%aN] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
+	ls10 = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%aN] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative -10
 
 	yolo = !sh -c 'git commit -m "$(curl -s whatthecommit.com/index.txt)"'
 
 	ignore = update-index --assume-unchanged
 	acknowledge = update-index --no-assume-unchanged
 	reword = ci --amend
+	amend = ci --amend --no-edit
 
 	add-exclude = "!f() { readlink -f $1 | sed 's~'$(git rev-parse --show-toplevel)'/~~' | tee -a $(git rev-parse --show-toplevel)/.git/info/exclude ; } ; f"
 
 	dfu = "!d() { ( git diff --color ; git ls-files --other --exclude-standard | while read -r i; do git diff --color -- /dev/null $i; done ) | `git config --get core.pager`; }; d"
 
 	la = "!git config --global --list | grep '^alias'"
-	wip = commit -m "wip" --no-verify
+	wip = "!c() { git commit -a -m wip --no-verify; git push -f origin HEAD}; c"
 	m = merge
 	mc = merge --continue
 	l = ls10
+	w = worktree
 
 [merge]
 	tool = vimdiff
@@ -81,7 +84,7 @@
 	# template = /home/srams/.gitmessage
 
 [mailmap]
-	# file = ~/.mailmap
+	file = ~/.mailmap
 [safe]
 	# directory = /home/srams/tools/neovim
 
@@ -89,4 +92,22 @@
 	format = ssh
 
 [gpg "ssh"]
-	program = "/opt/1Password/op-ssh-sign"
+	# program = "/opt/1Password/op-ssh-sign"
+[maintenance]
+	repo = /Users/srams/code/ordering/remove-auth
+	repo = /Users/srams/code/argonaut
+[column]
+	ui = auto
+[branch]
+	sort = -committerdate
+
+# [url "ssh://git@gitlab.cloudferro.com/"]
+# 	insteadOf = https://gitlab.cloudferro.com/
+# 
+[url "ssh://git@github.com/"]
+	insteadOf = https://github.com/
+[filter "lfs"]
+	clean = git-lfs clean -- %f
+	smudge = git-lfs smudge -- %f
+	process = git-lfs filter-process
+	required = true
