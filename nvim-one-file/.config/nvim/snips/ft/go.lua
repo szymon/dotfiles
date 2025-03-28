@@ -191,12 +191,7 @@ if err != nil {
 }
 <finish>
 ]], {
-        choice = c(1,
-            {
-                t("panic(err)"),
-                sn(1, { t("return "), d(1, go_return_values, {}), })
-            }
-        ),
+        choice = i(1),
         finish = i(0),
     }
     )),
