@@ -2,7 +2,13 @@
 
 [init]
 	defaultBranch = main
-
+[sendemail]
+    smtpServer = smtp.mail.me.com
+    smtpServerPort = 587
+    smtpEncryption = tls
+    smtpUser = szymon.rams@icloud.com
+[credentials]
+    helper = store
 [alias]
 	# most of these aliases are directly taken from https://git.wiki.kernel.org/index.php/Aliases
 	s = status
@@ -106,6 +112,8 @@
 # 
 [url "ssh://git@github.com/"]
 	insteadOf = https://github.com/
+# [url "ssh://git@gitlab.cloudferro.com/"]
+# 	insteadOf = https://gitlab.cloudferro.com/
 [filter "lfs"]
 	clean = git-lfs clean -- %f
 	smudge = git-lfs smudge -- %f

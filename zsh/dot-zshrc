@@ -1,228 +1,61 @@
-# vim: set ts=4 sw=4 et ai filetype=zsh :
-# from: http://zsh.sourceforge.net/Intro/intro_3.html
-# this file (.zshenv) is read and executed on all invocations of the shell, unless the -f option is set.
-# It should contain commands to set the command search path, plus other important environment
-# variables. .zshenv should not contain commands that produce output or assume that we are connected
-# to tty when executing it.
-
-
-umask 0022
-
-# If you come from bash you might have to change your $PATH.
-# export PATH=$HOME/bin:/usr/local/bin:$PATH
-if [[ $(uname) == 'Darwin' ]] && [ -f /etc/profile ]; then
-    PATH=""
-    source /etc/profile
-fi
 
 autoload -Uz compinit
 compinit
 
-# Force the terminal language to be English
-export LANG=en_US.UTF-8
+export ZSH="$HOME/.oh-my-zsh"
 
-# Path to your oh-my-zsh installation.
-export ZSH="$HOME/ohmyzsh"
+ZSH_THEME="robbyrussell"
 
-# Add gnu man pages (from brew)
-if [[ $(uname) == 'Darwin' ]]; then
-    export MANPATH="/usr/local/man:$MANPATH"
-fi
+# Uncomment the following line if pasting URLs and other text is messed up.
+# DISABLE_MAGIC_FUNCTIONS="true"
 
+# Uncomment the following line to disable colors in ls.
+# DISABLE_LS_COLORS="true"
 
-# =======================================================================
-# setup path (this goes from top to bottom, the files added at the top
-# will be later in the path, and added at the end will be on top of path)
-# This works as a reversed stack (or the one growing downwards), if we
-# always add $PATH at the end.
-
-# .local/bin is the installation folder for pip3 install --user
-[ -d "$HOME/.cargo"      ] && export PATH="$HOME/.cargo/bin:$PATH"
-[ -d "$HOME/go"          ] && export PATH="$HOME/go/bin/:$PATH"
-[ -d "/usr/local/go/bin" ] && export PATH="/usr/local/go/bin:$PATH"
-
-
-
-# FIXME: is there better option to do this?
-if [[ $(uname) == 'Darwin' ]]; then
-    # add gnu implementation of some tools
-    export PATH="/usr/local/opt/gnu-sed/libexec/gnubin:$PATH"
-    export PATH="/usr/local/opt/llvm/bin:$PATH"
-    # add custom python 3.8
-    export PATH="$HOME/.localpython/3.8.3/bin:$PATH"
-fi
-
-if [ -d "/var/lib/flatpak/exports/share" ]; then
-    export PATH="/var/lib/flatpak/exports/share:/home/srams/.local/share/flatpak/exports/share:$PATH"
-fi
-
-# add custom cuda installs, /usr/bin/cuda can be
-# managed by update-alternatives and point to the correct version of cuda
-export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
-export PATH="/usr/local/bin:$PATH"
-export PATH="/usr/local/cuda/bin:$PATH"
-export PATH="$PATH:/usr/local/go/bin"
-export CUDADIR=/usr/loca/cuda
-export LD_LIBRARY_PATH="$LD_LIBRARY_PATH:/usr/local/cuda/lib64"
-
-# add local bin and bin/usr for my scripts, functions and programs
-# this is where I'll install tools compiled from source
-export PATH="$HOME/bin/:$HOME/bin/usr/:$PATH"
-export PATH="$HOME/.local/bin:$PATH"
-
-# =====================
-# setup other variables
-
-# setup rust paths
-if command -v rustc 2>&1 >/dev/null; then
-    export RUST_SRC_PATH=$(rustc --print sysroot)/lib/rustlib/src/rust/src/
-fi
-
-# force fzf to use ripgrep
-if command -v rg 2>&1 >/dev/null; then
-    export FZF_DEFAULT_COMMAND='rg --files --hidden --follow'
-fi
-
-if command -v argo 1>/dev/null 2>&1; then
-    source <(argo completion zsh)
-fi
-
-if command -v kubectl 1>/dev/null 2>&1; then
-    source <(kubectl completion zsh)
-fi
-
-if [ -d "$HOME/.nvm" ]; then
-    export NVM_DIR="$HOME/.nvm"
-    [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
-    [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
-fi
-
-
-# disable automatic titles for tmuxp
-export DISABLE_AUTO_TITLE='true'
-
-# Set the default editor
-export EDITOR="/usr/local/bin/nvim"
-
-# this file is sourced in interactive shell. It should contain commands to set up aliases, functions
-# options, key bindings, etc.
-
-ZSH_THEME="szymon"
-plugins=(git python)
-
-# override default history expansion where pressing <cr> wouldn't execute the command
-# just replace current command with expanded history
-#
-#     $ mkdir build<cr>
-#     $ cd !$<cr>  # this would not be executed
-#     $ cd build   # it will be replaced by this, by default
-unsetopt HIST_VERIFY
+plugins=(git direnv)
 
 source $ZSH/oh-my-zsh.sh
 
-alias gs='git status'
-alias gd='git diff'
-alias gc='git commit'
-alias ga='git add'
-alias sr="cd $HOME/code/serenity"
-alias tmux-hyper="tmuxp load hyper"
-alias tmux-hyper-old="tmuxp load hyper-old"
-alias hpr="cd ~/code/hypernetworks-kd/"
-alias dps='docker ps --format="table {{.ID}}	{{.Names}}	{{.Image}}	{{.Command}}	{{.Status}}"'
+# User configuration
 
-if [[ $(uname) != 'Darwin' ]]; then
-    alias open="xdg-open"
+export MANPATH="/usr/local/man:$MANPATH"
+
+# You may need to manually set your language environment
+export LANG=en_US.UTF-8
+
+# Preferred editor for local and remote sessions
+export EDITOR='nvim'
+
+if [ -f ~/.cloudferro ]; then
+    source ~/.cloudferro
 fi
 
-edit-ssh-config() { "$EDITOR" ~/.ssh/config }
-edit-zshrc-config() { "$EDITOR" ~/.zshrc }
-edit-nvim-config() { "$EDITOR" ~/.config/nvim/init.vim }
-edit-oh-my-zsh-config() { "$EDITOR" ~/.oh-my-zsh }
+umask 0022
 
-# Add fzf zsh integration
-[ -f ~/.fzf.zsh ] && source ~/.fzf.zsh
+export PATH="/opt/homebrew/bin:$HOME/.local/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/bin:$PATH"
+export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
+export DOCKER_HOST="unix://$HOME/.colima/docker.sock"
+export SSH_AUTH_SOCK="~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
 
-# add secrets
-[ -f ~/.secrets ] && source ~/.secrets
+export VAULT_SKIP_VERIFY=true
+export JIRA_AUTH_TYPE=bearer
 
-# add function from .config/zsh/functions directory
-__base_dir="$HOME/.config/zsh/functions"
-if [[ -r $__base_dir ]]; then
-for function_file in $(ls $__base_dir); do
-    . "$__base_dir/$function_file"
-done
-unset function_file
-fi
-unset __base_dir
+export FZF_DEFAULT_COMMAND='rg --files --hidden --follow'
+export FZF_DEFAULT_OPTIONS="--bind c-f:preview-page-down,c-b:preview-page-up --preview # \'bat --color=always {}\'"
 
-if [[ -r "$HOME/.zsh/completion" ]]; then
-    fpath=(~/.zsh/completion $fpath)
-fi
+export PNPM_HOME=/Users/srams/Library/pnpm
+export PATH="$PNPM_HOME:$PATH"
 
-if [[ $(uname) != 'Darwin' ]]; then
-    # complete -o nospace -C /home/szymon/go/bin/terraform terraform
-    # eval "$(register-python-argcomplete pipx)"
+export PATH="/Applications/Ghostty.app/Contents/MacOS:$PATH"
 
-    # Scaleway CLI autocomplete initialization.
-    # eval "$(scw autocomplete script shell=zsh)"
+source <(kubectl completion zsh)
+source <(fzf --zsh)
 
-    function init_pyenv_conda() {
-    # >>> conda initialize >>>
-    # !! Contents within this block are managed by 'conda init' !!
-    __conda_setup="$('/home/szymon/.pyenv/versions/miniconda3-latest/bin/conda' 'shell.zsh' 'hook' 2> /dev/null)"
-    if [ $? -eq 0 ]; then
-        eval "$__conda_setup"
-    else
-        if [ -f "/home/szymon/.pyenv/versions/miniconda3-latest/etc/profile.d/conda.sh" ]; then
-            . "/home/szymon/.pyenv/versions/miniconda3-latest/etc/profile.d/conda.sh"
-        else
-            export PATH="/home/szymon/.pyenv/versions/miniconda3-latest/bin:$PATH"
-        fi
-    fi
-    unset __conda_setup
-    # <<< conda initialize <<<
-    }
-fi
-
-if command -v kubectl >/dev/null 2>&1; then
-    source <(kubectl completion zsh)
-    if command -v argo >/dev/null 2>&1; then
-        source <(argo completion zsh)
-    fi
-
-    alias k='kubectl'
-
-    complete -F __start_kubectl k
+bindkey -s ^o "tmux-sessionizer"
 
 
-    export KUBECONFIG_DIR="$HOME/.kube"
-    # export KUBECONFIG="$KUBECONFIG_DIR/00-cyrus.yaml:$KUBECONFIG_DIR/01-microk8s.yaml:$KUBECONFIG_DIR/02-magnum.yaml::$KUBECONFIG_DIR/10-codede.yaml:$KUBECONFIG_DIR/19-sydney.yaml"
+alias k=kubectl
 
-fi
-
-if command -v tk >/dev/null 2>&1; then
-    complete -o nospace -C /usr/local/bin/tk tk
-fi
-
-if command -v ssh-askpass >/dev/null 2>&1; then
-    export SSH_ASKPASS=$(which ssh-askpass)
-fi
-
-source_if_present() {
-    if [ -f "$1" ]; then
-        source "$1"
-    fi
-}
-source_if_present ~/.personal
-source_if_present ~/.cloudferro
-
-[ -f "/home/srams/.ghcup/env" ] && source "/home/srams/.ghcup/env" # ghcup-env
-
-autoload -U +X bashcompinit && bashcompinit
-complete -o nospace -C /usr/bin/vault vault
-
-eval "$(direnv hook zsh)"
-eval "$(aactivator init)"
-
-
-complete -o nospace -C /home/srams/go/bin/tk tk
+export NVM_DIR="$HOME/.nvm"
+[ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
+[ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
