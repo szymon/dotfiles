@@ -87,6 +87,60 @@ vim.keymap.set("n", "<leader>t", function()
     end
 end)
 
+vim.keymap.set("n", "<leader>m", function()
+    --[[
+    --  toggle between normal file and test file.
+    --]]
+    -- Get the current file's full path
+    local current_file = vim.api.nvim_buf_get_name(0)
+
+    -- Extract the directory and filename
+    local dir = vim.fn.fnamemodify(current_file, ":h")      -- Get the directory
+    local filename = vim.fn.fnamemodify(current_file, ":t") -- Get the filename
+
+    -- Determine the target file
+    local target_file
+    if filename:match("_test%.go$") then
+        -- If the current file is a test file, switch to the implementation file
+        target_file = filename:gsub("_test%.go$", ".go")
+    elseif filename:match("%.go$") then
+        -- If the current file is an implementation file, switch to the test file
+        target_file = filename:gsub("%.go$", "_test.go")
+    else
+        print("Not a Go file or test file!")
+        return
+    end
+
+    -- Construct the full path to the target file
+    local target_path = dir .. "/" .. target_file
+
+    -- Check if the target file is already open in a buffer
+    for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+        if vim.api.nvim_buf_is_loaded(buf) then
+            local buf_path = vim.api.nvim_buf_get_name(buf)
+            if buf_path == target_path then
+                -- Find the window displaying the buffer
+                for _, win in ipairs(vim.api.nvim_list_wins()) do
+                    if vim.api.nvim_win_get_buf(win) == buf then
+                        -- Switch to the window displaying the buffer
+                        vim.api.nvim_set_current_win(win)
+                        print("Switched to already open file: " .. target_path)
+                        return
+                    end
+                end
+            end
+        end
+    end
+
+    -- Check if the target file exists
+    if vim.fn.filereadable(target_path) == 1 then
+        -- Open the target file
+        vim.cmd("rightb vsplit " .. target_path)
+    else
+        print("File does not exist: " .. target_path)
+    end
+end)
+
 -- }}}
 
 -- Plugins {{{
@@ -337,13 +391,13 @@ vim.api.nvim_create_autocmd({ "BufRead", "BufEnter", "BufNewFile" },
 )
 
 local customFiletypes = vim.api.nvim_create_augroup("CustomFiletypes", { clear = true })
-vim.api.nvim_create_autocmd({ "BufRead", "BufEnter", "BufNewFile" },
-    {
-        group = customFiletypes,
-        pattern = "*.rego",
-        command = "setlocal filetype=rego expandtab shiftwidth=4 tabstop=4"
-    }
-)
+-- vim.api.nvim_create_autocmd({ "BufRead", "BufEnter", "BufNewFile" },
+--     {
+--         group = customFiletypes,
+--         pattern = "*.rego",
+--         command = "setlocal filetype=rego expandtab shiftwidth=4 tabstop=4"
+--     }
+-- )
 
 vim.api.nvim_create_autocmd({ "FileType" }, {
     group = customFiletypes,

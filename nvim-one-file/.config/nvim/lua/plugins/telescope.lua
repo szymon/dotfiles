@@ -1,5 +1,9 @@
 return {
     {
+        "benfowler/telescope-luasnip.nvim",
+        module = "telescope._extensions.luasnip", -- if you wish to lazy-load
+    },
+    {
         "nvim-telescope/telescope.nvim",
         dependencies = {
             { "nvim-lua/plenary.nvim" },
@@ -28,6 +32,8 @@ return {
             end
 
             require("telescope").setup({
+                pickers = {
+                },
                 defaults = {
                     preview = {
                         filesize_hook = function(filepath, bufnr, opts)
@@ -53,8 +59,28 @@ return {
             })
 
             pcall(require("telescope").load_extension, "fzf")
+            pcall(require("telescope").load_extension, "luasnip")
 
-            vim.keymap.set("n", "<c-p>", function() require('telescope.builtin').find_files() end,
+            vim.keymap.set("n", "<c-p>", function()
+                    require('telescope.builtin').find_files(
+                        {
+                            hidden = true,
+                            find_command = {
+                                "rg",
+                                "--files",
+                                "--hidden",
+                                "--glob=!**/.git/*",
+                                "--glob=!**/.idea/*",
+                                "--glob=!**/.vscode/*",
+                                "--glob=!**/build/*",
+                                "--glob=!**/dist/*",
+                                "--glob=!**/yarn.lock",
+                                "--glob=!**/package-lock.json",
+                                "--glob=!*.pb.go",
+                            },
+                        }
+                    )
+                end,
                 { silent = true, noremap = true, desc = "[telescope] open" }
             )
             vim.keymap.set("n", "<leader>hh",
@@ -75,7 +101,53 @@ return {
                 end,
                 { silent = true, noremap = true, desc = "[telescope] search cWORD" }
             )
-            vim.keymap.set("n", "<leader>rr", function() require('telescope.builtin').live_grep() end,
+            vim.keymap.set("n", "<leader>rr", function()
+                    -- TODO: move this to seperate file
+                    local pickers = require "telescope.pickers"
+                    local finders = require "telescope.finders"
+                    local make_entry = require "telescope.make_entry"
+                    local conf = require "telescope.config".values
+
+                    local opts = {}
+                    opts.cwd = vim.uv.cwd()
+
+                    local finder = finders.new_async_job({
+                        command_generator = function(prompt)
+                            if not prompt or prompt == "" then
+                                return nil
+                            end
+
+                            local pieces = vim.split(prompt, "  ")
+                            local args = { "rg" }
+                            if pieces[1] then
+                                table.insert(args, "-e")
+                                table.insert(args, pieces[1])
+                            end
+
+                            if pieces[2] then
+                                table.insert(args, "-g")
+                                table.insert(args, pieces[2])
+                            end
+
+                            ---@diagnostic disable-next-line: deprecated
+                            return vim.tbl_flatten({
+                                args,
+                                { "--color=never", "--no-heading", "--with-filename", "--line-number", "--column",
+                                    "--smart-case" },
+                            })
+                        end,
+                        entry_maker = make_entry.gen_from_vimgrep(opts),
+                        cwd = opts.cwd,
+                    })
+
+                    pickers.new(opts, {
+                        debounce = 100,
+                        prompt_title = "Multi Grep",
+                        finder = finder,
+                        previewer = conf.grep_previewer(opts),
+                        sorter = require("telescope.sorters").empty(),
+                    }):find()
+                end,
                 { silent = true, noremap = true, desc = "[telescope] live grep" }
             )
             vim.keymap.set("n", "<leader>gr",

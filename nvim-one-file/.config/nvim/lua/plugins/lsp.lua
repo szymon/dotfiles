@@ -169,6 +169,7 @@ return {
                     }
 
                 },
+                opa = {},
                 lua_ls = {
                     settings = {
                         Lua = {
