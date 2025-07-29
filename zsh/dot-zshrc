@@ -51,6 +51,10 @@ export PATH="/Applications/Ghostty.app/Contents/MacOS:$PATH"
 source <(kubectl completion zsh)
 source <(fzf --zsh)
 
+if command velero &> /dev/null; then
+    source <(velero completion zsh)
+fi
+
 bindkey -s ^o "tmux-sessionizer"
 
 
@@ -59,3 +63,8 @@ alias k=kubectl
 export NVM_DIR="$HOME/.nvm"
 [ -s "$NVM_DIR/nvm.sh" ] && \. "$NVM_DIR/nvm.sh"  # This loads nvm
 [ -s "$NVM_DIR/bash_completion" ] && \. "$NVM_DIR/bash_completion"  # This loads nvm bash_completion
+
+# opencode
+export PATH=/Users/srams/.opencode/bin:$PATH
+
+export HOMEBREW_NO_AUTO_UPDATE=1

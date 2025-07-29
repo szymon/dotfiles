@@ -49,6 +49,7 @@ colorscheme default
 
 " (Re)maps
 
+nnoremap gq mzgggqG`z
 nnoremap <leader>, :w<cr>
 nnoremap <leader><space> :noh<cr>
 nnoremap <leader>cc mzgg"+yG`zzz
@@ -110,6 +111,7 @@ augroup SZYMON_FILETYPES
     au FileType yaml setlocal ts=12 sts=2 sw=2 expandtab indentkeys-=<:>
     au FileType jsonnet setlocal ts=2 sts=2 sw=2 expandtab
     au FileType php setlocal ts=8 sts=8 sw=8 noexpandtab
+    au FileType gitcommit setlocal spell
 
 augroup END
 
@@ -117,4 +119,3 @@ augroup END
 highligh Visual gui=None term=reverse ctermfg=none ctermbg=232
 highligh search gui=none term=reverse ctermfg=none ctermbg=232
 highligh Folded gui=None term=reverse ctermfg=none ctermbg=232
-

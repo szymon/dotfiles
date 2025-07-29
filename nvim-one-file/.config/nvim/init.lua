@@ -132,13 +132,7 @@ vim.keymap.set("n", "<leader>m", function()
         end
     end
 
-    -- Check if the target file exists
-    if vim.fn.filereadable(target_path) == 1 then
-        -- Open the target file
-        vim.cmd("rightb vsplit " .. target_path)
-    else
-        print("File does not exist: " .. target_path)
-    end
+    vim.cmd("rightb vsplit " .. target_path)
 end)
 
 -- }}}

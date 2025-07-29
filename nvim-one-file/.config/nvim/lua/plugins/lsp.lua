@@ -82,7 +82,8 @@ return {
                 sources = {
                     { name = "copilot" },
                     { name = 'nvim_lsp' },
-                    -- { name = 'luasnip' },
+                    { name = 'luasnip' },
+                    { name = "supermaven" },
                     { name = 'path' },
                     { name = "buffer" },
                 },

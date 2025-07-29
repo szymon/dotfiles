@@ -245,6 +245,21 @@ end
 
 ls.add_snippets("go", {
     s(
+        "exp",
+        fmta(
+            [[
+    Expect(<input>).<action>(<result>)
+    <finish>
+]],
+            {
+                input = i(1, "err"),
+                action = i(2, "ShouldNot"),
+                result = i(3, "HaveOccurred"),
+                finish = i(0),
+            }
+        )
+    ),
+    s(
         "efi",
         fmta(
             [[
@@ -420,11 +435,57 @@ var _ = Describe("<describe>", Ordered, func() {
         })),
     s("simpleKubernetesTest",
         fmta([[
+
+package activities_test
+
+import (
+	workerv1 "github.com/cloudferro/mk8s/gen/worker/v1"
+	"github.com/cloudferro/mk8s/pkg/activities"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	"go.temporal.io/sdk/testsuite"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+	"k8s.io/client-go/kubernetes"
+	"k8s.io/client-go/kubernetes/fake"
+)
+
+var _ = Describe("<describe>", Ordered, func() {
+	var env *testsuite.TestActivityEnvironment
+	var acts *activities.Activities
+	var cli kubernetes.Interface
+
+	BeforeEach(func() {
+		cli = fake.NewClientset(
+		)
+
+		acts = &activities.Activities{
+			Logger: logger,
+			CreateKubernetesClient: func(kubeconfig []byte) (kubernetes.Interface, error) {
+				return cli, nil
+			},
+		}
+
+		env = suite.NewTestActivityEnvironment()
+		env.RegisterActivity(acts)
+	})
+
+	It("completes", func(c SpecContext) {
+		resp, err := env.ExecuteActivity("<activity>",
+            &workerv1.<activityInput>Input{
+                <finish>
+            },
+		)
+		Expect(err).ShouldNot(HaveOccurred())
+		Expect(resp.HasValue()).To(BeTrue())
+		result := workerv1.<activityOutput>Output{}
+		Expect(resp.Get(&result)).ShouldNot(HaveOccurred())
+	})
+})
 ]], {
             describe = f(function()
                 return vim.fn.expand("%:t")
             end),
-            command = i(1),
             activity = f(function()
                 local filename = vim.fn.expand("%:t")
                 return filename_to_pascal_case(filename)
@@ -440,6 +501,81 @@ var _ = Describe("<describe>", Ordered, func() {
             finish = i(0),
 
         })),
+
+    s("simpleOperatorTest",
+        fmta([[
+package activities_test
+
+import (
+	"github.com/cloudferro/mk8s/gen/operatorservice/v1"
+	"github.com/cloudferro/mk8s/gen/operatorservicemock/v1"
+	workerv1 "github.com/cloudferro/mk8s/gen/worker/v1"
+	"github.com/cloudferro/mk8s/pkg/activities"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	"go.temporal.io/sdk/testsuite"
+	"go.uber.org/mock/gomock"
+)
+
+var _ = Describe("<describe>", Ordered, func() {
+	var env *testsuite.TestActivityEnvironment
+	var acts *activities.Activities
+	var cli *operatorservicemock.MockOperatorClient
+	BeforeAll(func() {
+		ctrl := gomock.NewController(GinkgoT())
+		cli = operatorservicemock.NewMockOperatorClient(ctrl)
+
+		acts = &activities.Activities{
+			Logger: logger,
+			CreateOperatorClient: func() operatorservice.OperatorClient {
+				return cli
+			},
+		}
+
+		env = suite.NewTestActivityEnvironment()
+		env.RegisterActivity(acts)
+	})
+
+	It("completes", func(c SpecContext) {
+		cli.EXPECT().<command>(
+			gomock.Any(),
+			func() any { panic("unimplemented") }(),
+			func() any { panic("unimplemented") }(),
+			func() any { panic("unimplemented") }(),
+		).Return(nil).Times(1)
+
+		resp, err := env.ExecuteActivity("<activity>",
+			&workerv1.<activityInput>Input{
+                <finish>
+            })
+		Expect(err).ShouldNot(HaveOccurred())
+		Expect(resp.HasValue()).To(BeTrue())
+        result := workerv1.<activityOutput>Output{}
+        Expect(resp.Get(&result)).ShouldNot(HaveOccurred())
+	})
+})
+        ]],
+            {
+                describe = f(function()
+                    return vim.fn.expand("%:t")
+                end),
+                command = i(1),
+                activity = f(function()
+                    local filename = vim.fn.expand("%:t")
+                    return filename_to_pascal_case(filename)
+                end),
+                activityInput = f(function()
+                    local filename = vim.fn.expand("%:t")
+                    return filename_to_pascal_case(filename)
+                end),
+                activityOutput = f(function()
+                    local filename = vim.fn.expand("%:t")
+                    return filename_to_pascal_case(filename)
+                end),
+                finish = i(0),
+
+            })),
+
 })
 
 -- ls.add_snippets(

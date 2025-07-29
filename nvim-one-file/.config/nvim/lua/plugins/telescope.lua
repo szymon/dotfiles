@@ -51,7 +51,7 @@ return {
                             ["<c-k>"] = actions.move_selection_previous,
                             ["<c-j>"] = actions.move_selection_next,
                             ["<c-h>"] = actions.which_key,
-                            ["<c-;>"] = actions.delete_buffer,
+                            -- ["<m-d>"] = actions.delete_buffer,
                             ["<esc>"] = actions.close,
                         }
                     }
@@ -90,6 +90,37 @@ return {
             vim.keymap.set("n", "<leader>sw",
                 function()
                     local word = vim.fn.expand("<cword>")
+                    require("telescope.builtin").grep_string({ search = word })
+                end,
+                { silent = true, noremap = true, desc = "[telescope] search cword" }
+            )
+            vim.keymap.set("v", "<leader>s",
+                function()
+                    local _, start_row, start_col = unpack(vim.fn.getpos("v"))
+                    local _, end_row, end_col = unpack(vim.fn.getpos("."))
+
+                    print(vim.inspect({ start_row, start_col, end_row, end_col }))
+
+                    if start_row ~= end_row then
+                        print("Selection spans multiple lines. This function only supports single-line selections.")
+                        return ""
+                    end
+
+                    if start_col > end_col then
+                        start_col, end_col = end_col, start_col
+                    end
+
+                    local line_content = vim.api.nvim_buf_get_lines(
+                        0,
+                        start_row - 1,
+                        start_row,
+                        false
+                    )[1]
+
+                    start_col = start_col - 1
+                    end_col = end_col - 1
+
+                    local word = line_content:sub(start_col + 1, end_col + 1)
                     require("telescope.builtin").grep_string({ search = word })
                 end,
                 { silent = true, noremap = true, desc = "[telescope] search cword" }
