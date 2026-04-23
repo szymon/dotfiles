@@ -361,7 +361,13 @@ vim.keymap.set(
     "<leader>f",
     function()
         local buffer = vim.api.nvim_get_current_buf()
-        require("conform").format({ bufnr = buffer, async = true })
+        require("conform").format({
+            bufnr = buffer,
+            async = true,
+            filter = function(client)
+                return client.name ~= "html"
+            end,
+        })
     end,
     {
         remap = true,

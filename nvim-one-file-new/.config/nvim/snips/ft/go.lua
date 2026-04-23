@@ -243,7 +243,7 @@ end
 
 
 
-ls.add_snippets("go", {
+return {
     s(
         "exp",
         fmta(
@@ -363,12 +363,12 @@ package activities_test
 import (
 	"context"
 
+	workerv1 "github.com/cloudferro/mk8s/gen/worker/v1"
+	"github.com/cloudferro/mk8s/pkg/activities"
+	openstackapi "github.com/cloudferro/mk8s/pkg/clients/openstack"
+	"github.com/cloudferro/mk8s/pkg/clients/openstack/openstackmock"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	workerv1 "gitlab.cloudferro.com/k8s/managed-kubernetes/gen/worker/v1"
-	"gitlab.cloudferro.com/k8s/managed-kubernetes/pkg/activities"
-	openstackapi "gitlab.cloudferro.com/k8s/managed-kubernetes/pkg/clients/openstack"
-	"gitlab.cloudferro.com/k8s/managed-kubernetes/pkg/clients/openstack/openstackmock"
 	"go.temporal.io/sdk/testsuite"
 	"go.uber.org/mock/gomock"
 )
@@ -439,11 +439,13 @@ var _ = Describe("<describe>", Ordered, func() {
 package activities_test
 
 import (
+	workerv1 "github.com/cloudferro/mk8s/gen/worker/v1"
+	"github.com/cloudferro/mk8s/pkg/activities"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	workerv1 "gitlab.cloudferro.com/k8s/managed-kubernetes/gen/worker/v1"
-	"gitlab.cloudferro.com/k8s/managed-kubernetes/pkg/activities"
 	"go.temporal.io/sdk/testsuite"
+	corev1 "k8s.io/api/core/v1"
+	metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 	"k8s.io/client-go/kubernetes"
 	"k8s.io/client-go/kubernetes/fake"
 )
@@ -451,7 +453,7 @@ import (
 var _ = Describe("<describe>", Ordered, func() {
 	var env *testsuite.TestActivityEnvironment
 	var acts *activities.Activities
-	var cli *fake.Clientset
+	var cli kubernetes.Interface
 
 	BeforeEach(func() {
 		cli = fake.NewClientset(
@@ -574,7 +576,7 @@ var _ = Describe("<describe>", Ordered, func() {
 
             })),
 
-})
+}
 
 -- ls.add_snippets(
 --   "go",

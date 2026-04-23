@@ -18,7 +18,8 @@
 	ca = commit --amend
 	co = checkout
 	br = branch
-	r = reset
+	r = restore
+    rs = restore --staged
 	cp = cherry-pick
 	fp = fetch --progress
 	pf = push --force-with-lease
@@ -63,6 +64,8 @@
 	mc = merge --continue
 	l = ls10
 	w = worktree
+
+    showfiles = show --name-status
 
 [merge]
 	tool = vimdiff
@@ -110,8 +113,6 @@
 # [url "ssh://git@gitlab.cloudferro.com/"]
 # 	insteadOf = https://gitlab.cloudferro.com/
 # 
-[url "ssh://git@github.com/"]
-	insteadOf = https://github.com/
 # [url "ssh://git@gitlab.cloudferro.com/"]
 # 	insteadOf = https://gitlab.cloudferro.com/
 [filter "lfs"]
@@ -119,3 +120,5 @@
 	smudge = git-lfs smudge -- %f
 	process = git-lfs filter-process
 	required = true
+[coderabbit]
+	machineId = cli/01bb2c0312044a16aa984d8379b55c2f

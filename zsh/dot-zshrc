@@ -35,7 +35,7 @@ umask 0022
 export PATH="/opt/homebrew/bin:$HOME/.local/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/bin:$PATH"
 export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 export DOCKER_HOST="unix://$HOME/.colima/docker.sock"
-export SSH_AUTH_SOCK="~/Library/Group Containers/2BUA8C4S2C.com.1password/t/agent.sock"
+export SSH_AUTH_SOCK="~/.1password/agent.sock"
 
 export VAULT_SKIP_VERIFY=true
 export JIRA_AUTH_TYPE=bearer
@@ -55,7 +55,11 @@ if command velero &> /dev/null; then
     source <(velero completion zsh)
 fi
 
-bindkey -s ^o "tmux-sessionizer"
+if command jj &> /dev/null; then
+    source <(jj util completion zsh)
+fi
+
+# bindkey -s ^o "tmux-sessionizer"
 
 
 alias k=kubectl
@@ -68,3 +72,11 @@ export NVM_DIR="$HOME/.nvm"
 export PATH=/Users/srams/.opencode/bin:$PATH
 
 export HOMEBREW_NO_AUTO_UPDATE=1
+
+export HISTFILE="$HOME/.zsh_history"
+export HISTSIZE=1000000000
+export SAVEHIST=1000000000
+setopt EXTENDED_HISTORY
+
+
+export GOPRIVATE=gitlab.cloudferro.com/*

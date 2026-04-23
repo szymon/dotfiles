@@ -5,13 +5,16 @@ return {
         config = function()
             ---@diagnostic disable-next-line
             require("nvim-treesitter.configs").setup({
+                indent = {
+                    enable = true,
+                    -- disable = { "javascript" },
+                },
 
                 ensure_installed = {
                     "go", "html", "javascript", "json", "markdown", "python", "query",
                     "rust", "toml", "yaml", "nix", "lua", "css", "bash", "dockerfile",
                     "templ", "zig",
                 },
-
 
                 highlight = {
                     enable = true,

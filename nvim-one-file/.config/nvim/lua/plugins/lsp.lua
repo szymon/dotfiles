@@ -31,7 +31,7 @@ return {
                         luasnip.lsp_expand(args.body)
                     end,
                 },
-                completion = { completeopt = 'menu,menuone,noinsert' },
+                completion = { completeopt = 'noselect,menu,menuone,noinsert' },
                 preselect = cmp.PreselectMode.None,
 
                 -- For an understanding of why these mappings were
@@ -203,12 +203,7 @@ return {
                         gopls = {
                             usePlaceholders = true,
                             experimentalPostfixCompletions = true,
-                            analyses = {
-                                pointerTypeCheck = true,
-                                usePlaceholders = true,
-                                unusedparams = true,
-                                shadow = true,
-                            },
+                            -- analyses = { },
                             gofumpt = true,
                             codelenses = {
                                 generate = true,
@@ -218,7 +213,6 @@ return {
                                 upgrade_depdendency = true,
                                 vendor = true,
                             },
-                            staticcheck = true,
                         }
                     }
 
