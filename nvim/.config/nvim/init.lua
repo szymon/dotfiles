@@ -1,303 +1,154 @@
-vim.cmd [[source ~/.vimrc]]
+vim.cmd([[ source ~/.vimrc ]])
 
-require "plugins"
-require "lsp_configs"
-require "statusline"
-
+vim.opt.guicursor = ""
 vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
-vim.opt.spell = true
+vim.opt.spell = false
 vim.opt.relativenumber = true
 vim.opt.number = true
-vim.opt.syntax = "off"
-vim.opt.spell = false
-
-vim.opt.colorcolumn = "88"
-
-vim.opt.laststatus = 3
-vim.cmd [[ hi WinSeperator guibg=none ]]
-
-local telescope_actions = require("telescope.actions")
-local cb = require'diffview.config'.diffview_callback
-
-local opts = {noremap = true, silent = true}
-
-local function set_keymap(mode, mapping, action)
-    vim.api.nvim_set_keymap(mode, mapping, action, opts)
-end
-
-set_keymap("n", "<c-p>", "<cmd>lua require('telescope.builtin').find_files()<cr>")
-set_keymap("n", "<leader>rr", "<cmd>lua require('telescope.builtin').live_grep()<cr>")
-set_keymap("n", "<leader>gr", "<cmd>lua require('telescope.builtin').grep_string()<cr>")
-set_keymap("n", "<leader>;",
-           "<cmd>lua require('telescope.builtin').buffers({sort_lastused = true, ignore_current_buffer = true })<cr>")
-set_keymap("n", "<leader>fh", "<cmd>lua require('telescope.builtin').help_tags()<cr>")
-set_keymap("n", "<leader>fk", "<cmd>lua require('telescope.builtin').keymaps()<cr>")
-set_keymap("n", "<leader>fs", "<cmd>lua require('telescope.builtin').spell_suggest()<cr>")
-set_keymap("n", "<leader>fgc", "<cmd>lua require('telescope.builtin').git_commits()<cr>")
-set_keymap("n", "<leader>fgb", "<cmd>lua require('telescope.builtin').git_bcommits()<cr>")
-set_keymap("n", "<leader>fgs", "<cmd>lua require('telescope.builtin').git_status()<cr>")
-
--- vim.api.nvim_set_keymap("n", "<leader>j", "<cmd>cn<cr>", opts)
--- vim.api.nvim_set_keymap("n", "<leader>k", "<cmd>cp<cr>", opts)
-
-vim.cmd [[
-" call submode#enter_with('grow/shrink', 'n', '', '<leader><up>', '<C-w>+')
-" call submode#enter_with('grow/shrink', 'n', '', '<leader><down>', '<C-w>-')
-" call submode#map('grow/shrink', 'n', '', '<down>', '<C-w>-')
-" call submode#map('grow/shrink', 'n', '', '<up>', '<C-w>+')
-
-call submode#enter_with('quickfixlist', 'n', '', '<leader>j', '<cmd>cn<cr>')
-call submode#enter_with('quickfixlist', 'n', '', '<leader>k', '<cmd>cp<cr>')
-call submode#map('quickfixlist', 'n', '', 'j', '<cmd>cn<cr>')
-call submode#map('quickfixlist', 'n', '', 'k', '<cmd>cp<cr>')
-]]
-
--- vim.cmd [[
--- augroup mywriting
---     au!
---     autocmd BufEnter *.md set textwidth=88 showbreak=+++ linebreak
---     autocmd BufEnter *.txt set textwidth=88 showbreak=+++ linebreak
--- augroup END
--- ]]
-
-vim.g.submode_timeout = 0
-vim.g.submode_keep_leaving_key = 1
-
+vim.opt.colorcolumn = "88,120"
 vim.opt.background = "dark"
-vim.cmd [[colorscheme gruvbox-material]]
+vim.opt.laststatus = 3
+vim.opt.swapfile = false
+vim.opt.backup = false
+vim.opt.undodir = os.getenv("HOME") .. "/.vim/undo"
+vim.opt.undofile = true
+vim.opt.updatetime = 200
 
--- insert mode refresh completions (at word, at function call)
--- scrolling window with completions
---
--- some way to define actions on save (format, sort imports...)
-vim.g.Illuminate_delay = 300
-vim.api.nvim_command [[ hi def link LspReferenceText CursorLine ]]
-vim.api.nvim_command [[ hi def link LspReferenceWrite CursorLine ]]
-vim.api.nvim_command [[ hi def link LspReferenceRead CursorLine ]]
+vim.g.mouse = "a"
 
--- pop-up window for diagnostic is unreadable, now sure how to change it
--- so instead change text color to pink
-vim.api.nvim_command [[ hi DiagnosticFloatingError guifg=Pink ]]
+-- general keymaps
+vim.keymap.set("v", "J", ":m '>+1<cr>gv=gv", { desc = "[general] move selected line down" })
+vim.keymap.set("v", "L", ":m '<-2<cr>gv=gv", { desc = "[general] move selected line up" })
 
--- Telescope_scroll_window {{{
-function Telescope_scroll_window(prompt_bufnr, direction, mod)
-    local action_state = require 'telescope.actions.state'
-    local state = require 'telescope.state'
-    -- mostly stolen from https://github.com/nvim-telescope/telescope.nvim/blob/8b02088743c07c2f82aec2772fbd2b3774195448/lua/telescope/actions/set.lua#L168
+vim.keymap.set("n", "Y", "yg$", { desc = "[general] yank to end of line" })
 
-    local previewer = action_state.get_current_picker(prompt_bufnr).previewer
+vim.keymap.set("x", "<leader>p", '"_dP', { desc = "[general] paste without overwriting clipboard" })
 
-    -- Check if we actually have a previewer
-    if type(previewer) ~= "table" or previewer.scroll_fn == nil then return end
-    if type(mod) == "function" then mod = mod(prompt_bufnr) end
+-- disable ex mode
+vim.keymap.set("n", "Q", "<nop>", { desc = "[general] disable ex mode" })
 
-    local status = state.get_status(prompt_bufnr)
-    local default_speed = vim.api.nvim_win_get_height(status.preview_win) / mod
-    local speed = status.picker.layout_config.scroll_speed or default_speed
+-- keep cursor inplace when joining lines
+vim.keymap.set("n", "J", "mzJ`z", { desc = "[general] join lines without moving the cursor" })
 
-    previewer:scroll_fn(math.floor(speed * direction))
+-- keep cursor in the center when jumping half page
+vim.keymap.set("n", "<c-d>", "<c-d>zz", { desc = "[general] jump half page down and center the cursor" })
+vim.keymap.set("n", "<c-u>", "<c-u>zz", { desc = "[general] jump half page up and center the cursor" })
+
+-- keep cursor in the center when searching with n/N
+vim.keymap.set("n", "n", "nzzzv", { desc = "[general] search next and center the cursor" })
+vim.keymap.set("n", "N", "Nzzzv", { desc = "[general] search previous and center the cursor" })
+
+vim.keymap.set("n", "<leader>x", "<cmd>!chmod +x %<cr>", { desc = "[general] make file executable" })
+
+vim.keymap.set("n", "<leader>e", vim.diagnostic.open_float, { desc = "[general] open diagnostics" })
+-- vim.keymap.set("n", "<leader>u", vim.cmd.UndotreeToggle)
+
+-- vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1, float = true }) end,
+--     { desc = "[general] go to previous diagnostic" })
+-- vim.keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1, float = true }) end,
+--     { desc = "[general] go to next diagnostic" })
+
+vim.keymap.set("n", ";", "dd", { desc = "[general] remove line" })
+
+vim.keymap.set("n", "<leader>m", function()
+	--[[
+    --  toggle between normal file and test file.
+    --]]
+	-- Get the current file's full path
+	local current_file = vim.api.nvim_buf_get_name(0)
+
+	-- Extract the directory and filename
+	local dir = vim.fn.fnamemodify(current_file, ":h") -- Get the directory
+	local filename = vim.fn.fnamemodify(current_file, ":t") -- Get the filename
+
+	-- Determine the target file
+	local target_file
+	if filename:match("_test%.go$") then
+		-- If the current file is a test file, switch to the implementation file
+		target_file = filename:gsub("_test%.go$", ".go")
+	elseif filename:match("%.go$") then
+		-- If the current file is an implementation file, switch to the test file
+		target_file = filename:gsub("%.go$", "_test.go")
+	else
+		print("Not a Go file or test file!")
+		return
+	end
+
+	-- Construct the full path to the target file
+	local target_path = dir .. "/" .. target_file
+
+	-- Check if the target file is already open in a buffer
+	for _, buf in ipairs(vim.api.nvim_list_bufs()) do
+		if vim.api.nvim_buf_is_loaded(buf) then
+			local buf_path = vim.api.nvim_buf_get_name(buf)
+			if buf_path == target_path then
+				-- Find the window displaying the buffer
+				for _, win in ipairs(vim.api.nvim_list_wins()) do
+					if vim.api.nvim_win_get_buf(win) == buf then
+						-- Switch to the window displaying the buffer
+						vim.api.nvim_set_current_win(win)
+						print("Switched to already open file: " .. target_path)
+						return
+					end
+				end
+			end
+		end
+	end
+
+	vim.cmd("rightb vsplit " .. target_path)
+end)
+
+local function dupLine(opts)
+	if opts == nil then
+		opts = {
+			count = 1,
+		}
+	end
+	local bufnr = vim.api.nvim_get_current_buf()
+	local row, col = unpack(vim.api.nvim_win_get_cursor(0))
+	local line = vim.api.nvim_buf_get_lines(bufnr, row - 1, row, false)
+	vim.api.nvim_buf_set_lines(bufnr, row, row, false, line)
+	vim.api.nvim_win_set_cursor(0, { row + opts.count, col })
 end
 
-local function get_window_height(bufnr)
-    local state = require 'telescope.state'
-    local status = state.get_status(bufnr)
-    return vim.api.nvim_win_get_height(status.preview_win)
-end
+vim.keymap.set("n", "gb", dupLine, { desc = "[general] duplicate current line and move down" })
 
-require("telescope").setup({
-    defaults = {
-        mappings = {
-            i = {
-                ["<c-f>"] = function(pbn)
-                    Telescope_scroll_window(pbn, 1, 1)
-                end,
-                ["<c-b>"] = function(pbn)
-                    Telescope_scroll_window(pbn, -1, 1)
-                end,
-                ["<c-e>"] = function(pbn)
-                    Telescope_scroll_window(pbn, 1, get_window_height)
-                end,
-                ["<c-y>"] = function(pbn)
-                    Telescope_scroll_window(pbn, -1, get_window_height)
-                end,
-                ["<c-k>"] = telescope_actions.move_selection_previous,
-                ["<c-j>"] = telescope_actions.move_selection_next,
-                ["<c-h>"] = telescope_actions.which_key,
-                ["<esc>"] = telescope_actions.close
-            }
-        }
-    }
+require("custom.statusline").setup()
+
+vim.pack.add({
+	"https://github.com/stevearc/oil.nvim",
+	"https://github.com/stevearc/conform.nvim",
+	"https://github.com/ibhagwan/fzf-lua",
+	"https://github.com/supermaven-inc/supermaven-nvim",
+	"https://github.com/lewis6991/gitsigns.nvim",
+	"https://github.com/nvim-lua/plenary.nvim",
+	"https://github.com/tpope/vim-fugitive",
+	"https://github.com/google/vim-jsonnet",
+	"https://github.com/ThePrimeagen/harpoon",
+	"https://github.com/ray-x/go.nvim",
+	"https://github.com/ellisonleao/gruvbox.nvim",
+	-- cmp
+	"https://github.com/hrsh7th/nvim-cmp",
+	"https://github.com/saadparwaiz1/cmp_luasnip",
+	"https://github.com/hrsh7th/cmp-nvim-lsp",
+	"https://github.com/hrsh7th/cmp-path",
+	"https://github.com/L3MON4D3/LuaSnip",
+    -- "https://github.com/saghen/blink.cmp",
+	-- lsp
+	"https://github.com/williamboman/mason.nvim",
+	"https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim",
+	"https://github.com/j-hui/fidget.nvim",
+    "https://github.com/neovim/nvim-lspconfig",
+    -- treesitter
+    "https://github.com/nvim-treesitter/nvim-treesitter",
+}, {
+	confirm = false,
 })
--- }}}
--- gitsigns {{{
-require("gitsigns").setup {
-    signs = {
-        add = {hl = "SignAdd", text = "+"},
-        change = {hl = "SignChange", text = "~"},
-        delete = {hl = "SignDelete", text = "-"},
-        topdelete = {hl = "SignDelete", text = "-"},
-        changedelete = {hl = "SignChange", text = "~"}
-    },
-    watch_gitdir = {interval = 1000}
-}
 
-set_keymap('n', '<leader>hs', "<cmd>lua require('gitsigns').stage_hunk()<cr>");
-set_keymap('n', '<leader>hu', "<cmd>lua require('gitsigns').undo_stage_hunk()<cr>");
-set_keymap('n', '<leader>hr', "<cmd>lua require('gitsigns').reset_hunk()<cr>");
-set_keymap('n', '<leader>hR', "<cmd>lua require('gitsigns').reset_buffer()<cr>");
-set_keymap('n', '<leader>hp', "<cmd>lua require('gitsigns').preview_hunk()<cr>");
-set_keymap('n', '<leader>hb', "<cmd>lua require('gitsigns').blame_line()<cr>");
-set_keymap('v', '<leader>hs', "<cmd>lua require('functions').stage_selection()<cr>");
-
--- }}}
--- diffview {{{
--- require'diffview'.setup {
---     diff_binaries = false, -- Show diffs for binaries
---     enhanced_diff_hl = false, -- See ':h diffview-config-enhanced_diff_hl'
---     file_panel = {
---         position = "left", -- One of 'left', 'right', 'top', 'bottom'
---         width = 35, -- Only applies when position is 'left' or 'right'
---         height = 10, -- Only applies when position is 'top' or 'bottom'
---         listing_style = "tree", -- One of 'list' or 'tree'
---         tree_options = { -- Only applies when listing_style is 'tree'
---             flatten_dirs = true, -- Flatten dirs that only contain one single dir
---             folder_statuses = "only_folded" -- One of 'never', 'only_folded' or 'always'.
---         }
---     },
---     file_history_panel = {
---         position = "bottom",
---         width = 35,
---         height = 16,
---         log_options = {
---             max_count = 256, -- Limit the number of commits
---             follow = false, -- Follow renames (only for single file)
---             all = false, -- Include all refs under 'refs/' including HEAD
---             merges = false, -- List only merge commits
---             no_merges = false, -- List no merge commits
---             reverse = false -- List commits in reverse order
---         }
---     },
---     default_args = { -- Default args prepended to the arg-list for the listed commands
---         DiffviewOpen = {},
---         DiffviewFileHistory = {}
---     },
---     hooks = {}, -- See ':h diffview-config-hooks'
---     key_bindings = {
---         disable_defaults = false, -- Disable the default key bindings
---         -- The `view` bindings are active in the diff buffers, only when the current
---         -- tabpage is a Diffview.
---         view = {
---             ["<tab>"] = cb("select_next_entry"), -- Open the diff for the next file
---             ["<s-tab>"] = cb("select_prev_entry"), -- Open the diff for the previous file
---             ["gf"] = cb("goto_file"), -- Open the file in a new split in previous tabpage
---             ["<C-w><C-f>"] = cb("goto_file_split"), -- Open the file in a new split
---             ["<C-w>gf"] = cb("goto_file_tab"), -- Open the file in a new tabpage
---             ["<leader>e"] = cb("focus_files"), -- Bring focus to the files panel
---             ["<leader>b"] = cb("toggle_files") -- Toggle the files panel.
---         },
---         file_panel = {
---             ["j"] = cb("next_entry"), -- Bring the cursor to the next file entry
---             ["<down>"] = cb("next_entry"),
---             ["k"] = cb("prev_entry"), -- Bring the cursor to the previous file entry.
---             ["<up>"] = cb("prev_entry"),
---             ["<cr>"] = cb("select_entry"), -- Open the diff for the selected entry.
---             ["o"] = cb("select_entry"),
---             ["<2-LeftMouse>"] = cb("select_entry"),
---             ["-"] = cb("toggle_stage_entry"), -- Stage / unstage the selected entry.
---             ["S"] = cb("stage_all"), -- Stage all entries.
---             ["U"] = cb("unstage_all"), -- Unstage all entries.
---             ["X"] = cb("restore_entry"), -- Restore entry to the state on the left side.
---             ["R"] = cb("refresh_files"), -- Update stats and entries in the file list.
---             ["<tab>"] = cb("select_next_entry"),
---             ["<s-tab>"] = cb("select_prev_entry"),
---             ["gf"] = cb("goto_file"),
---             ["<C-w><C-f>"] = cb("goto_file_split"),
---             ["<C-w>gf"] = cb("goto_file_tab"),
---             ["i"] = cb("listing_style"), -- Toggle between 'list' and 'tree' views
---             ["f"] = cb("toggle_flatten_dirs"), -- Flatten empty subdirectories in tree listing style.
---             ["<leader>e"] = cb("focus_files"),
---             ["<leader>b"] = cb("toggle_files")
---         },
---         file_history_panel = {
---             ["g!"] = cb("options"), -- Open the option panel
---             ["<C-A-d>"] = cb("open_in_diffview"), -- Open the entry under the cursor in a diffview
---             ["y"] = cb("copy_hash"), -- Copy the commit hash of the entry under the cursor
---             ["zR"] = cb("open_all_folds"),
---             ["zM"] = cb("close_all_folds"),
---             ["j"] = cb("next_entry"),
---             ["<down>"] = cb("next_entry"),
---             ["k"] = cb("prev_entry"),
---             ["<up>"] = cb("prev_entry"),
---             ["<cr>"] = cb("select_entry"),
---             ["o"] = cb("select_entry"),
---             ["<2-LeftMouse>"] = cb("select_entry"),
---             ["<tab>"] = cb("select_next_entry"),
---             ["<s-tab>"] = cb("select_prev_entry"),
---             ["gf"] = cb("goto_file"),
---             ["<C-w><C-f>"] = cb("goto_file_split"),
---             ["<C-w>gf"] = cb("goto_file_tab"),
---             ["<leader>e"] = cb("focus_files"),
---             ["<leader>b"] = cb("toggle_files")
---         },
---         option_panel = {["<tab>"] = cb("select"), ["q"] = cb("close")}
---     }
--- }
--- }}}
--- treesitter {{{
-require'nvim-treesitter.configs'.setup {ensure_installed = {"python", "lua", "go", "yaml"}, highlight = {enable = true}}
--- }}}
--- better diagnostics {{{
-
-require('trouble').setup {
-    position = "bottom", -- position of the list can be: bottom, top, left, right
-    height = 10, -- height of the trouble list when position is top or bottom
-    width = 50, -- width of the list when position is left or right
-    icons = false, -- use devicons for filenames
-    mode = "workspace_diagnostics", -- "workspace_diagnostics", "document_diagnostics", "quickfix", "lsp_references", "loclist"
-    fold_open = ">", -- icon used for open folds
-    fold_closed = "v", -- icon used for closed folds
-    group = true, -- group results by file
-    padding = true, -- add an extra new line on top of the list
-    action_keys = { -- key mappings for actions in the trouble list
-        -- map to {} to remove a mapping, for example:
-        -- close = {},
-        close = "q", -- close the list
-        cancel = "<esc>", -- cancel the preview and get back to your last window / buffer / cursor
-        refresh = "r", -- manually refresh
-        jump = {"<cr>", "<tab>"}, -- jump to the diagnostic or open / close folds
-        open_split = {"<c-x>"}, -- open buffer in new split
-        open_vsplit = {"<c-v>"}, -- open buffer in new vsplit
-        open_tab = {"<c-t>"}, -- open buffer in new tab
-        jump_close = {"o"}, -- jump to the diagnostic and close the list
-        toggle_mode = "m", -- toggle between "workspace" and "document" diagnostics mode
-        toggle_preview = "P", -- toggle auto_preview
-        hover = "K", -- opens a small popup with the full multiline message
-        preview = "p", -- preview the diagnostic location
-        close_folds = {"zM", "zm"}, -- close all folds
-        open_folds = {"zR", "zr"}, -- open all folds
-        toggle_fold = {"zA", "za"}, -- toggle fold of current file
-        previous = "k", -- preview item
-        next = "j" -- next item
-    },
-    indent_lines = false, -- add an indent guide below the fold icons
-    auto_open = false, -- automatically open the list when you have diagnostics
-    auto_close = false, -- automatically close the list when you have no diagnostics
-    auto_preview = true, -- automatically preview the location of the diagnostic. <esc> to close preview and go back to last window
-    auto_fold = false, -- automatically fold a file trouble list at creation
-    auto_jump = {"lsp_definitions"}, -- for the given modes, automatically jump if there is only a single result
-    signs = {
-        -- icons / text used for a diagnostic
-        error = "error",
-        warning = "warning",
-        hint = "hint",
-        information = "info",
-        other = "other"
-    },
-    use_diagnostic_signs = false -- enabling this will use the signs defined in your lsp client
-}
-set_keymap("n", "<leader>tt", "<cmd>lua require('trouble').toggle()<cr>")
-
--- }}}
-
--- vim: foldmethod=marker :
+vim.diagnostic.config({
+	virtual_text = true,
+	update_in_insert = true,
+	signs = { severity_limit = "Error" },
+	underline = { severity_limit = "Warning" },
+})
