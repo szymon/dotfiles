@@ -32,7 +32,7 @@ fi
 
 umask 0022
 
-export PATH="/opt/homebrew/bin:$HOME/.local/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/bin:$PATH"
+export PATH="/opt/homebrew/bin:/opt/homebrew/sbin:$HOME/.local/bin:$HOME/go/bin:/usr/local/go/bin:/usr/local/bin:$PATH"
 export LD_LIBRARY_PATH="/usr/local/lib:$LD_LIBRARY_PATH"
 export DOCKER_HOST="unix://$HOME/.colima/docker.sock"
 export SSH_AUTH_SOCK="~/.1password/agent.sock"
@@ -77,6 +77,6 @@ export HISTFILE="$HOME/.zsh_history"
 export HISTSIZE=1000000000
 export SAVEHIST=1000000000
 setopt EXTENDED_HISTORY
-
+export PATH="${KREW_ROOT:-$HOME/.krew}/bin:$PATH"
 
 export GOPRIVATE=gitlab.cloudferro.com/*

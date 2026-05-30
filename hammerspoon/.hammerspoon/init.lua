@@ -76,8 +76,8 @@ end)
 Apps = {
     { "1", "Helium" },
     { "2", "Ghostty" },
-    { "3", "Microsoft Teams" },
-    { "4", "Slack" },
+    { "4", "Microsoft Teams" },
+    { "3", "Slack" },
 }
 
 for _, app in ipairs(Apps) do

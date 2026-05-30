@@ -42,8 +42,9 @@
 	graphviz = "!f() { echo 'digraph git {' ; git log --pretty='format:  %h -> { %p }' \"$@\" | sed 's/[0-9a-f][0-9a-f]*/\"&\"/g' ; echo '}'; }; f"
 
 	# pretty logs
-	lg = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%aN] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
 	lga = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%aN] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative --all
+	lg = log --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%aN] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
+	lg10 = log -10 --graph --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%aN] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
 	ls = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%aN] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative
 	ls10 = log --pretty=format:'%C(green)%h %C(yellow)[%<(12,trunc)%ad] %C(bold blue)[%<(13,trunc)%aN] %Creset%<(80,trunc)%s %Cred%d%Creset' --decorate --date=relative -10
 
@@ -62,7 +63,7 @@
 	wip = "!c() { git commit -a -m wip --no-verify; git push -f origin HEAD}; c"
 	m = merge
 	mc = merge --continue
-	l = ls10
+	l = lg10
 	w = worktree
 
     showfiles = show --name-status
@@ -95,6 +96,7 @@
 [mailmap]
 	file = ~/.mailmap
 [safe]
+	directory = /Users/srams/code/mk8s/main
 	# directory = /home/srams/tools/neovim
 
 [gpg]
