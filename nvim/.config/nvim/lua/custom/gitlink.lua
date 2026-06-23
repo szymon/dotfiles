@@ -10,6 +10,19 @@ local urlFromRemote = function(remote)
     error("unsupported remote: " .. remote)
 end
 
+---@param base string
+---@param branch string
+---@param file string
+---@param line number
+local function formatUrl(base, branch, file, line)
+    if base:find("github") then
+        return base .. "/blob/" .. branch .. "/" .. file .. "#L" .. line
+    elseif base:find("gitlab") then
+        return base .. "/-/blob/" .. branch .. "/" .. file .. "#L" .. line
+    end
+    error("unsupported remote: " .. base)
+end
+
 vim.keymap.set("n", "gl", function()
     local remoteResult = vim.system({ "git", "remote", "get-url", "origin" }, { text = true }):wait()
     local url = urlFromRemote(remoteResult.stdout:gsub("%s+", ""))
@@ -25,6 +38,6 @@ vim.keymap.set("n", "gl", function()
 
     local file = bn:gsub(repo .. "/", "")
 
-    local fileUrl = url .. "/-/blob/" .. branch .. "/" .. file .. "#L" .. line
+    local fileUrl = formatUrl(url, branch, file, line)
     vim.system({ "open", fileUrl }, { detach = true })
 end, { noremap = true, silent = true })
