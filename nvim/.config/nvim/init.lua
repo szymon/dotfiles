@@ -1,5 +1,6 @@
 vim.cmd([[ source ~/.vimrc ]])
 
+-- require("vim._core.ui2").enable({})
 vim.opt.guicursor = ""
 vim.opt.signcolumn = "yes"
 vim.opt.wrap = false
@@ -14,6 +15,11 @@ vim.opt.backup = false
 vim.opt.undodir = os.getenv("HOME") .. "/.vim/undo"
 vim.opt.undofile = true
 vim.opt.updatetime = 200
+
+-- vim.o.autocomplete = true
+-- vim.opt.complete:append("o")
+-- vim.opt.completeopt = { "menuone", "noselect", "noinsert" }
+-- vim.o.pumheight = 5
 
 vim.g.mouse = "a"
 
@@ -117,34 +123,49 @@ vim.keymap.set("n", "gb", dupLine, { desc = "[general] duplicate current line an
 require("custom.statusline").setup()
 
 vim.pack.add({
-	"https://github.com/stevearc/oil.nvim",
+	-- theme
+	"https://github.com/folke/tokyonight.nvim",
+	"https://github.com/ellisonleao/gruvbox.nvim",
+	-- general
 	"https://github.com/stevearc/conform.nvim",
 	"https://github.com/ibhagwan/fzf-lua",
 	"https://github.com/supermaven-inc/supermaven-nvim",
-	"https://github.com/lewis6991/gitsigns.nvim",
 	"https://github.com/nvim-lua/plenary.nvim",
-	"https://github.com/tpope/vim-fugitive",
 	"https://github.com/google/vim-jsonnet",
-	"https://github.com/ThePrimeagen/harpoon",
+	{ src = "https://github.com/ThePrimeagen/harpoon", version = "harpoon2" },
 	"https://github.com/ray-x/go.nvim",
-	"https://github.com/ellisonleao/gruvbox.nvim",
+	-- git
+	"https://github.com/tpope/vim-fugitive",
+	"https://github.com/lewis6991/gitsigns.nvim",
 	-- cmp
 	"https://github.com/hrsh7th/nvim-cmp",
 	"https://github.com/saadparwaiz1/cmp_luasnip",
 	"https://github.com/hrsh7th/cmp-nvim-lsp",
 	"https://github.com/hrsh7th/cmp-path",
 	"https://github.com/L3MON4D3/LuaSnip",
-    -- "https://github.com/saghen/blink.cmp",
+	-- "https://github.com/saghen/blink.cmp",
 	-- lsp
 	"https://github.com/williamboman/mason.nvim",
 	"https://github.com/WhoIsSethDaniel/mason-tool-installer.nvim",
 	"https://github.com/j-hui/fidget.nvim",
-    "https://github.com/neovim/nvim-lspconfig",
-    -- treesitter
-    "https://github.com/nvim-treesitter/nvim-treesitter",
+	"https://github.com/neovim/nvim-lspconfig",
+	-- treesitter
+	{ src = "https://github.com/nvim-treesitter/nvim-treesitter", version = "main" },
 }, {
 	confirm = false,
 })
+
+vim.api.nvim_create_user_command("PackAdd", function(opts)
+	vim.pack.add(opts.fargs)
+end, { nargs = "+" })
+vim.api.nvim_create_user_command("PackUpdate", function(opts)
+	if opts.args ~= "" then
+		local plugins = vim.split(opts.args, "%s+", { trimempty = true })
+		vim.pack.update(plugins)
+	else
+		vim.pack.update()
+	end
+end, { nargs = "*" })
 
 vim.diagnostic.config({
 	virtual_text = true,
@@ -152,3 +173,5 @@ vim.diagnostic.config({
 	signs = { severity_limit = "Error" },
 	underline = { severity_limit = "Warning" },
 })
+
+require("custom.gitlink")

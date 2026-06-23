@@ -1,9 +1,4 @@
-ts = require("nvim-treesitter")
-tsconf = require("nvim-treesitter.configs")
-
-
-
-tsconf.setup({
+require("nvim-treesitter").setup({
 	indent = {
 		enable = true,
 		-- disable = { "javascript" },
@@ -31,7 +26,7 @@ tsconf.setup({
 
 	highlight = {
 		enable = true,
-		additional_vim_regex_highlighting = false,
+		additional_vim_regex_highlighting = true,
 	},
 
 	refactor = {
@@ -39,15 +34,7 @@ tsconf.setup({
 		highlight_current_scope = { enable = false },
 	},
 
-	incremental_selection = {
-		enable = true,
-		keymaps = {
-			init_selection = "<M-w>",
-			node_incremental = "<M-w>",
-			node_decremental = "<M-C-w>",
-			scope_incremental = "<M-e>",
-		},
-	},
+	incremental_selection = { enable = false },
 
 	playground = {
 		enable = true,
@@ -61,4 +48,20 @@ tsconf.setup({
 	},
 })
 
+vim.treesitter.language.register("sql", {"sql", "psql"})
 vim.treesitter.language.add("sql", { path = "/Users/srams/code/tree-sitter-sql/sql.so" })
+
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = { "*" },
+	callback = function()
+		local filetype = vim.bo.filetype
+		if filetype and filetype ~= "" then
+			local success = pcall(function()
+				vim.treesitter.start()
+			end)
+			if not success then
+				return
+			end
+		end
+	end,
+})

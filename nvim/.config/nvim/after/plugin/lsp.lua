@@ -8,6 +8,7 @@ local servers = {
 	buf = {
 		filetypes = { "proto" },
 	},
+    templ = {},
 	-- html = {
 	--     filetype = { "html", "templ" },
 	-- },
@@ -78,7 +79,9 @@ local servers = {
 		},
 	},
 	opa = {},
-	["lua-language-server"] = {
+	lua_ls = {
+        manual_install = true,
+        server_name = "lua-language-server",
 		settings = {
 			Lua = {
 				runtime = { version = "LuaJIT" },
@@ -126,13 +129,13 @@ local servers = {
 	["typescript-language-server"] = {
 		filetypes = { "typescript", "javascript", "javascriptreact", "typescriptreact", "vue" },
 		init_options = {
-			plugins = {
-				{
-					name = "@vue/typescript-plugin",
-					location = vue_language_server_path,
-					languages = { "vue" },
-				},
-			},
+			-- plugins = {
+			-- 	{
+			-- 		name = "@vue/typescript-plugin",
+			-- 		location = vue_language_server_path,
+			-- 		languages = { "vue" },
+			-- 	},
+			-- },
 		},
 	},
 }
@@ -193,6 +196,10 @@ vim.api.nvim_create_autocmd("LspAttach", {
 		vim.keymap.set("n", "<leader>D", vim.lsp.buf.type_definition, { desc = "[lsp] type definition" })
 		vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, { desc = "[lsp] rename" })
 		vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, { desc = "[lsp] code actions" })
+
+       -- if client:supports_method("textDocument/completion") then
+       --     vim.lsp.completion.enable(true, client.id, bn, {autotrigger = true})
+       -- end
 	end,
 })
 

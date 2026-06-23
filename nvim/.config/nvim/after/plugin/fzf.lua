@@ -1,4 +1,3 @@
-
 fzf = require("fzf-lua")
 
 fzf.setup({
@@ -14,6 +13,10 @@ fzf.setup({
 })
 
 vim.keymap.set("n", "<c-p>", fzf.files, { desc = "fzf files" })
-vim.keymap.set("n", "<leader>;", fzf.files, { desc = "fzf buffers" })
-vim.keymap.set("n", "<leader>gr", fzf.files, { desc = "fzf grep" })
-vim.keymap.set("n", "<leader>sw", fzf.files, { desc = "fzf cword" })
+vim.keymap.set("n", "<leader>;", fzf.buffers, { desc = "fzf buffers" })
+vim.keymap.set("n", "<leader>gr", fzf.live_grep_native, { desc = "fzf grep" })
+vim.keymap.set("n", "<leader>sw", fzf.grep_cword, { desc = "fzf cword" })
+vim.keymap.set("v", "<leader>sw", function(args)
+    local selection = require("fzf-lua.utils").get_visual_selection()
+    fzf.live_grep({ search = selection })
+end, { desc = "fzf selection" })
